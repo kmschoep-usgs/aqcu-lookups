@@ -1,0 +1,7 @@
+aquarius:
+  service:
+    endpoint: "https://test-aquarius.gov/"
+    user: "test"
+    password: "test"
+    retries:
+      unauthorized: 1
