@@ -6,7 +6,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-
     <properties>
         <cida.maven.url>https://internal.cida.usgs.gov/maven/content/repositories</cida.maven.url>
         <wma.artifactory.url>https://cida.usgs.gov/artifactory</wma.artifactory.url>
@@ -15,9 +14,10 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <additionalparam>-Xdoclint:none</additionalparam>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <springfox.version>2.8.0</springfox.version>
+        <springfox.version>2.9.0</springfox.version>
         <aquarius.sdk.version>18.5.2</aquarius.sdk.version>
         <aqcu.framework.version>0.0.2-SNAPSHOT</aqcu.framework.version>
+        <guava.version>20.0</guava.version>
     </properties>
 
     <parent>
@@ -32,6 +32,17 @@
             <name>AQCU Maven Centralized (Artifactory)</name>
             <url>${wma.artifactory.url}/aqcu-maven-centralized/</url>
         </repository>
+        <!-- SpringFox 2.9.0 Fixes Polymorphism issues but isn't on MavenCentral due to publishing issues.
+             See: https://github.com/springfox/springfox/issues/2372
+        -->
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>bintray</name>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
     </repositories>
 
     <dependencyManagement>
@@ -43,6 +54,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -51,6 +67,14 @@
             <groupId>gov.usgs.aqcu</groupId>
             <artifactId>aqcu-framework</artifactId>
             <version>${aqcu.framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>gov.usgs.aqcu</groupId>
+            <artifactId>aqcu-framework</artifactId>
+            <version>${aqcu.framework.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

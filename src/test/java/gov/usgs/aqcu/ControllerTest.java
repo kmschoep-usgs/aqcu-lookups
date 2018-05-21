@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.gson.Gson;
 
+/*
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -30,3 +31,4 @@ public class ControllerTest {
 	public void setup() {
 	}
 }
+*/
