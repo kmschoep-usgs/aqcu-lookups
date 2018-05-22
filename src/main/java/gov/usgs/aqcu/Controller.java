@@ -1,5 +1,6 @@
 package gov.usgs.aqcu;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -9,19 +10,24 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Provisioning
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ControlConditionType;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesDescription;
+import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
 import gov.usgs.aqcu.parameter.ProcessorTypesRequestParameters;
 import gov.usgs.aqcu.parameter.SiteSearchRequestParameters;
 import gov.usgs.aqcu.parameter.TimeSeriesIdentifiersRequestParameters;
 import gov.usgs.aqcu.reference.ComputationReferenceService;
 import gov.usgs.aqcu.reference.ControlConditionReferenceService;
 import gov.usgs.aqcu.reference.PeriodReferenceService;
+import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
 import gov.usgs.aqcu.retrieval.LocationDescriptionListService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
+import gov.usgs.aqcu.retrieval.UnitsLookupService;
+import gov.usgs.aqcu.util.AqcuTimeUtils;
 import gov.usgs.aqcu.model.LocationBasicData;
 import gov.usgs.aqcu.model.TimeSeriesBasicData;
 
@@ -45,21 +51,27 @@ public class Controller {
 	private ComputationReferenceService computationReferenceService;
 	private ControlConditionReferenceService controlConditionReferenceService;
 	private PeriodReferenceService periodReferenceService;
+	private UnitsLookupService unitsLookupService;
+	private FieldVisitDescriptionListService fieldVisitDescriptionListService;
 
 	@Autowired
 	public Controller(
 		TimeSeriesDescriptionListService timeSeriesDescriptionListService,
 		ProcessorTypesService processorTypesService,
 		LocationDescriptionListService locationDescriptionListService,
+		UnitsLookupService unitsLookupService,
 		ComputationReferenceService computationReferenceService,
 		ControlConditionReferenceService controlConditionReferenceService,
-		PeriodReferenceService periodReferenceService) {
+		PeriodReferenceService periodReferenceService,
+		FieldVisitDescriptionListService fieldVisitDescriptionListService) {
 			this.timeSeriesDescriptionListService = timeSeriesDescriptionListService;
 			this.processorTypesService = processorTypesService;
 			this.locationDescriptionListService = locationDescriptionListService;
+			this.unitsLookupService = unitsLookupService;
 			this.computationReferenceService = computationReferenceService;
 			this.controlConditionReferenceService = controlConditionReferenceService;
 			this.periodReferenceService = periodReferenceService;
+			this.fieldVisitDescriptionListService = fieldVisitDescriptionListService;
 	}
 
 	@GetMapping(value="/timeseries/identifiers", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -114,15 +126,16 @@ public class Controller {
 	}
 	
 	@GetMapping(value="/field-visit-dates", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getFieldVisitDates() throws Exception {
-		
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+	public ResponseEntity<?> getFieldVisitDates(@Validated FieldVisitDatesRequestParameters params) throws Exception {
+		List<String> fieldVisitDates = fieldVisitDescriptionListService.getFieldVisitDates(params.getSiteNumber());
+		return new ResponseEntity<List<String>>(fieldVisitDates, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/units", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getUnits() throws Exception {
-		
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+		List<UnitMetadata> unitMetadataList = unitsLookupService.getUnits();
+		List<String> unitList = unitMetadataList.stream().map(u -> u.getIdentifier()).collect(Collectors.toList());
+		return new ResponseEntity<List<String>>(unitList, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	/*
