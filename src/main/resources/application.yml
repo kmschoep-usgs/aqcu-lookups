@@ -14,6 +14,37 @@ aquarius:
     password: ${aquariusServicePassword}
     retries:
       unauthorized: ${aquariusUnauthorizedRetires:3}
+  reference:
+    computations:
+      - Decumulated
+      - Max
+      - Max At Event Time
+      - Mean
+      - Median
+      - Min
+      - SelectedValue
+      - Sum
+      - TidalHigh
+      - TidalHigherLow
+      - TidalLow
+      - TidalLowerHigh
+      - Variance
+      - EquivalentMean
+      - AM
+      - Instantaneous
+      - 120DayHighMean
+      - 003DayHighMean
+      - STD
+      - Unknown
+    periods:
+      - Annual
+      - Daily
+      - Hourly
+      - Monthly
+      - Points
+      - Water Year
+      - Weekly
+      - Unknown
 
 security:
   require-ssl: true

@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Provisioning.Location;
+import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ControlConditionType;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesDescription;
 
@@ -15,6 +16,9 @@ import org.slf4j.LoggerFactory;
 import gov.usgs.aqcu.parameter.ProcessorTypesRequestParameters;
 import gov.usgs.aqcu.parameter.SiteSearchRequestParameters;
 import gov.usgs.aqcu.parameter.TimeSeriesIdentifiersRequestParameters;
+import gov.usgs.aqcu.reference.ComputationReferenceService;
+import gov.usgs.aqcu.reference.ControlConditionReferenceService;
+import gov.usgs.aqcu.reference.PeriodReferenceService;
 import gov.usgs.aqcu.retrieval.LocationDescriptionListService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
@@ -38,15 +42,24 @@ public class Controller {
 	private TimeSeriesDescriptionListService timeSeriesDescriptionListService;
 	private ProcessorTypesService processorTypesService;
 	private LocationDescriptionListService locationDescriptionListService;
+	private ComputationReferenceService computationReferenceService;
+	private ControlConditionReferenceService controlConditionReferenceService;
+	private PeriodReferenceService periodReferenceService;
 
 	@Autowired
 	public Controller(
 		TimeSeriesDescriptionListService timeSeriesDescriptionListService,
 		ProcessorTypesService processorTypesService,
-		LocationDescriptionListService locationDescriptionListService) {
+		LocationDescriptionListService locationDescriptionListService,
+		ComputationReferenceService computationReferenceService,
+		ControlConditionReferenceService controlConditionReferenceService,
+		PeriodReferenceService periodReferenceService) {
 			this.timeSeriesDescriptionListService = timeSeriesDescriptionListService;
 			this.processorTypesService = processorTypesService;
 			this.locationDescriptionListService = locationDescriptionListService;
+			this.computationReferenceService = computationReferenceService;
+			this.controlConditionReferenceService = controlConditionReferenceService;
+			this.periodReferenceService = periodReferenceService;
 	}
 
 	@GetMapping(value="/timeseries/identifiers", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -84,20 +97,20 @@ public class Controller {
 	
 	@GetMapping(value="/controlConditions", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getControlConditions() throws Exception {
-		
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+		List<Map<String,String>> controlConditionList = controlConditionReferenceService.get();
+		return new ResponseEntity<List<Map<String,String>>>(controlConditionList, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/computations", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getComputations() throws Exception {
-		
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+		List<String> computationList = computationReferenceService.get();
+		return new ResponseEntity<List<String>>(computationList, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/periods", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getPeriods() throws Exception {
-		
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+		List<String> periodList = periodReferenceService.get();
+		return new ResponseEntity<List<String>>(periodList, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/field-visit-dates", produces={MediaType.APPLICATION_JSON_VALUE})
