@@ -20,7 +20,7 @@ public class ComputationReferenceService {
 		this.aquariusReferenceListConfig = aquariusReferenceListConfig;
 	}
 
-	public List<String> get() throws Exception {
+	public List<String> get() {
         //TODO: Cache this list somewhere else
 		return aquariusReferenceListConfig.getComputations();
 	}

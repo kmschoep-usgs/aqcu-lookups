@@ -20,7 +20,7 @@ public class ControlConditionReferenceService {
 	@Autowired
 	public ControlConditionReferenceService() {}
 
-	public List<Map<String,String>> get() throws Exception {
+	public List<Map<String,String>> get() {
         //TODO: Cache this list somewhere else
 		List<ControlConditionType> controlConditionTypes = new ArrayList<>(Arrays.asList(ControlConditionType.values()));
 		List<Map<String,String>> controlConditionList = new ArrayList<>();

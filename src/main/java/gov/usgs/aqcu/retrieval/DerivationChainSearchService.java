@@ -1,7 +1,6 @@
 package gov.usgs.aqcu.retrieval;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +14,6 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Time
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.usgs.aqcu.parameter.FindInDerivationChainRequestParameters;
 import gov.usgs.aqcu.util.AqcuTimeUtils;
 import gov.usgs.aqcu.util.TimeSeriesUtils;
 
@@ -41,13 +39,6 @@ public class DerivationChainSearchService {
         this.timeSeriesDescriptionListService = timeSeriesDescriptionListService;
     }
 
-    public List<TimeSeriesDescription> findTimeSeriesInDerivationChain(FindInDerivationChainRequestParameters params) {
-        TimeSeriesDescription primaryDescription = timeSeriesDescriptionListService.getTimeSeriesDescription(params.getTimeSeriesIdentifier());
-        ZoneOffset primaryZoneOffset = TimeSeriesUtils.getZoneOffset(primaryDescription);
-        return findTimeSeriesInDerivationChain(params.getTimeSeriesIdentifier(), params.getDirection(), params.getPrimary(), null, params.getParameter(), 
-            params.getComputationIdentifier(), params.getComputationPeriodIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset), params.getFullChain());
-    }
-
     public List<TimeSeriesDescription> findTimeSeriesInDerivationChain(String timeSeriesIdentifier, String direction, Boolean primary, Boolean publish, String parameter,
             String computationIdentifier, String computationPeriodIdentifier, Instant startDate, Instant endDate, Boolean fullChain) {
         List<String> fullTimeSeriesList = null;
@@ -61,7 +52,7 @@ public class DerivationChainSearchService {
             List<Processor> procList = downchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
             fullTimeSeriesList = downchainProcessorListService.getOutputTimeSeriesUniqueIdList(procList);
         } else {
-            LOG.error("Invalid direction: " + direction.trim().toLowerCase() + ". Expected one of: " + DERIVATION_CHAIN_UP_DIRECTION + " or " + DERIVATION_CHAIN_DOWN_DIRECTION);
+            LOG.error("Invalid direction. Expected one of: " + DERIVATION_CHAIN_UP_DIRECTION + " or " + DERIVATION_CHAIN_DOWN_DIRECTION);
         }
 
         //Fetch descriptions for each found time series and see if it matches the filter criteria.
@@ -84,15 +75,17 @@ public class DerivationChainSearchService {
 
     public boolean timeSeriesMatchesFilterCriteria(TimeSeriesDescription tsDesc, Boolean primary, Boolean publish, String parameter,
     String computationIdentifier, String computationPeriodIdentifier, Instant startDate, Instant endDate) {
-        if(publish != null && publish != tsDesc.isPublish()) {
+        if(tsDesc == null) {
+            return false;
+        } else if(publish != null && publish != tsDesc.isPublish()) {
             return false;
         } else if(primary != null && primary != TimeSeriesUtils.isPrimaryTimeSeries(tsDesc)) {
             return false;
         } else if(parameter != null && !parameter.equals(tsDesc.getParameter())) {
             return false;
-        } else if(computationIdentifier != null && !tsDesc.getComputationIdentifier().equals(computationIdentifier)) {
+        } else if(computationIdentifier != null && !computationIdentifier.equals(tsDesc.getComputationIdentifier())) {
             return false;
-        } else if(computationPeriodIdentifier != null && !tsDesc.getComputationPeriodIdentifier().equals(computationPeriodIdentifier)) {
+        } else if(computationPeriodIdentifier != null && !computationPeriodIdentifier.equals(tsDesc.getComputationPeriodIdentifier())) {
             return false;
         } else if(startDate != null && endDate != null && !AqcuTimeUtils.doesTimeRangeOverlap(tsDesc.getRawStartTime(), tsDesc.getRawEndTime(), startDate, endDate)) {
             return false;
