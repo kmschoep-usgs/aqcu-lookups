@@ -34,7 +34,7 @@ public class Controller {
 
 	@Autowired
 	public Controller(LookupsService lookupsService) {
-			this.lookupsService = lookupsService;
+		this.lookupsService = lookupsService;
 	}
 
 	@GetMapping(value="/timeseries/identifiers", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -44,25 +44,21 @@ public class Controller {
 	
 	@GetMapping(value="/derivationChain/find", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> searchDerivationChain(@Validated FindInDerivationChainRequestParameters params) throws Exception {
-		
 		return new ResponseEntity<List<String>>(lookupsService.searchDerivationChain(params), new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/derivationChain/ratingModel", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getRatingModel(@Validated GetUpchainRatingModelsRequestParameters params) throws Exception {
-		
 		return new ResponseEntity<List<String>>(lookupsService.getRatingModel(params), new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/timeseries/processorTypes", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getProcessorTypes(@Validated ProcessorTypesRequestParameters params) throws Exception {
-		
 		return new ResponseEntity<Map<String, List<String>>>(lookupsService.getProcessorTypes(params), new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/sites", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getSites(@Validated SiteSearchRequestParameters params) throws Exception {
-		
 		return new ResponseEntity<List<LocationBasicData>>(lookupsService.searchSites(params), new HttpHeaders(), HttpStatus.OK);
 	}
 	

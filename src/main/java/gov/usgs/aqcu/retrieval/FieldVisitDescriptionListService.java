@@ -37,11 +37,11 @@ public class FieldVisitDescriptionListService {
 		FieldVisitDescriptionListServiceRequest request = new FieldVisitDescriptionListServiceRequest()
 			.setLocationIdentifier(locationIdentifier)
 			.setIncludeInvalidFieldVisits(false);
-        FieldVisitDescriptionListServiceResponse unitList = aquariusRetrievalService.executePublishApiRequest(request);
+		FieldVisitDescriptionListServiceResponse unitList = aquariusRetrievalService.executePublishApiRequest(request);
 		return unitList;
-    }
+	}
 
-    public List<String> getFieldVisitDates(String locationIdentifier) {
+	public List<String> getFieldVisitDates(String locationIdentifier) {
 		ZoneOffset primaryZoneOffset = TimeSeriesUtils.getZoneOffset(locationDataService.getRawResponse(locationIdentifier));
 		List<FieldVisitDescription> descList = getRawResponse(locationIdentifier).getFieldVisitDescriptions();
 		List<LocalDateTime> fieldVisitDates = descList.stream().map(f -> LocalDateTime.ofInstant(f.getStartTime(), primaryZoneOffset)).collect(Collectors.toList());	

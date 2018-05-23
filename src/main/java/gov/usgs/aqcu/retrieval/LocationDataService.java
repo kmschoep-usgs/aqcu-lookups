@@ -22,7 +22,7 @@ public class LocationDataService {
 	public LocationDataServiceResponse getRawResponse(String locationIdentifier) {
 		LocationDataServiceRequest request = new LocationDataServiceRequest()
 				.setLocationIdentifier(locationIdentifier);
-        LocationDataServiceResponse locationData = aquariusRetrievalService.executePublishApiRequest(request);
+		LocationDataServiceResponse locationData = aquariusRetrievalService.executePublishApiRequest(request);
 		return locationData;
 	}
 }

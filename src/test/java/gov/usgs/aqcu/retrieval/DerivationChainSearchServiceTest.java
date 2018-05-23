@@ -34,8 +34,8 @@ public class DerivationChainSearchServiceTest {
 	@MockBean
 	private DownchainProcessorListService downchainProcessorListService;
 	@MockBean
-    private TimeSeriesDescriptionListService timeSeriesDescriptionListService;
-    
+	private TimeSeriesDescriptionListService timeSeriesDescriptionListService;
+	
 	private DerivationChainSearchService service;
 	
 	private static final TimeSeriesThresholdPeriod p1 = new TimeSeriesThresholdPeriod()
@@ -199,15 +199,15 @@ public class DerivationChainSearchServiceTest {
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, false, null, null, null, null, null));
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, false, true, null, null, null, null, null));
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, "Incorrect", null, null, null, null));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, null, null, "Incorrect", null, null, null, null));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, null, null, "Incorrect", null, null, null, null));
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, DESC_PRIMARY_PUBLISH.getParameter(), "Incorrect", null, null, null));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, null, null, null, "Incorrect", null, null, null));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, DESC_PRIMARY_PUBLISH.getParameter(), 
-            DESC_PRIMARY_PUBLISH.getComputationIdentifier(), "Incorrect", null, null));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, null, null, null, null, "Incorrect", null, null));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, DESC_PRIMARY_PUBLISH.getParameter(), 
-            DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), Instant.parse("2000-01-01T00:00:00Z"), Instant.parse("2000-01-01T00:00:00Z")));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, null, null, null, null, null, Instant.parse("2000-01-01T00:00:00Z"), Instant.parse("2000-01-01T00:00:00Z")));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, null, null, null, "Incorrect", null, null, null));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, DESC_PRIMARY_PUBLISH.getParameter(), 
+			DESC_PRIMARY_PUBLISH.getComputationIdentifier(), "Incorrect", null, null));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, null, null, null, null, "Incorrect", null, null));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, DESC_PRIMARY_PUBLISH.getParameter(), 
+			DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), Instant.parse("2000-01-01T00:00:00Z"), Instant.parse("2000-01-01T00:00:00Z")));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, null, null, null, null, null, Instant.parse("2000-01-01T00:00:00Z"), Instant.parse("2000-01-01T00:00:00Z")));
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY, false, null, null, null, null, null, null));
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY, false, true, null, null, null, null, null));
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PUBLISH, null, false, null, null, null, null, null));
@@ -220,160 +220,160 @@ public class DerivationChainSearchServiceTest {
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, false, true, 
 			DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
 			DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, false, 
-            DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
-            DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
-            "Incorrect", DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
-            DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
-            DESC_PRIMARY_PUBLISH.getParameter(), "Incorrect", DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
-            DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
-            DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), "Incorrect", 
-            DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
-        assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
-            DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
-            Instant.parse("2000-01-01T00:00:00Z"), Instant.parse("2000-01-01T00:00:00Z")));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, false, 
+			DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
+			DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
+			"Incorrect", DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
+			DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
+			DESC_PRIMARY_PUBLISH.getParameter(), "Incorrect", DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
+			DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
+			DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), "Incorrect", 
+			DESC_PRIMARY_PUBLISH.getRawStartTime(), DESC_PRIMARY_PUBLISH.getRawEndTime()));
+		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
+			DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
+			Instant.parse("2000-01-01T00:00:00Z"), Instant.parse("2000-01-01T00:00:00Z")));
 	}
 	
 	@Test
 	public void findTimeSeriesNullTest() {
 		List<TimeSeriesDescription> result = service.findTimeSeriesInDerivationChain(null, null, null, null, null, null, null, null, null, null);
 		assertTrue(result.isEmpty());
-    }
-    
-    @Test
+	}
+	
+	@Test
 	@SuppressWarnings("unchecked")
 	public void findTimeSeriesUpchainTest() {
-        given(upchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
-            .willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
-        given(upchainProcessorListService.getInputTimeSeriesUniqueIdList(any(ArrayList.class)))
-            .willReturn(new ArrayList<String>(Arrays.asList("any")));
-        given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(any(ArrayList.class)))
-            .willReturn(new ArrayList<TimeSeriesDescription>(Arrays.asList(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER)));
-        Instant testStart = DESC_PRIMARY_PUBLISH.getRawStartTime();
-        Instant testEnd = DESC_PRIMARY_PUBLISH.getRawEndTime();
-        
-        List<TimeSeriesDescription> result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", true, true, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", true, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", null, true, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PUBLISH));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", false, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", null, false, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", false, false, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, DESC_PRIMARY_PUBLISH.getParameter(), null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, "Incorrect", null, null, testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", true, true, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
-    }
+		given(upchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
+		given(upchainProcessorListService.getInputTimeSeriesUniqueIdList(any(ArrayList.class)))
+			.willReturn(new ArrayList<String>(Arrays.asList("any")));
+		given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(any(ArrayList.class)))
+			.willReturn(new ArrayList<TimeSeriesDescription>(Arrays.asList(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER)));
+		Instant testStart = DESC_PRIMARY_PUBLISH.getRawStartTime();
+		Instant testEnd = DESC_PRIMARY_PUBLISH.getRawEndTime();
+		
+		List<TimeSeriesDescription> result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", true, true, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", true, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", null, true, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PUBLISH));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", false, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", null, false, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", false, false, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, DESC_PRIMARY_PUBLISH.getParameter(), null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, "Incorrect", null, null, testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", true, true, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
+	}
 
-    @Test
+	@Test
 	@SuppressWarnings("unchecked")
 	public void findTimeSeriesDownchainTest() {
-        given(downchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
-            .willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
-        given(downchainProcessorListService.getOutputTimeSeriesUniqueIdList(any(ArrayList.class)))
-            .willReturn(new ArrayList<String>(Arrays.asList("any")));
-        given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(any(ArrayList.class)))
-            .willReturn(new ArrayList<TimeSeriesDescription>(Arrays.asList(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER)));
-        Instant testStart = DESC_PRIMARY_PUBLISH.getRawStartTime();
-        Instant testEnd = DESC_PRIMARY_PUBLISH.getRawEndTime();
-        
-        List<TimeSeriesDescription> result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", true, true, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", true, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, true, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PUBLISH));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", false, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, false, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", false, false, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, DESC_PRIMARY_PUBLISH.getParameter(), null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, "Incorrect", null, null, testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", true, true, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
-    }
+		given(downchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
+		given(downchainProcessorListService.getOutputTimeSeriesUniqueIdList(any(ArrayList.class)))
+			.willReturn(new ArrayList<String>(Arrays.asList("any")));
+		given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(any(ArrayList.class)))
+			.willReturn(new ArrayList<TimeSeriesDescription>(Arrays.asList(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER)));
+		Instant testStart = DESC_PRIMARY_PUBLISH.getRawStartTime();
+		Instant testEnd = DESC_PRIMARY_PUBLISH.getRawEndTime();
+		
+		List<TimeSeriesDescription> result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", true, true, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", true, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, true, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PUBLISH));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", false, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, false, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", false, false, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, DESC_PRIMARY_PUBLISH.getParameter(), null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY, DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, "Incorrect", null, null, testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", true, true, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
+	}
 
-    @Test
+	@Test
 	@SuppressWarnings("unchecked")
 	public void findTimeSeriesUpchainDownchainTest() {
-        List<String> upList = Arrays.asList("up");
-        List<String> downList = Arrays.asList("down");
-        given(upchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
-            .willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
-        given(upchainProcessorListService.getInputTimeSeriesUniqueIdList(any(ArrayList.class)))
-            .willReturn(new ArrayList<String>(upList));
-        given(downchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
-            .willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
-        given(downchainProcessorListService.getOutputTimeSeriesUniqueIdList(any(ArrayList.class)))
-            .willReturn(new ArrayList<String>(downList));
-        given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(upList))
-            .willReturn(new ArrayList<TimeSeriesDescription>(Arrays.asList(DESC_PRIMARY_PUBLISH, DESC_PRIMARY)));
-        given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(downList))
-            .willReturn(new ArrayList<TimeSeriesDescription>(Arrays.asList(DESC_PUBLISH, DESC_NEITHER)));
-        Instant testStart = DESC_PRIMARY_PUBLISH.getRawStartTime();
-        Instant testEnd = DESC_PRIMARY_PUBLISH.getRawEndTime();
-        
-        List<TimeSeriesDescription> result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", true, true, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", true, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", null, true, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", false, null, null, null, null, testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", null, false, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", false, false, null, null, null, testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, DESC_PRIMARY_PUBLISH.getParameter(), null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, "Incorrect", null, null, testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", true, true, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
-        result = service.findTimeSeriesInDerivationChain(null, "upchain", false, false, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", true, true, null, null, null, testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", true, null, null, null, null, testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, true, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PUBLISH));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", false, null, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, false, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", false, false, null, null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, DESC_PRIMARY_PUBLISH.getParameter(), null, null, testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, "Incorrect", null, null, testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", true, true, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
-        assertTrue(result.isEmpty());
-        result = service.findTimeSeriesInDerivationChain(null, "downchain", false, false, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
-        assertThat(result, containsInAnyOrder(DESC_NEITHER));
-    }
+		List<String> upList = Arrays.asList("up");
+		List<String> downList = Arrays.asList("down");
+		given(upchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
+		given(upchainProcessorListService.getInputTimeSeriesUniqueIdList(any(ArrayList.class)))
+			.willReturn(new ArrayList<String>(upList));
+		given(downchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
+		given(downchainProcessorListService.getOutputTimeSeriesUniqueIdList(any(ArrayList.class)))
+			.willReturn(new ArrayList<String>(downList));
+		given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(upList))
+			.willReturn(new ArrayList<TimeSeriesDescription>(Arrays.asList(DESC_PRIMARY_PUBLISH, DESC_PRIMARY)));
+		given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(downList))
+			.willReturn(new ArrayList<TimeSeriesDescription>(Arrays.asList(DESC_PUBLISH, DESC_NEITHER)));
+		Instant testStart = DESC_PRIMARY_PUBLISH.getRawStartTime();
+		Instant testEnd = DESC_PRIMARY_PUBLISH.getRawEndTime();
+		
+		List<TimeSeriesDescription> result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", true, true, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", true, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", null, true, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", false, null, null, null, null, testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", null, false, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", false, false, null, null, null, testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, DESC_PRIMARY_PUBLISH.getParameter(), null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH, DESC_PRIMARY));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", null, null, "Incorrect", null, null, testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", true, true, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PRIMARY_PUBLISH));
+		result = service.findTimeSeriesInDerivationChain(null, "upchain", false, false, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", true, true, null, null, null, testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", true, null, null, null, null, testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, true, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PUBLISH));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", false, null, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, false, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", false, false, null, null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, DESC_PRIMARY_PUBLISH.getParameter(), null, null, testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_PUBLISH, DESC_NEITHER));
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", null, null, "Incorrect", null, null, testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", true, true, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
+		assertTrue(result.isEmpty());
+		result = service.findTimeSeriesInDerivationChain(null, "downchain", false, false, DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), testStart, testEnd, false);
+		assertThat(result, containsInAnyOrder(DESC_NEITHER));
+	}
 }

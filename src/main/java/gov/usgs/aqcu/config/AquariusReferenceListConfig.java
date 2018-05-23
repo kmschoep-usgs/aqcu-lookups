@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix="aquarius.reference")
 public class AquariusReferenceListConfig {
-    private List<String> computations = new ArrayList<>();
-    private List<String> periods = new ArrayList<>();
+	private List<String> computations = new ArrayList<>();
+	private List<String> periods = new ArrayList<>();
 
-    public List<String> getComputations() {
-        return computations;
-    }
-    public List<String> getPeriods() {
-        return periods;
-    }
+	public List<String> getComputations() {
+		return computations;
+	}
+	public List<String> getPeriods() {
+		return periods;
+	}
 }

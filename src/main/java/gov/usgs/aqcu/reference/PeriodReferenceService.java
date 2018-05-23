@@ -21,7 +21,7 @@ public class PeriodReferenceService {
 	}
 
 	public List<String> get() {
-        //TODO: Cache this list somewhere else
+		//TODO: Cache this list somewhere else
 		return aquariusReferenceListConfig.getPeriods();
 	}
 }

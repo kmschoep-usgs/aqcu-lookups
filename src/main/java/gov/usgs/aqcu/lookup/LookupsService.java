@@ -47,9 +47,9 @@ public class LookupsService {
 	private DerivationChainSearchService derivationChainService;
 	private UpchainRatingModelSearchService upchainRatingModelSearchService;
 
-    @Autowired
-    public LookupsService(
-        TimeSeriesDescriptionListService timeSeriesDescriptionListService,
+	@Autowired
+	public LookupsService(
+		TimeSeriesDescriptionListService timeSeriesDescriptionListService,
 		ProcessorTypesService processorTypesService,
 		LocationDescriptionListService locationDescriptionListService,
 		UnitsLookupService unitsLookupService,
@@ -68,65 +68,65 @@ public class LookupsService {
 			this.periodReferenceService = periodReferenceService;
 			this.fieldVisitDescriptionListService = fieldVisitDescriptionListService;
 			this.derivationChainService = derivationChainService;
-            this.upchainRatingModelSearchService = upchainRatingModelSearchService;
-    }
+			this.upchainRatingModelSearchService = upchainRatingModelSearchService;
+	}
 
-    public Map<String,TimeSeriesBasicData> getTimeSeriesDescriptions(TimeSeriesIdentifiersRequestParameters params) {
-        List<TimeSeriesDescription> descs = timeSeriesDescriptionListService.getTimeSeriesDescriptionList(params.getComputationIdentifier(), params.getComputationPeriodIdentifier(),
+	public Map<String,TimeSeriesBasicData> getTimeSeriesDescriptions(TimeSeriesIdentifiersRequestParameters params) {
+		List<TimeSeriesDescription> descs = timeSeriesDescriptionListService.getTimeSeriesDescriptionList(params.getComputationIdentifier(), params.getComputationPeriodIdentifier(),
 			params.getStationId(), params.getParameter(), params.getPublish(), params.getPrimary());
 		return descs.stream().map(d -> new TimeSeriesBasicData(d)).collect(Collectors.toMap(TimeSeriesBasicData::getUniqueId, Function.identity()));
-    }
+	}
 
-    public List<String> searchDerivationChain(FindInDerivationChainRequestParameters params) {
+	public List<String> searchDerivationChain(FindInDerivationChainRequestParameters params) {
 		ZoneOffset primaryZoneOffset = getZoneOffset(params.getTimeSeriesIdentifier());
-        List<TimeSeriesDescription> descList = derivationChainService.findTimeSeriesInDerivationChain(params.getTimeSeriesIdentifier(), params.getDirection(), params.getPrimary(), null, params.getParameter(), 
-            params.getComputationIdentifier(), params.getComputationPeriodIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset), params.getFullChain());
-        return descList.stream().map(d -> d.getUniqueId()).collect(Collectors.toList());
-    }
+		List<TimeSeriesDescription> descList = derivationChainService.findTimeSeriesInDerivationChain(params.getTimeSeriesIdentifier(), params.getDirection(), params.getPrimary(), null, params.getParameter(), 
+			params.getComputationIdentifier(), params.getComputationPeriodIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset), params.getFullChain());
+		return descList.stream().map(d -> d.getUniqueId()).collect(Collectors.toList());
+	}
 
-    public List<String> getRatingModel(GetUpchainRatingModelsRequestParameters params) {
+	public List<String> getRatingModel(GetUpchainRatingModelsRequestParameters params) {
 		ZoneOffset primaryZoneOffset = getZoneOffset(params.getTimeSeriesIdentifier());
 		return upchainRatingModelSearchService.getRatingModelsUpchain(params.getTimeSeriesIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset), params.getFullChain());
-    }
+	}
 
-    public Map<String, List<String>> getProcessorTypes(ProcessorTypesRequestParameters params) {
+	public Map<String, List<String>> getProcessorTypes(ProcessorTypesRequestParameters params) {
 		ZoneOffset primaryZoneOffset = getZoneOffset(params.getTimeSeriesIdentifier());
-        return processorTypesService.getProcessorTypes(params.getTimeSeriesIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset));
-    }
+		return processorTypesService.getProcessorTypes(params.getTimeSeriesIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset));
+	}
 
-    public List<LocationBasicData> searchSites(SiteSearchRequestParameters params) {
-        List<LocationDescription> siteDescList = locationDescriptionListService.searchSites(params.getSiteNumber(), params.getPageSize());
-        return siteDescList.stream().map(d -> new LocationBasicData(d)).collect(Collectors.toList());
-    }
+	public List<LocationBasicData> searchSites(SiteSearchRequestParameters params) {
+		List<LocationDescription> siteDescList = locationDescriptionListService.searchSites(params.getSiteNumber(), params.getPageSize());
+		return siteDescList.stream().map(d -> new LocationBasicData(d)).collect(Collectors.toList());
+	}
 
-    public List<String> getFieldVisitDates(FieldVisitDatesRequestParameters params) {
-        return fieldVisitDescriptionListService.getFieldVisitDates(params.getSiteNumber());
-    }
+	public List<String> getFieldVisitDates(FieldVisitDatesRequestParameters params) {
+		return fieldVisitDescriptionListService.getFieldVisitDates(params.getSiteNumber());
+	}
 
-    public List<Map<String,String>> getControlConditions() {
-        return controlConditionReferenceService.get();
-    }
+	public List<Map<String,String>> getControlConditions() {
+		return controlConditionReferenceService.get();
+	}
 
-    public List<String> getComputations() {
+	public List<String> getComputations() {
 		return computationReferenceService.get();
-    }
+	}
 
-    public List<String> getPeriods() {
-       return periodReferenceService.get();
-    }
+	public List<String> getPeriods() {
+		 return periodReferenceService.get();
+	}
 
-    public List<String> getUnits() {
+	public List<String> getUnits() {
 		List<UnitMetadata> unitMetadataList = unitsLookupService.getUnits();
-        return unitMetadataList.stream().map(u -> u.getIdentifier()).collect(Collectors.toList());
-    }
+		return unitMetadataList.stream().map(u -> u.getIdentifier()).collect(Collectors.toList());
+	}
 
-    protected ZoneOffset getZoneOffset(String timeSeriesIdentifier) {
-        TimeSeriesDescription primaryDescription = null;
+	protected ZoneOffset getZoneOffset(String timeSeriesIdentifier) {
+		TimeSeriesDescription primaryDescription = null;
 
-        if(timeSeriesIdentifier != null) {
-            primaryDescription = timeSeriesDescriptionListService.getTimeSeriesDescription(timeSeriesIdentifier);
-        }
-        
+		if(timeSeriesIdentifier != null) {
+			primaryDescription = timeSeriesDescriptionListService.getTimeSeriesDescription(timeSeriesIdentifier);
+		}
+		
 		return TimeSeriesUtils.getZoneOffset(primaryDescription);
-    }
+	}
 }

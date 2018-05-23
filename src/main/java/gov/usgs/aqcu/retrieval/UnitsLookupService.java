@@ -24,11 +24,11 @@ public class UnitsLookupService {
 
 	protected UnitListServiceResponse getRawResponse() {
 		UnitListServiceRequest request = new UnitListServiceRequest();
-        UnitListServiceResponse unitList = aquariusRetrievalService.executePublishApiRequest(request);
+		UnitListServiceResponse unitList = aquariusRetrievalService.executePublishApiRequest(request);
 		return unitList;
-    }
+	}
 
-    public List<UnitMetadata> getUnits() {
-        return getRawResponse().getUnits();
-    }
+	public List<UnitMetadata> getUnits() {
+		return getRawResponse().getUnits();
+	}
 }

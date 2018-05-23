@@ -108,28 +108,28 @@ public class LookupsServiceTest {
 		.setUniqueId("uid-1")
 		.setUnit("unit-1")
 		.setUtcOffset(1.0)
-        .setUtcOffsetIsoDuration(Duration.ofHours(0));
-    private LocationDescription locDesc1 = new LocationDescription()
-        .setIdentifier("testid1")
-        .setName("testname1")
-        .setUniqueId("testuid1");
-    private LocationDescription locDesc2 = new LocationDescription()
-        .setIdentifier("testid2")
-        .setName("testname2")
-        .setUniqueId("testuid2");
-    private UnitMetadata unit1 = new UnitMetadata()
-        .setDisplayName("name1")
-        .setIdentifier("identifier1")
-        .setSymbol("symbol1");
-    private UnitMetadata unit2 = new UnitMetadata()
-        .setDisplayName("name2")
-        .setIdentifier("identifier2")
-        .setSymbol("symbol2");
-    private UnitMetadata unit3 = new UnitMetadata()
-        .setDisplayName("name3")
-        .setIdentifier("identifier3")
-        .setSymbol("symbol3");
-    private LookupsService service;
+		.setUtcOffsetIsoDuration(Duration.ofHours(0));
+	private LocationDescription locDesc1 = new LocationDescription()
+		.setIdentifier("testid1")
+		.setName("testname1")
+		.setUniqueId("testuid1");
+	private LocationDescription locDesc2 = new LocationDescription()
+		.setIdentifier("testid2")
+		.setName("testname2")
+		.setUniqueId("testuid2");
+	private UnitMetadata unit1 = new UnitMetadata()
+		.setDisplayName("name1")
+		.setIdentifier("identifier1")
+		.setSymbol("symbol1");
+	private UnitMetadata unit2 = new UnitMetadata()
+		.setDisplayName("name2")
+		.setIdentifier("identifier2")
+		.setSymbol("symbol2");
+	private UnitMetadata unit3 = new UnitMetadata()
+		.setDisplayName("name3")
+		.setIdentifier("identifier3")
+		.setSymbol("symbol3");
+	private LookupsService service;
 
 	@Before
 	public void setup() {
@@ -251,156 +251,156 @@ public class LookupsServiceTest {
 
 	@Test
 	public void getProcessorTypesEmptyTest() {
-        given(processorTypesService.getProcessorTypes(any(String.class), any(Instant.class), any(Instant.class)))
-            .willReturn(new HashMap<String, List<String>>());
-        ProcessorTypesRequestParameters params = new ProcessorTypesRequestParameters();
-        params.setLastMonths(12);
-        params.setTimeSeriesIdentifier("any");
+		given(processorTypesService.getProcessorTypes(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new HashMap<String, List<String>>());
+		ProcessorTypesRequestParameters params = new ProcessorTypesRequestParameters();
+		params.setLastMonths(12);
+		params.setTimeSeriesIdentifier("any");
 
-        Map<String, List<String>> result = service.getProcessorTypes(params);
-        assertTrue(result.isEmpty());
+		Map<String, List<String>> result = service.getProcessorTypes(params);
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void getProcessorTypesTest() {
-        Map<String, List<String>> expected = new HashMap<>();
-        List<String> up = new ArrayList<>(Arrays.asList("testup"));
-        List<String> down = new ArrayList<>(Arrays.asList("testdown"));
-        expected.put("upChain", up);
-        expected.put("downChain", down);
-        given(processorTypesService.getProcessorTypes(any(String.class), any(Instant.class), any(Instant.class)))
-            .willReturn(expected);
-        ProcessorTypesRequestParameters params = new ProcessorTypesRequestParameters();
-        params.setLastMonths(12);
-        params.setTimeSeriesIdentifier("any");
+		Map<String, List<String>> expected = new HashMap<>();
+		List<String> up = new ArrayList<>(Arrays.asList("testup"));
+		List<String> down = new ArrayList<>(Arrays.asList("testdown"));
+		expected.put("upChain", up);
+		expected.put("downChain", down);
+		given(processorTypesService.getProcessorTypes(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(expected);
+		ProcessorTypesRequestParameters params = new ProcessorTypesRequestParameters();
+		params.setLastMonths(12);
+		params.setTimeSeriesIdentifier("any");
 
-        Map<String, List<String>> result = service.getProcessorTypes(params);
-        assertEquals(result, expected);
+		Map<String, List<String>> result = service.getProcessorTypes(params);
+		assertEquals(result, expected);
 	}
 
 	@Test
 	public void searchSitesEmptyTest() {
-        given(locationDescriptionListService.searchSites(any(String.class), any(Integer.class)))
-            .willReturn(new ArrayList<>());
-        SiteSearchRequestParameters params = new SiteSearchRequestParameters();
-        params.setPageSize(1);
-        params.setSiteNumber("any");
+		given(locationDescriptionListService.searchSites(any(String.class), any(Integer.class)))
+			.willReturn(new ArrayList<>());
+		SiteSearchRequestParameters params = new SiteSearchRequestParameters();
+		params.setPageSize(1);
+		params.setSiteNumber("any");
 
-        List<LocationBasicData> result = service.searchSites(params);
-        assertTrue(result.isEmpty());
+		List<LocationBasicData> result = service.searchSites(params);
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void searchSitesTest() {
-        given(locationDescriptionListService.searchSites(any(String.class), any(Integer.class)))
-            .willReturn(new ArrayList<>(Arrays.asList(locDesc1, locDesc2)));
-        SiteSearchRequestParameters params = new SiteSearchRequestParameters();
-        params.setPageSize(1);
-        params.setSiteNumber("any");
+		given(locationDescriptionListService.searchSites(any(String.class), any(Integer.class)))
+			.willReturn(new ArrayList<>(Arrays.asList(locDesc1, locDesc2)));
+		SiteSearchRequestParameters params = new SiteSearchRequestParameters();
+		params.setPageSize(1);
+		params.setSiteNumber("any");
 
-        List<LocationBasicData> result = service.searchSites(params);
-        assertEquals(result.size(), 2);
-        assertEquals(result.get(0).getSiteName(), locDesc1.getName());
-        assertEquals(result.get(0).getSiteNumber(), locDesc1.getIdentifier());
-        assertEquals(result.get(1).getSiteName(), locDesc2.getName());
-        assertEquals(result.get(1).getSiteNumber(), locDesc2.getIdentifier());
+		List<LocationBasicData> result = service.searchSites(params);
+		assertEquals(result.size(), 2);
+		assertEquals(result.get(0).getSiteName(), locDesc1.getName());
+		assertEquals(result.get(0).getSiteNumber(), locDesc1.getIdentifier());
+		assertEquals(result.get(1).getSiteName(), locDesc2.getName());
+		assertEquals(result.get(1).getSiteNumber(), locDesc2.getIdentifier());
 	}
 
 	@Test
 	public void getFieldVisitDatesEmptyTest() {
-        given(fieldVisitDescriptionListService.getFieldVisitDates(any(String.class)))
-            .willReturn(new ArrayList<>());
-        FieldVisitDatesRequestParameters params = new FieldVisitDatesRequestParameters();
-        params.setSiteNumber("any");
-        
-        List<String> result = service.getFieldVisitDates(params);
-        assertTrue(result.isEmpty());
+		given(fieldVisitDescriptionListService.getFieldVisitDates(any(String.class)))
+			.willReturn(new ArrayList<>());
+		FieldVisitDatesRequestParameters params = new FieldVisitDatesRequestParameters();
+		params.setSiteNumber("any");
+		
+		List<String> result = service.getFieldVisitDates(params);
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void getFieldVisitDatesTest() {
-        given(fieldVisitDescriptionListService.getFieldVisitDates(any(String.class)))
-            .willReturn(new ArrayList<>(Arrays.asList("2017-01-01", "2017-02-01")));
-        FieldVisitDatesRequestParameters params = new FieldVisitDatesRequestParameters();
-        params.setSiteNumber("any");
-        
-        List<String> result = service.getFieldVisitDates(params);
-        assertEquals(result.size(), 2);
-        assertThat(result, containsInAnyOrder("2017-01-01", "2017-02-01"));
+		given(fieldVisitDescriptionListService.getFieldVisitDates(any(String.class)))
+			.willReturn(new ArrayList<>(Arrays.asList("2017-01-01", "2017-02-01")));
+		FieldVisitDatesRequestParameters params = new FieldVisitDatesRequestParameters();
+		params.setSiteNumber("any");
+		
+		List<String> result = service.getFieldVisitDates(params);
+		assertEquals(result.size(), 2);
+		assertThat(result, containsInAnyOrder("2017-01-01", "2017-02-01"));
 	}
 
 	@Test
 	public void getControlConditionsEmptyTest() {
-        given(controlConditionReferenceService.get()).willReturn(new ArrayList<>());
-        List<Map<String,String>> result = service.getControlConditions();
-        assertTrue(result.isEmpty());
+		given(controlConditionReferenceService.get()).willReturn(new ArrayList<>());
+		List<Map<String,String>> result = service.getControlConditions();
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void getControlConditionsTest() {
-        List<Map<String,String>> expected = new ArrayList<Map<String,String>>();
-        Map<String,String> cond1 = new HashMap<>();
-        cond1.put("test1", "test1");
-        expected.add(cond1);
-        Map<String,String> cond2 = new HashMap<>();
-        cond2.put("test2", "test2");
-        expected.add(cond2);
-        given(controlConditionReferenceService.get()).willReturn(expected);
-        List<Map<String,String>> result = service.getControlConditions();
-        assertEquals(result, expected);
+		List<Map<String,String>> expected = new ArrayList<Map<String,String>>();
+		Map<String,String> cond1 = new HashMap<>();
+		cond1.put("test1", "test1");
+		expected.add(cond1);
+		Map<String,String> cond2 = new HashMap<>();
+		cond2.put("test2", "test2");
+		expected.add(cond2);
+		given(controlConditionReferenceService.get()).willReturn(expected);
+		List<Map<String,String>> result = service.getControlConditions();
+		assertEquals(result, expected);
 	}
 
 	@Test
 	public void getComputationsEmptyTest() {
-        given(computationReferenceService.get()).willReturn(new ArrayList<>());
-        List<String> result = service.getComputations();
-        assertTrue(result.isEmpty());
+		given(computationReferenceService.get()).willReturn(new ArrayList<>());
+		List<String> result = service.getComputations();
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void getComputationsTest() {
-        given(computationReferenceService.get()).willReturn(new ArrayList<>(Arrays.asList("test1", "test2")));
-        List<String> result = service.getComputations();
-        assertThat(result, containsInAnyOrder("test1", "test2"));
+		given(computationReferenceService.get()).willReturn(new ArrayList<>(Arrays.asList("test1", "test2")));
+		List<String> result = service.getComputations();
+		assertThat(result, containsInAnyOrder("test1", "test2"));
 	}
 
 	@Test
 	public void getPeriodsEmptyTest() {
-        given(periodReferenceService.get()).willReturn(new ArrayList<>());
-        List<String> result = service.getPeriods();
-        assertTrue(result.isEmpty());
+		given(periodReferenceService.get()).willReturn(new ArrayList<>());
+		List<String> result = service.getPeriods();
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void getPeriodsTest() {
-        given(periodReferenceService.get()).willReturn(new ArrayList<>(Arrays.asList("test1", "test2")));
-        List<String> result = service.getPeriods();
-        assertThat(result, containsInAnyOrder("test1", "test2"));
+		given(periodReferenceService.get()).willReturn(new ArrayList<>(Arrays.asList("test1", "test2")));
+		List<String> result = service.getPeriods();
+		assertThat(result, containsInAnyOrder("test1", "test2"));
 	}
 
 	@Test
 	public void getUnitsEmptyTest() {
-        given(unitsLookupService.getUnits()).willReturn(new ArrayList<>());
-        List<String> result = service.getUnits();
-        assertTrue(result.isEmpty());
+		given(unitsLookupService.getUnits()).willReturn(new ArrayList<>());
+		List<String> result = service.getUnits();
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void getUnitsTest() {
-        given(unitsLookupService.getUnits()).willReturn(new ArrayList<>(Arrays.asList(unit1, unit2, unit3)));
-        List<String> result = service.getUnits();
-        assertThat(result, containsInAnyOrder(unit1.getIdentifier(), unit2.getIdentifier(), unit3.getIdentifier()));
+		given(unitsLookupService.getUnits()).willReturn(new ArrayList<>(Arrays.asList(unit1, unit2, unit3)));
+		List<String> result = service.getUnits();
+		assertThat(result, containsInAnyOrder(unit1.getIdentifier(), unit2.getIdentifier(), unit3.getIdentifier()));
 	}
 
 	@Test
 	public void getZoneOffsetNullTest() {
-        assertEquals(service.getZoneOffset(null), ZoneOffset.UTC);
-    }
-    
-    @Test
+		assertEquals(service.getZoneOffset(null), ZoneOffset.UTC);
+	}
+	
+	@Test
 	public void getZoneOffsetTest() {
-        given(timeSeriesDescriptionListService.getTimeSeriesDescription(any(String.class)))
-            .willReturn(tsDesc1);
-        assertEquals(service.getZoneOffset(tsDesc1.getIdentifier()), ZoneOffset.ofHours(1));
+		given(timeSeriesDescriptionListService.getTimeSeriesDescription(any(String.class)))
+			.willReturn(tsDesc1);
+		assertEquals(service.getZoneOffset(tsDesc1.getIdentifier()), ZoneOffset.ofHours(1));
 	}
 }
