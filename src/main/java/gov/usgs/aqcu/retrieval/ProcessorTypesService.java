@@ -24,22 +24,22 @@ public class ProcessorTypesService {
 
 	private DownchainProcessorListService downchainProcessorListService;
 	private UpchainProcessorListService upchainProcessorListService;
-	private TimeSeriesDescriptionListService timeSeriesDescriptionService;
+	private TimeSeriesDescriptionListService timeSeriesDescriptionListService;
 
 	@Autowired
 	public ProcessorTypesService(
-		TimeSeriesDescriptionListService timeSeriesDescriptionService,
+		TimeSeriesDescriptionListService timeSeriesDescriptionListService,
 		DownchainProcessorListService downchainProcessorListService,
 		UpchainProcessorListService upchainProcessorListService
 	) {
-		this.timeSeriesDescriptionService = timeSeriesDescriptionService;
+		this.timeSeriesDescriptionListService = timeSeriesDescriptionListService;
 		this.downchainProcessorListService = downchainProcessorListService;
 		this.upchainProcessorListService = upchainProcessorListService;
 	}
 
 	public Map<String, List<String>> getProcessorTypes(ProcessorTypesRequestParameters params) {
 		Map<String, List<String>> processorMap = new HashMap<>();
-		TimeSeriesDescription primaryDescription = timeSeriesDescriptionService.getTimeSeriesDescription(params.getTimeSeriesIdentifier());
+		TimeSeriesDescription primaryDescription = timeSeriesDescriptionListService.getTimeSeriesDescription(params.getTimeSeriesIdentifier());
 		ZoneOffset primaryZoneOffset = TimeSeriesUtils.getZoneOffset(primaryDescription);
 		List<Processor> upProcessors = upchainProcessorListService.getRawResponse(params.getTimeSeriesIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset)).getProcessors();
 		List<Processor> downProcessors = downchainProcessorListService.getRawResponse(params.getTimeSeriesIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset)).getProcessors();

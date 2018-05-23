@@ -1,13 +1,10 @@
 package gov.usgs.aqcu;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Provisioning.Location;
-import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ControlConditionType;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
@@ -16,18 +13,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
+import gov.usgs.aqcu.parameter.FindInDerivationChainRequestParameters;
+import gov.usgs.aqcu.parameter.GetUpchainRatingModelsRequestParameters;
 import gov.usgs.aqcu.parameter.ProcessorTypesRequestParameters;
 import gov.usgs.aqcu.parameter.SiteSearchRequestParameters;
 import gov.usgs.aqcu.parameter.TimeSeriesIdentifiersRequestParameters;
 import gov.usgs.aqcu.reference.ComputationReferenceService;
 import gov.usgs.aqcu.reference.ControlConditionReferenceService;
 import gov.usgs.aqcu.reference.PeriodReferenceService;
+import gov.usgs.aqcu.retrieval.DerivationChainSearchService;
 import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
 import gov.usgs.aqcu.retrieval.LocationDescriptionListService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
 import gov.usgs.aqcu.retrieval.UnitsLookupService;
-import gov.usgs.aqcu.util.AqcuTimeUtils;
+import gov.usgs.aqcu.retrieval.UpchainRatingModelSearchService;
 import gov.usgs.aqcu.model.LocationBasicData;
 import gov.usgs.aqcu.model.TimeSeriesBasicData;
 
@@ -53,6 +53,8 @@ public class Controller {
 	private PeriodReferenceService periodReferenceService;
 	private UnitsLookupService unitsLookupService;
 	private FieldVisitDescriptionListService fieldVisitDescriptionListService;
+	private DerivationChainSearchService derivationChainService;
+	private UpchainRatingModelSearchService upchainRatingModelSearchService;
 
 	@Autowired
 	public Controller(
@@ -63,7 +65,9 @@ public class Controller {
 		ComputationReferenceService computationReferenceService,
 		ControlConditionReferenceService controlConditionReferenceService,
 		PeriodReferenceService periodReferenceService,
-		FieldVisitDescriptionListService fieldVisitDescriptionListService) {
+		FieldVisitDescriptionListService fieldVisitDescriptionListService,
+		DerivationChainSearchService derivationChainService,
+		UpchainRatingModelSearchService upchainRatingModelSearchService) {
 			this.timeSeriesDescriptionListService = timeSeriesDescriptionListService;
 			this.processorTypesService = processorTypesService;
 			this.locationDescriptionListService = locationDescriptionListService;
@@ -72,6 +76,8 @@ public class Controller {
 			this.controlConditionReferenceService = controlConditionReferenceService;
 			this.periodReferenceService = periodReferenceService;
 			this.fieldVisitDescriptionListService = fieldVisitDescriptionListService;
+			this.derivationChainService = derivationChainService;
+			this.upchainRatingModelSearchService = upchainRatingModelSearchService;
 	}
 
 	@GetMapping(value="/timeseries/identifiers", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -83,15 +89,16 @@ public class Controller {
 	}
 	
 	@GetMapping(value="/derivationChain/find", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> searchDerivationChain() throws Exception {
-		
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+	public ResponseEntity<?> searchDerivationChain(@Validated FindInDerivationChainRequestParameters params) throws Exception {
+		List<TimeSeriesDescription> descList = derivationChainService.findTimeSeriesInDerivationChain(params);
+		List<String> tsUidList = descList.stream().map(d -> d.getUniqueId()).collect(Collectors.toList());
+		return new ResponseEntity<List<String>>(tsUidList, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/derivationChain/ratingModel", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getRatingModel() throws Exception {
-		
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+	public ResponseEntity<?> getRatingModel(@Validated GetUpchainRatingModelsRequestParameters params) throws Exception {
+		List<String> ratingModelIds = upchainRatingModelSearchService.getRatingModelsUpchain(params);
+		return new ResponseEntity<List<String>>(ratingModelIds, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/timeseries/processorTypes", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -158,7 +165,7 @@ public class Controller {
 	}
 
 	String getRequestingUser() {
-		//Pull Requesting User From SecurityContext
+		//TODO: Pull Requesting User From SecurityContext
 		return "testUser";
 	}
 }
