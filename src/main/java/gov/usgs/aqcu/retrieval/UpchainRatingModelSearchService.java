@@ -25,14 +25,17 @@ public class UpchainRatingModelSearchService {
 	public List<String> getRatingModelsUpchain(String timeSeriesIdentifier, Instant startDate, Instant endDate, Boolean fullChain) {
 		List<Processor> upProcs = upchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
 		List<String> ratingModelIds = new ArrayList<>();
-		List<String> inputTsIds = upchainProcessorListService.getInputTimeSeriesUniqueIdList(upProcs);
-		ratingModelIds.addAll(upchainProcessorListService.getRatingModelUniqueIdList(upProcs));
-		
-		if(fullChain && !inputTsIds.isEmpty()) {
-			for(String tsId : inputTsIds) {
-				List<String> newRatingModels = getRatingModelsUpchain(tsId, startDate, endDate, fullChain);
-				if(!newRatingModels.isEmpty()) {
-					ratingModelIds.addAll(newRatingModels);
+
+		if(!upProcs.isEmpty()) {
+			List<String> inputTsIds = upchainProcessorListService.getInputTimeSeriesUniqueIdList(upProcs);
+			ratingModelIds.addAll(upchainProcessorListService.getRatingModelUniqueIdList(upProcs));
+			
+			if(fullChain && !inputTsIds.isEmpty()) {
+				for(String tsId : inputTsIds) {
+					List<String> newRatingModels = getRatingModelsUpchain(tsId, startDate, endDate, fullChain);
+					if(!newRatingModels.isEmpty()) {
+						ratingModelIds.addAll(newRatingModels);
+					}
 				}
 			}
 		}

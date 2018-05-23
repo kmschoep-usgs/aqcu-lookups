@@ -1,6 +1,5 @@
 package gov.usgs.aqcu.retrieval;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,17 +22,13 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Proc
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.usgs.aqcu.util.AquariusRetrievalUtils;
 
 @RunWith(SpringRunner.class)
-public class DerivationChainSearchServiceTest {
-	private static final Logger LOG = LoggerFactory.getLogger(DerivationChainSearchServiceTest.class);	
-	
+public class DerivationChainSearchServiceTest {	
 	@MockBean
 	private UpchainProcessorListService upchainProcessorListService;
 	@MockBean
@@ -41,7 +36,6 @@ public class DerivationChainSearchServiceTest {
 	@MockBean
     private TimeSeriesDescriptionListService timeSeriesDescriptionListService;
     
-
 	private DerivationChainSearchService service;
 	
 	private static final TimeSeriesThresholdPeriod p1 = new TimeSeriesThresholdPeriod()

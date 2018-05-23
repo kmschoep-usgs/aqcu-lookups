@@ -121,7 +121,12 @@ public class LookupsService {
     }
 
     protected ZoneOffset getZoneOffset(String timeSeriesIdentifier) {
-        TimeSeriesDescription primaryDescription = timeSeriesDescriptionListService.getTimeSeriesDescription(timeSeriesIdentifier);
+        TimeSeriesDescription primaryDescription = null;
+
+        if(timeSeriesIdentifier != null) {
+            primaryDescription = timeSeriesDescriptionListService.getTimeSeriesDescription(timeSeriesIdentifier);
+        }
+        
 		return TimeSeriesUtils.getZoneOffset(primaryDescription);
     }
 }
