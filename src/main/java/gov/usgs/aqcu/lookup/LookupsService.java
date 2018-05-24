@@ -13,6 +13,7 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Unit
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import gov.usgs.aqcu.model.LocationBasicData;
 import gov.usgs.aqcu.model.TimeSeriesBasicData;
@@ -34,6 +35,7 @@ import gov.usgs.aqcu.retrieval.UnitsLookupService;
 import gov.usgs.aqcu.retrieval.UpchainRatingModelSearchService;
 import gov.usgs.aqcu.util.TimeSeriesUtils;
 
+@Repository
 public class LookupsService {
 	private static final Logger LOG = LoggerFactory.getLogger(LookupsService.class);
 	private TimeSeriesDescriptionListService timeSeriesDescriptionListService;
