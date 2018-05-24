@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -65,11 +66,14 @@ public class ProcessorTypesServiceTest {
 			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
 		
 		Map<String,List<String>> result = service.getProcessorTypes("any", Instant.parse("2017-01-01T00:00:00Z"), Instant.parse("2017-01-01T00:00:00Z"));
-		assertTrue(result.isEmpty());
+		assertFalse(result.isEmpty());
+		assertThat(result.keySet(), containsInAnyOrder("upChain", "downChain"));
+		assertTrue(result.get("upChain").isEmpty());
+		assertTrue(result.get("downChain").isEmpty());
 	}
 
 	@Test
-	public void getProcessorTypesTest() {
+	public void getProcessorTypesTest1() {
 		given(upchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
 			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>(Arrays.asList(proc1, proc2))));
 		given(downchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
@@ -77,6 +81,34 @@ public class ProcessorTypesServiceTest {
 		
 		Map<String,List<String>> result = service.getProcessorTypes("any", Instant.parse("2017-01-01T00:00:00Z"), Instant.parse("2017-01-01T00:00:00Z"));
 		assertThat(result.get("upChain"), containsInAnyOrder(proc1.getProcessorType(), proc2.getProcessorType()));
+		assertThat(result.get("downChain"), containsInAnyOrder(proc3.getProcessorType()));
+	}
+
+	@Test
+	public void getProcessorTypesTest2() {
+		given(upchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>(Arrays.asList(proc1, proc2))));
+		given(downchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
+		
+		Map<String,List<String>> result = service.getProcessorTypes("any", Instant.parse("2017-01-01T00:00:00Z"), Instant.parse("2017-01-01T00:00:00Z"));
+		assertFalse(result.isEmpty());
+		assertThat(result.keySet(), containsInAnyOrder("upChain", "downChain"));
+		assertThat(result.get("upChain"), containsInAnyOrder(proc1.getProcessorType(), proc2.getProcessorType()));
+		assertTrue(result.get("downChain").isEmpty());
+	}
+
+	@Test
+	public void getProcessorTypesTest3() {
+		given(upchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>()));
+		given(downchainProcessorListService.getRawResponse(any(String.class), any(Instant.class), any(Instant.class)))
+			.willReturn(new ProcessorListServiceResponse().setProcessors(new ArrayList<>(Arrays.asList(proc3))));
+		
+		Map<String,List<String>> result = service.getProcessorTypes("any", Instant.parse("2017-01-01T00:00:00Z"), Instant.parse("2017-01-01T00:00:00Z"));
+		assertFalse(result.isEmpty());
+		assertThat(result.keySet(), containsInAnyOrder("upChain", "downChain"));
+		assertTrue(result.get("upChain").isEmpty());
 		assertThat(result.get("downChain"), containsInAnyOrder(proc3.getProcessorType()));
 	}
 }
