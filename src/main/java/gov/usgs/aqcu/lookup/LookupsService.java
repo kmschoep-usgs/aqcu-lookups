@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
 
@@ -28,7 +27,7 @@ import gov.usgs.aqcu.reference.ControlConditionReferenceService;
 import gov.usgs.aqcu.reference.PeriodReferenceService;
 import gov.usgs.aqcu.retrieval.DerivationChainSearchService;
 import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
-import gov.usgs.aqcu.retrieval.LocationDescriptionListService;
+import gov.usgs.aqcu.retrieval.LocationSearchService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
 import gov.usgs.aqcu.retrieval.UnitsLookupService;
@@ -40,7 +39,7 @@ public class LookupsService {
 	private static final Logger LOG = LoggerFactory.getLogger(LookupsService.class);
 	private TimeSeriesDescriptionListService timeSeriesDescriptionListService;
 	private ProcessorTypesService processorTypesService;
-	private LocationDescriptionListService locationDescriptionListService;
+	private LocationSearchService locationSearchService;
 	private ComputationReferenceService computationReferenceService;
 	private ControlConditionReferenceService controlConditionReferenceService;
 	private PeriodReferenceService periodReferenceService;
@@ -53,7 +52,7 @@ public class LookupsService {
 	public LookupsService(
 		TimeSeriesDescriptionListService timeSeriesDescriptionListService,
 		ProcessorTypesService processorTypesService,
-		LocationDescriptionListService locationDescriptionListService,
+		LocationSearchService locationSearchService,
 		UnitsLookupService unitsLookupService,
 		ComputationReferenceService computationReferenceService,
 		ControlConditionReferenceService controlConditionReferenceService,
@@ -63,7 +62,7 @@ public class LookupsService {
 		UpchainRatingModelSearchService upchainRatingModelSearchService) {
 			this.timeSeriesDescriptionListService = timeSeriesDescriptionListService;
 			this.processorTypesService = processorTypesService;
-			this.locationDescriptionListService = locationDescriptionListService;
+			this.locationSearchService = locationSearchService;
 			this.unitsLookupService = unitsLookupService;
 			this.computationReferenceService = computationReferenceService;
 			this.controlConditionReferenceService = controlConditionReferenceService;
@@ -97,8 +96,7 @@ public class LookupsService {
 	}
 
 	public List<LocationBasicData> searchSites(SiteSearchRequestParameters params) {
-		List<LocationDescription> siteDescList = locationDescriptionListService.searchSites(params.getSiteNumber(), params.getPageSize());
-		return siteDescList.stream().map(d -> new LocationBasicData(d)).collect(Collectors.toList());
+		return locationSearchService.searchSites(params.getSiteNumber(), params.getPageSize());
 	}
 
 	public List<String> getFieldVisitDates(FieldVisitDatesRequestParameters params) {
