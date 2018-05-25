@@ -34,14 +34,19 @@ public class ProcessorTypesService {
 		Map<String, List<String>> processorMap = new HashMap<>();
 		List<Processor> upProcessors = upchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
 		List<Processor> downProcessors = downchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
+		List<String> upTypes = new ArrayList<>();
+		List<String> downTypes = new ArrayList<>();
 		
 		if(!upProcessors.isEmpty()) {
-			processorMap.put("upChain", new ArrayList<>(upProcessors.stream().map(p -> p.getProcessorType()).collect(Collectors.toSet())));
+			upTypes = new ArrayList<>(upProcessors.stream().map(p -> p.getProcessorType()).collect(Collectors.toSet()));
 		}
 
 		if(!downProcessors.isEmpty()) {
-			processorMap.put("downChain", new ArrayList<>(downProcessors.stream().map(p -> p.getProcessorType()).collect(Collectors.toSet())));
+			downTypes = new ArrayList<>(downProcessors.stream().map(p -> p.getProcessorType()).collect(Collectors.toSet()));
 		}
+
+		processorMap.put("upChain", upTypes);
+		processorMap.put("downChain", downTypes);
 		
 		return processorMap;
 	}
