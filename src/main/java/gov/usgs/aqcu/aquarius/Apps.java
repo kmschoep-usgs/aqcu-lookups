@@ -102,7 +102,7 @@ public class Apps
         * UTCOffset
         */
         @ApiMember(Description="UTCOffset")
-        public Integer UTCOffset = null;
+        public Double UTCOffset = null;
         
         /**
         * Elevation
@@ -166,7 +166,7 @@ public class Apps
         public String getUserData() {return this.UserData;}
         public String getSource() {return this.Source;}
         public String getElevationUnits() {return this.ElevationUnits;}
-        public Integer getUTCOffset() {return this.UTCOffset;}
+        public Double getUTCOffset() {return this.UTCOffset;}
         public Double getElevation() {return this.Elevation;}
         public Double getLatitude() {return this.Latitude;}
         public Double getLongitude() {return this.Longitude;}
@@ -185,7 +185,7 @@ public class Apps
         public LocationSearchResult setUserData(String value) {this.UserData = value; return this;}
         public LocationSearchResult setSource(String value) {this.Source = value; return this;}
         public LocationSearchResult setElevationUnits(String value) {this.ElevationUnits = value; return this;}
-        public LocationSearchResult setUTCOffset(Integer value) {this.UTCOffset = value; return this;}
+        public LocationSearchResult setUTCOffset(Double value) {this.UTCOffset = value; return this;}
         public LocationSearchResult setElevation(Double value) {this.Elevation = value; return this;}
         public LocationSearchResult setLatitude(Double value) {this.Latitude = value; return this;}
         public LocationSearchResult setLongitude(Double value) {this.Longitude = value; return this;}
