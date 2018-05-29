@@ -13,6 +13,7 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Time
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThreshold;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThresholdPeriod;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
+import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Provisioning.Location;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ExtendedAttribute;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 
@@ -30,6 +31,7 @@ import gov.usgs.aqcu.reference.PeriodReferenceService;
 import gov.usgs.aqcu.retrieval.DerivationChainSearchService;
 import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
 import gov.usgs.aqcu.retrieval.LocationDescriptionListService;
+import gov.usgs.aqcu.retrieval.LocationSearchService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
 import gov.usgs.aqcu.retrieval.UnitsLookupService;
@@ -57,7 +59,7 @@ public class LookupsServiceTest {
 	@MockBean
 	private ProcessorTypesService processorTypesService;
 	@MockBean
-	private LocationDescriptionListService locationDescriptionListService;
+	private LocationSearchService locationSearchService;
 	@MockBean
 	private ComputationReferenceService computationReferenceService;
 	@MockBean
@@ -109,14 +111,6 @@ public class LookupsServiceTest {
 		.setUnit("unit-1")
 		.setUtcOffset(1.0)
 		.setUtcOffsetIsoDuration(Duration.ofHours(0));
-	private LocationDescription locDesc1 = new LocationDescription()
-		.setIdentifier("testid1")
-		.setName("testname1")
-		.setUniqueId("testuid1");
-	private LocationDescription locDesc2 = new LocationDescription()
-		.setIdentifier("testid2")
-		.setName("testname2")
-		.setUniqueId("testuid2");
 	private UnitMetadata unit1 = new UnitMetadata()
 		.setDisplayName("name1")
 		.setIdentifier("identifier1")
@@ -133,7 +127,7 @@ public class LookupsServiceTest {
 
 	@Before
 	public void setup() {
-		service = new LookupsService(timeSeriesDescriptionListService, processorTypesService, locationDescriptionListService,
+		service = new LookupsService(timeSeriesDescriptionListService, processorTypesService, locationSearchService,
 			unitsLookupService, computationReferenceService, controlConditionReferenceService, periodReferenceService,
 			fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService);
 	}
@@ -280,7 +274,7 @@ public class LookupsServiceTest {
 
 	@Test
 	public void searchSitesEmptyTest() {
-		given(locationDescriptionListService.searchSites(any(String.class), any(Integer.class)))
+		given(locationSearchService.searchSites(any(String.class), any(Integer.class)))
 			.willReturn(new ArrayList<>());
 		SiteSearchRequestParameters params = new SiteSearchRequestParameters();
 		params.setPageSize(1);
@@ -292,18 +286,21 @@ public class LookupsServiceTest {
 
 	@Test
 	public void searchSitesTest() {
-		given(locationDescriptionListService.searchSites(any(String.class), any(Integer.class)))
-			.willReturn(new ArrayList<>(Arrays.asList(locDesc1, locDesc2)));
+		LocationBasicData loc1 = new LocationBasicData();
+		loc1.setSiteNumber("0001");
+		loc1.setSiteName("test1");
+		LocationBasicData loc2 = new LocationBasicData();
+		loc2.setSiteNumber("0002");
+		loc2.setSiteName("test2");
+		given(locationSearchService.searchSites(any(String.class), any(Integer.class)))
+			.willReturn(new ArrayList<>(Arrays.asList(loc1, loc2)));
 		SiteSearchRequestParameters params = new SiteSearchRequestParameters();
 		params.setPageSize(1);
 		params.setSiteNumber("any");
 
 		List<LocationBasicData> result = service.searchSites(params);
 		assertEquals(result.size(), 2);
-		assertEquals(result.get(0).getSiteName(), locDesc1.getName());
-		assertEquals(result.get(0).getSiteNumber(), locDesc1.getIdentifier());
-		assertEquals(result.get(1).getSiteName(), locDesc2.getName());
-		assertEquals(result.get(1).getSiteNumber(), locDesc2.getIdentifier());
+		assertThat(result, containsInAnyOrder(loc1, loc2));
 	}
 
 	@Test
