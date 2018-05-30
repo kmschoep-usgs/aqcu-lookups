@@ -1,5 +1,7 @@
 package gov.usgs.aqcu;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +34,7 @@ import org.springframework.http.MediaType;
 public class Controller {
 	private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
 	private LookupsService lookupsService;
+	private Instant launchTime = Instant.now();
 
 	@Autowired
 	public Controller(LookupsService lookupsService) {
@@ -68,18 +72,33 @@ public class Controller {
 	}
 	
 	@GetMapping(value="/controlConditions", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getControlConditions() throws Exception {
-		return new ResponseEntity<List<Map<String,String>>>(lookupsService.getControlConditions(), new HttpHeaders(), HttpStatus.OK);
+	public ResponseEntity<?> getControlConditions(WebRequest req) throws Exception {
+		if(req.checkNotModified(getReferenceListsLastModified())) {
+			return null;
+		}
+		HttpHeaders head = new HttpHeaders();
+		head.setLastModified(getReferenceListsLastModified());
+		return new ResponseEntity<List<Map<String,String>>>(lookupsService.getControlConditions(), head, HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/computations", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getComputations() throws Exception {
-		return new ResponseEntity<List<String>>(lookupsService.getComputations(), new HttpHeaders(), HttpStatus.OK);
+	public ResponseEntity<?> getComputations(WebRequest req) throws Exception {
+		if(req.checkNotModified(getReferenceListsLastModified())) {
+			return null;
+		}
+		HttpHeaders head = new HttpHeaders();
+		head.setLastModified(getReferenceListsLastModified());
+		return new ResponseEntity<List<String>>(lookupsService.getComputations(), head, HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/periods", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getPeriods() throws Exception {
-		return new ResponseEntity<List<String>>(lookupsService.getPeriods(), new HttpHeaders(), HttpStatus.OK);
+	public ResponseEntity<?> getPeriods(WebRequest req) throws Exception {
+		if(req.checkNotModified(getReferenceListsLastModified())) {
+			return null;
+		}
+		HttpHeaders head = new HttpHeaders();
+		head.setLastModified(getReferenceListsLastModified());
+		return new ResponseEntity<List<String>>(lookupsService.getPeriods(), head, HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/units", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -106,8 +125,7 @@ public class Controller {
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.GONE);
 	}
 
-	String getRequestingUser() {
-		//TODO: Pull Requesting User From SecurityContext
-		return "testUser";
+	long getReferenceListsLastModified() {
+		return launchTime.toEpochMilli();
 	}
 }
