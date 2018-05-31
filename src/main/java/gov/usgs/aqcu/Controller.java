@@ -13,6 +13,7 @@ import gov.usgs.aqcu.parameter.GetUpchainRatingModelsRequestParameters;
 import gov.usgs.aqcu.parameter.ProcessorTypesRequestParameters;
 import gov.usgs.aqcu.parameter.SiteSearchRequestParameters;
 import gov.usgs.aqcu.parameter.TimeSeriesIdentifiersRequestParameters;
+import gov.usgs.aqcu.config.AquariusReferenceListProperties;
 import gov.usgs.aqcu.lookup.LookupsService;
 import gov.usgs.aqcu.model.LocationBasicData;
 import gov.usgs.aqcu.model.TimeSeriesBasicData;
@@ -33,11 +34,15 @@ import org.springframework.http.MediaType;
 public class Controller {
 	private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
 	private LookupsService lookupsService;
-	private Instant launchTime = Instant.now();
+	private AquariusReferenceListProperties aquariusReferenceListProperties;
 
 	@Autowired
-	public Controller(LookupsService lookupsService) {
+	public Controller(
+		LookupsService lookupsService,
+		AquariusReferenceListProperties aquariusReferenceListProperties
+	) {
 		this.lookupsService = lookupsService;
+		this.aquariusReferenceListProperties = aquariusReferenceListProperties;
 	}
 
 	@GetMapping(value="/timeseries/identifiers", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -125,6 +130,6 @@ public class Controller {
 	}
 
 	long getReferenceListsLastModified() {
-		return launchTime.toEpochMilli();
+		return aquariusReferenceListProperties.getLastModifiedInstant().toEpochMilli();
 	}
 }
