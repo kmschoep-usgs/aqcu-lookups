@@ -21,7 +21,7 @@ public class ComputationReferenceService {
 	}
 
 	public List<String> get() {
-		//TODO: Cache this list somewhere else
+		//TODO: Persist this list somewhere else?
 		return aquariusReferenceListProperties.getComputations();
 	}
 }
