@@ -87,7 +87,7 @@ public class DerivationChainSearchService {
 			return false;
 		} else if(computationPeriodIdentifier != null && !computationPeriodIdentifier.equals(tsDesc.getComputationPeriodIdentifier())) {
 			return false;
-		} else if(startDate != null && endDate != null && !AqcuTimeUtils.doesTimeRangeOverlap(tsDesc.getRawStartTime(), tsDesc.getRawEndTime(), startDate, endDate)) {
+		} else if(startDate != null && endDate != null && tsDesc.getRawStartTime() != null && tsDesc.getRawEndTime() != null && !AqcuTimeUtils.doesTimeRangeOverlap(tsDesc.getRawStartTime(), tsDesc.getRawEndTime(), startDate, endDate)) {
 			return false;
 		}
 
