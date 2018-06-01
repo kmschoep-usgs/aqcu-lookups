@@ -13,9 +13,7 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Time
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThreshold;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThresholdPeriod;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
-import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Provisioning.Location;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ExtendedAttribute;
-import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 
 import gov.usgs.aqcu.model.LocationBasicData;
 import gov.usgs.aqcu.model.TimeSeriesBasicData;
@@ -30,7 +28,6 @@ import gov.usgs.aqcu.reference.ControlConditionReferenceService;
 import gov.usgs.aqcu.reference.PeriodReferenceService;
 import gov.usgs.aqcu.retrieval.DerivationChainSearchService;
 import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
-import gov.usgs.aqcu.retrieval.LocationDescriptionListService;
 import gov.usgs.aqcu.retrieval.LocationSearchService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
