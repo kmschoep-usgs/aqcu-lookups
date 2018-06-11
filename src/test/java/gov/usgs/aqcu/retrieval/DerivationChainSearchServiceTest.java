@@ -147,6 +147,26 @@ public class DerivationChainSearchServiceTest {
 		.setUtcOffset(0.0)
 		.setUtcOffsetIsoDuration(Duration.ofHours(0));
 
+	public static final TimeSeriesDescription DESC_NO_TIMES = new TimeSeriesDescription()
+		.setComment("comment-1")
+		.setComputationIdentifier("comp-id-1")
+		.setComputationPeriodIdentifier("period-id-1")
+		.setDescription("desc-1")
+		.setExtendedAttributes(new ArrayList<>())
+		.setIdentifier("id-1")
+		.setLabel("label-1")
+		.setLastModified(Instant.parse("2017-01-01T00:00:00Z"))
+		.setLocationIdentifier("loc-id-1")
+		.setParameter("param-1")
+		.setPublish(false)
+		.setSubLocationIdentifier("sub-id-1")
+		.setThresholds(Arrays.asList(threshold1))
+		.setTimeSeriesType("type-1")
+		.setUniqueId("uid-1")
+		.setUnit("unit-1")
+		.setUtcOffset(0.0)
+		.setUtcOffsetIsoDuration(Duration.ofHours(0));
+
 	@Before
 	public void setup() {
 		service = new DerivationChainSearchService(upchainProcessorListService, downchainProcessorListService, timeSeriesDescriptionListService);
@@ -235,6 +255,9 @@ public class DerivationChainSearchServiceTest {
 		assertFalse(service.timeSeriesMatchesFilterCriteria(DESC_PRIMARY_PUBLISH, true, true, 
 			DESC_PRIMARY_PUBLISH.getParameter(), DESC_PRIMARY_PUBLISH.getComputationIdentifier(), DESC_PRIMARY_PUBLISH.getComputationPeriodIdentifier(), 
 			Instant.parse("2000-01-01T00:00:00Z"), Instant.parse("2000-01-01T00:00:00Z")));
+		assertTrue(service.timeSeriesMatchesFilterCriteria(DESC_NO_TIMES, null, null, null, null, null, null, null));
+		assertTrue(service.timeSeriesMatchesFilterCriteria(DESC_NO_TIMES, null, null, null, null, null, Instant.parse("2000-01-01T00:00:00Z"), Instant.parse("2000-01-01T00:00:00Z")));
+		
 	}
 	
 	@Test
