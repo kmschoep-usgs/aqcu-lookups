@@ -26,8 +26,8 @@ public class ControlConditionReferenceService {
 		List<Map<String,String>> controlConditionList = new ArrayList<>();
 		for(ControlConditionType c : controlConditionTypes) {
 			Map<String,String> conditionMap = new HashMap<>();
-			conditionMap.put("name: ", c.name());
-			conditionMap.put("value: ", c.toString());
+			conditionMap.put("name", c.name());
+			conditionMap.put("value", c.toString());
 			controlConditionList.add(conditionMap);
 		}
 
