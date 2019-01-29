@@ -1,11 +1,7 @@
 package gov.usgs.aqcu;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
 import gov.usgs.aqcu.parameter.FindInDerivationChainRequestParameters;
@@ -32,7 +28,6 @@ import org.springframework.http.MediaType;
 @RestController
 @RequestMapping("/lookup")
 public class Controller {
-	private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
 	private LookupsService lookupsService;
 	private AquariusReferenceListProperties aquariusReferenceListProperties;
 
