@@ -6,15 +6,11 @@ import java.util.List;
 
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Processor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class UpchainRatingModelSearchService {
-	private static final Logger LOG = LoggerFactory.getLogger(UpchainRatingModelSearchService.class);	
-
 	private UpchainProcessorListService upchainProcessorListService;
 
 	@Autowired

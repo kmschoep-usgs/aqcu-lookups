@@ -16,7 +16,7 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <springfox.version>2.9.0</springfox.version>
         <aquarius.sdk.version>18.6.2</aquarius.sdk.version>
-        <aqcu.framework.version>0.0.3</aqcu.framework.version>
+        <aqcu.framework.version>0.0.5-SNAPSHOT</aqcu.framework.version>
         <guava.version>20.0</guava.version>
     </properties>
 

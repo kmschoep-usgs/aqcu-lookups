@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -36,7 +34,6 @@ import gov.usgs.aqcu.util.TimeSeriesUtils;
 
 @Repository
 public class LookupsService {
-	private static final Logger LOG = LoggerFactory.getLogger(LookupsService.class);
 	private TimeSeriesDescriptionListService timeSeriesDescriptionListService;
 	private ProcessorTypesService processorTypesService;
 	private LocationSearchService locationSearchService;
