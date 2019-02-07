@@ -326,22 +326,15 @@ public class LookupsServiceTest {
 	@Test
 	public void getControlConditionsEmptyTest() {
 		given(controlConditionReferenceService.get()).willReturn(new ArrayList<>());
-		List<Map<String,String>> result = service.getControlConditions();
+		List<String> result = service.getControlConditions();
 		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void getControlConditionsTest() {
-		List<Map<String,String>> expected = new ArrayList<Map<String,String>>();
-		Map<String,String> cond1 = new HashMap<>();
-		cond1.put("test1", "test1");
-		expected.add(cond1);
-		Map<String,String> cond2 = new HashMap<>();
-		cond2.put("test2", "test2");
-		expected.add(cond2);
-		given(controlConditionReferenceService.get()).willReturn(expected);
-		List<Map<String,String>> result = service.getControlConditions();
-		assertEquals(result, expected);
+		given(controlConditionReferenceService.get()).willReturn(new ArrayList<>(Arrays.asList("test1", "test2")));
+		List<String> result = service.getControlConditions();
+		assertThat(result, containsInAnyOrder("test1", "test2"));
 	}
 
 	@Test
