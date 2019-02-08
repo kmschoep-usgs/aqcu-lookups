@@ -77,7 +77,7 @@ public class Controller {
 		}
 		HttpHeaders head = new HttpHeaders();
 		head.setLastModified(getReferenceListsLastModified());
-		return new ResponseEntity<List<Map<String,String>>>(lookupsService.getControlConditions(), head, HttpStatus.OK);
+		return new ResponseEntity<List<String>>(lookupsService.getControlConditions(), head, HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/computations", produces={MediaType.APPLICATION_JSON_VALUE})

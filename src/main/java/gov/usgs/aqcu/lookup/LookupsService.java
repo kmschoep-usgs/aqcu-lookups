@@ -100,7 +100,7 @@ public class LookupsService {
 		return fieldVisitDescriptionListService.getFieldVisitDates(params.getSiteNumber());
 	}
 
-	public List<Map<String,String>> getControlConditions() {
+	public List<String> getControlConditions() {
 		return controlConditionReferenceService.get();
 	}
 
