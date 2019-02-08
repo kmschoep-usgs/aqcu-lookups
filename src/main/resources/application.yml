@@ -48,6 +48,23 @@ aquarius:
       - Water Year
       - Weekly
       - Unknown
+    controlConditions:
+      - Unknown
+      - Unspecifed
+      - Clear
+      - FillControlChanged
+      - ScourControlChanged
+      - DebrisLight
+      - DebrisModerate
+      - DebrisHeavy
+      - VegetationLight
+      - VegetationModerate
+      - VegetationHeavy
+      - IceAnchor
+      - IceCover
+      - IceShore
+      - Submerged
+      - NoFlow
 
 security:
   require-ssl: true
