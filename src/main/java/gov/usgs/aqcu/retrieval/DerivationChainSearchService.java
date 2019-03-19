@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.usgs.aqcu.util.AqcuTimeUtils;
 import gov.usgs.aqcu.util.TimeSeriesUtils;
+import gov.usgs.aqcu.util.LogExecutionTime;
 
 @Repository
 public class DerivationChainSearchService {
@@ -39,23 +40,28 @@ public class DerivationChainSearchService {
 		this.timeSeriesDescriptionListService = timeSeriesDescriptionListService;
 	}
 
+        @LogExecutionTime
 	public List<TimeSeriesDescription> findTimeSeriesInDerivationChain(String timeSeriesIdentifier, String direction, Boolean primary, Boolean publish, String parameter,
 			String computationIdentifier, String computationPeriodIdentifier, Instant startDate, Instant endDate, Boolean fullChain) {
 		List<String> fullTimeSeriesList = null;
 		List<TimeSeriesDescription> filteredTimeSeriesList = new ArrayList<>();
 
 		//Get list of related time series that are within the requested time range
+                LOG.debug("Get related time series within the requested time range.");
 		if(direction != null && DERIVATION_CHAIN_UP_DIRECTION.equals(direction.trim().toLowerCase())) {
-			List<Processor> procList = upchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
+			LOG.debug("Getting upchain.");
+                        List<Processor> procList = upchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
 			fullTimeSeriesList = upchainProcessorListService.getInputTimeSeriesUniqueIdList(procList);
 		} else if(direction != null && DERIVATION_CHAIN_DOWN_DIRECTION.equals(direction.trim().toLowerCase())) {
-			List<Processor> procList = downchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
+			LOG.debug("Getting downchain.");
+                        List<Processor> procList = downchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
 			fullTimeSeriesList = downchainProcessorListService.getOutputTimeSeriesUniqueIdList(procList);
 		} else {
 			LOG.error("Invalid direction. Expected one of: " + DERIVATION_CHAIN_UP_DIRECTION + " or " + DERIVATION_CHAIN_DOWN_DIRECTION);
 		}
 
 		//Fetch descriptions for each found time series and see if it matches the filter criteria.
+                LOG.debug("Get descriptions for time series and filter them by criteria.");
 		if(fullTimeSeriesList != null && !fullTimeSeriesList.isEmpty()) {
 			List<TimeSeriesDescription> tsDescList = timeSeriesDescriptionListService.getTimeSeriesDescriptionList(fullTimeSeriesList);
 			filteredTimeSeriesList.addAll(tsDescList.stream()
@@ -73,6 +79,7 @@ public class DerivationChainSearchService {
 		return filteredTimeSeriesList;
 	}
 
+        @LogExecutionTime
 	public boolean timeSeriesMatchesFilterCriteria(TimeSeriesDescription tsDesc, Boolean primary, Boolean publish, String parameter,
 	String computationIdentifier, String computationPeriodIdentifier, Instant startDate, Instant endDate) {
 		if(tsDesc == null) {

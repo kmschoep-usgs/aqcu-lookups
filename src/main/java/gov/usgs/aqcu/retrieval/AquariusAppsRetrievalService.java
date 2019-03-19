@@ -11,10 +11,13 @@ import gov.usgs.aqcu.exception.AquariusRetrievalException;
 import net.servicestack.client.IReturn;
 import net.servicestack.client.WebServiceException;
 
+import gov.usgs.aqcu.util.LogExecutionTime;
+
 @Repository
 public class AquariusAppsRetrievalService extends AquariusRetrievalService {
 	private static final Logger LOG = LoggerFactory.getLogger(AquariusAppsRetrievalService.class);
 
+        @LogExecutionTime
 	protected <TResponse> TResponse executeAppsApiRequest(IReturn<TResponse> request) throws AquariusRetrievalException {
 		String errorMessage = "";
 		int unauthorizedRetryCounter = 0;
@@ -25,6 +28,7 @@ public class AquariusAppsRetrievalService extends AquariusRetrievalService {
 			try {
 				//Despite this being AutoCloseable we CANNOT close it or it will delete the session in AQ for our service account
 				//and cause any other in-flight requests to fail.
+                                LOG.debug("Authenticating service account against Aquarius.");
 				AquariusAppsClient client = AquariusAppsClient.createConnectedClient(aquariusUrl.replace("/AQUARIUS/", ""), aquariusUser, aquariusPassword);
 				return client.Apps.get(request);
 			} catch (WebServiceException e) {
@@ -52,7 +56,7 @@ public class AquariusAppsRetrievalService extends AquariusRetrievalService {
 			}
 		} while(doRetry);
 
-		LOG.error("Failed to retireve data from Aquarius for request " + request.toString() + ". Out of retires.");
+		LOG.error("Failed to retireve data from Aquarius for request " + request.toString() + ". Out of retries.");
 		throw new AquariusRetrievalException("Failed to retrieve data from Aquarius for request " + request.toString());
 	}
 }

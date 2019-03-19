@@ -10,6 +10,7 @@ import gov.usgs.aqcu.aquarius.Apps.SearchLocationsServiceRequest;
 import gov.usgs.aqcu.aquarius.Apps.SearchLocationsServiceResponse;
 import gov.usgs.aqcu.model.LocationBasicData;
 
+import gov.usgs.aqcu.util.LogExecutionTime;
 
 @Repository
 public class LocationSearchService {
@@ -20,6 +21,7 @@ public class LocationSearchService {
 		this.aquariusAppsRetrievalService = aquariusAppsRetrievalService;
 	}
 
+        @LogExecutionTime
 	protected SearchLocationsServiceResponse getRawResponse(String queryString, Integer pageSize) {
 		SearchLocationsServiceRequest request = new SearchLocationsServiceRequest()
             .setQueryString(queryString)
@@ -28,6 +30,7 @@ public class LocationSearchService {
 		return locationData;
     }
     
+    @LogExecutionTime
     public List<LocationBasicData> searchSites(String queryString, Integer pageSize) {
         return getRawResponse(queryString, pageSize).getResults().stream()
             .map(r -> new LocationBasicData(r))

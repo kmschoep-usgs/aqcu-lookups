@@ -9,6 +9,8 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Unit
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitListServiceResponse;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
 
+import gov.usgs.aqcu.util.LogExecutionTime;
+
 @Repository
 public class UnitsLookupService {
 	private AquariusRetrievalService aquariusRetrievalService;
@@ -18,12 +20,14 @@ public class UnitsLookupService {
 		this.aquariusRetrievalService = aquariusRetrievalService;
 	}
 
+        @LogExecutionTime
 	protected UnitListServiceResponse getRawResponse() {
 		UnitListServiceRequest request = new UnitListServiceRequest();
 		UnitListServiceResponse unitList = aquariusRetrievalService.executePublishApiRequest(request);
 		return unitList;
 	}
 
+        @LogExecutionTime
 	public List<UnitMetadata> getUnits() {
 		return getRawResponse().getUnits();
 	}

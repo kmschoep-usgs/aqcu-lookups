@@ -9,6 +9,8 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Proc
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.usgs.aqcu.util.LogExecutionTime;
+
 @Repository
 public class UpchainRatingModelSearchService {
 	private UpchainProcessorListService upchainProcessorListService;
@@ -18,6 +20,7 @@ public class UpchainRatingModelSearchService {
 		this.upchainProcessorListService = upchainProcessorListService;
 	}
 
+        @LogExecutionTime
 	public List<String> getRatingModelsUpchain(String timeSeriesIdentifier, Instant startDate, Instant endDate, Boolean fullChain) {
 		List<Processor> upProcs = upchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();
 		List<String> ratingModelIds = new ArrayList<>();

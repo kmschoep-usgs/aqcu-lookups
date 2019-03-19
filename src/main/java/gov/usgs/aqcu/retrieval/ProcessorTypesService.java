@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Processor;
 
+import gov.usgs.aqcu.util.LogExecutionTime;
+
 @Repository
 public class ProcessorTypesService {
 	private DownchainProcessorListService downchainProcessorListService;
@@ -26,6 +28,7 @@ public class ProcessorTypesService {
 		this.upchainProcessorListService = upchainProcessorListService;
 	}
 
+        @LogExecutionTime
 	public Map<String, List<String>> getProcessorTypes(String timeSeriesIdentifier, Instant startDate, Instant endDate) {
 		Map<String, List<String>> processorMap = new HashMap<>();
 		List<Processor> upProcessors = upchainProcessorListService.getRawResponse(timeSeriesIdentifier, startDate, endDate).getProcessors();

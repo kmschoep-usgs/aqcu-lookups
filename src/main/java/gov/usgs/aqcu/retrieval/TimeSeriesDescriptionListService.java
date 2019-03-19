@@ -19,6 +19,7 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Time
 
 import gov.usgs.aqcu.exception.AquariusProcessingException;
 import gov.usgs.aqcu.util.AquariusRetrievalUtils;
+import gov.usgs.aqcu.util.LogExecutionTime;
 
 @Repository
 public class TimeSeriesDescriptionListService {
@@ -33,6 +34,7 @@ public class TimeSeriesDescriptionListService {
 		this.aquariusRetrievalService = aquariusRetrievalService;
 	}
 
+        @LogExecutionTime
 	protected TimeSeriesDescriptionListByUniqueIdServiceResponse getRawResponse(List<String> timeSeriesUniqueIds) {
 		TimeSeriesDescriptionListByUniqueIdServiceRequest request = new TimeSeriesDescriptionListByUniqueIdServiceRequest()
 				.setTimeSeriesUniqueIds(new ArrayList<>(new HashSet<>(timeSeriesUniqueIds)));
@@ -40,6 +42,7 @@ public class TimeSeriesDescriptionListService {
 		return tssDesc;
 	}
 
+        @LogExecutionTime
 	protected TimeSeriesDescriptionListServiceResponse getRawResponse(String computationIdentifier, String computationPeriodIdentifier, 
 	String stationId, String parameter, Boolean publish, Boolean primary) {
 		ArrayList<ExtendedAttributeFilter> extendedFilters = new ArrayList<>();
@@ -59,8 +62,10 @@ public class TimeSeriesDescriptionListService {
 		return tssDesc;
 	}
 
+        @LogExecutionTime
 	public List<TimeSeriesDescription> getTimeSeriesDescriptionList(List<String> timeSeriesUniqueIds) {
-		List<TimeSeriesDescription> descList = getRawResponse(timeSeriesUniqueIds).getTimeSeriesDescriptions();
+		LOG.debug("Get time series description list.");
+                List<TimeSeriesDescription> descList = getRawResponse(timeSeriesUniqueIds).getTimeSeriesDescriptions();
 
 		if(descList.size() != timeSeriesUniqueIds.size()) {
 			String errorString = "Failed to fetch descriptions for all requested Time Series Identifiers: \nRequested: " + timeSeriesUniqueIds.size() + 
@@ -71,11 +76,13 @@ public class TimeSeriesDescriptionListService {
 		return descList;
 	}
 
+        @LogExecutionTime
 	public List<TimeSeriesDescription> getTimeSeriesDescriptionList(String computationIdentifier, String computationPeriodIdentifier, 
 			String stationId, String parameter, Boolean publish, Boolean primary) {
 		return getRawResponse(computationIdentifier, computationPeriodIdentifier, stationId, parameter, publish, primary).getTimeSeriesDescriptions();
 	}
 
+        @LogExecutionTime
 	public TimeSeriesDescription getTimeSeriesDescription(String timeSeriesUniqueId) {
 		return getTimeSeriesDescriptionList(Arrays.asList(timeSeriesUniqueId)).get(0);
 	}
