@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Travis and Coveralls
 
 ### Changed
+- AQCU Framework to 0.0.6-SNAPSHOT
 
 ## [0.0.4] - 2019-02-20
 ### Added
