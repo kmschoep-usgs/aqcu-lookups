@@ -14,7 +14,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <additionalparam>-Xdoclint:none</additionalparam>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <springfox.version>2.9.0</springfox.version>
+        <springfox.version>2.9.2</springfox.version>
         <aquarius.sdk.version>18.8.1</aquarius.sdk.version>
         <aqcu.framework.version>0.0.6-SNAPSHOT</aqcu.framework.version>
         <guava.version>20.0</guava.version>
@@ -32,9 +32,6 @@
             <name>AQCU Maven Centralized (Artifactory)</name>
             <url>${wma.artifactory.url}/aqcu-maven-centralized/</url>
         </repository>
-        <!-- SpringFox 2.9.0 Fixes Polymorphism issues but isn't on MavenCentral due to publishing issues.
-             See: https://github.com/springfox/springfox/issues/2372
-        -->
         <repository>
             <snapshots>
                 <enabled>false</enabled>
