@@ -56,7 +56,7 @@ public class AquariusAppsRetrievalService extends AquariusRetrievalService {
 			}
 		} while(doRetry);
 
-		LOG.error("Failed to retireve data from Aquarius for request " + request.toString() + ". Out of retries.");
+		LOG.error("Failed to retrieve data from Aquarius for request " + request.toString() + ". Out of retries.");
 		throw new AquariusRetrievalException("Failed to retrieve data from Aquarius for request " + request.toString());
 	}
 }
