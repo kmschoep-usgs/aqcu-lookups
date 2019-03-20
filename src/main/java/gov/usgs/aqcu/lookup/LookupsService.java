@@ -31,7 +31,6 @@ import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
 import gov.usgs.aqcu.retrieval.UnitsLookupService;
 import gov.usgs.aqcu.retrieval.UpchainRatingModelSearchService;
 import gov.usgs.aqcu.util.TimeSeriesUtils;
-import gov.usgs.aqcu.util.LogExecutionTime;
 
 @Repository
 public class LookupsService {
@@ -70,14 +69,12 @@ public class LookupsService {
 			this.upchainRatingModelSearchService = upchainRatingModelSearchService;
 	}
 
-        @LogExecutionTime
 	public Map<String,TimeSeriesBasicData> getTimeSeriesDescriptions(TimeSeriesIdentifiersRequestParameters params) {
 		List<TimeSeriesDescription> descs = timeSeriesDescriptionListService.getTimeSeriesDescriptionList(params.getComputationIdentifier(), params.getComputationPeriodIdentifier(),
 			params.getStationId(), params.getParameter(), params.getPublish(), params.getPrimary());
 		return descs.stream().map(d -> new TimeSeriesBasicData(d)).collect(Collectors.toMap(TimeSeriesBasicData::getUniqueId, Function.identity()));
 	}
 
-        @LogExecutionTime
 	public List<String> searchDerivationChain(FindInDerivationChainRequestParameters params) {
 		ZoneOffset primaryZoneOffset = getZoneOffset(params.getTimeSeriesIdentifier());
 		List<TimeSeriesDescription> descList = derivationChainService.findTimeSeriesInDerivationChain(params.getTimeSeriesIdentifier(), params.getDirection(), params.getPrimary(), null, params.getParameter(), 
@@ -85,50 +82,41 @@ public class LookupsService {
 		return descList.stream().map(d -> d.getUniqueId()).collect(Collectors.toList());
 	}
 
-        @LogExecutionTime
 	public List<String> getRatingModel(GetUpchainRatingModelsRequestParameters params) {
 		ZoneOffset primaryZoneOffset = getZoneOffset(params.getTimeSeriesIdentifier());
 		return upchainRatingModelSearchService.getRatingModelsUpchain(params.getTimeSeriesIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset), params.getFullChain());
 	}
 
-        @LogExecutionTime
 	public Map<String, List<String>> getProcessorTypes(ProcessorTypesRequestParameters params) {
 		ZoneOffset primaryZoneOffset = getZoneOffset(params.getTimeSeriesIdentifier());
 		return processorTypesService.getProcessorTypes(params.getTimeSeriesIdentifier(), params.getStartInstant(primaryZoneOffset), params.getEndInstant(primaryZoneOffset));
 	}
 
-        @LogExecutionTime
 	public List<LocationBasicData> searchSites(SiteSearchRequestParameters params) {
 		return locationSearchService.searchSites(params.getSiteNumber(), params.getPageSize());
 	}
 
-        @LogExecutionTime
 	public List<String> getFieldVisitDates(FieldVisitDatesRequestParameters params) {
 		return fieldVisitDescriptionListService.getFieldVisitDates(params.getSiteNumber());
 	}
 
-        @LogExecutionTime
 	public List<String> getControlConditions() {
 		return controlConditionReferenceService.get();
 	}
 
-        @LogExecutionTime
 	public List<String> getComputations() {
 		return computationReferenceService.get();
 	}
 
-        @LogExecutionTime
 	public List<String> getPeriods() {
 		 return periodReferenceService.get();
 	}
 
-        @LogExecutionTime
 	public List<String> getUnits() {
 		List<UnitMetadata> unitMetadataList = unitsLookupService.getUnits();
 		return unitMetadataList.stream().map(u -> u.getIdentifier()).collect(Collectors.toList());
 	}
 
-        @LogExecutionTime
 	protected ZoneOffset getZoneOffset(String timeSeriesIdentifier) {
 		TimeSeriesDescription primaryDescription = null;
 
