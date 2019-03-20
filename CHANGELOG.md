@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - AQCU Framework to 0.0.6-SNAPSHOT
+- Exclude config classes from coveralls reporting
 
 ## [0.0.4] - 2019-02-20
 ### Added
