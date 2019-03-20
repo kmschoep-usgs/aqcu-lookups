@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.usgs.aqcu.util.TimeSeriesUtils;
+import gov.usgs.aqcu.util.LogExecutionTime;
 
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.FieldVisitDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.FieldVisitDescriptionListServiceRequest;
@@ -29,6 +30,7 @@ public class FieldVisitDescriptionListService {
 		this.locationDataService = locationDataService;
 	}
 
+        @LogExecutionTime
 	protected FieldVisitDescriptionListServiceResponse getRawResponse(String locationIdentifier) {
 		FieldVisitDescriptionListServiceRequest request = new FieldVisitDescriptionListServiceRequest()
 			.setLocationIdentifier(locationIdentifier)
@@ -37,6 +39,7 @@ public class FieldVisitDescriptionListService {
 		return unitList;
 	}
 
+        @LogExecutionTime
 	public List<String> getFieldVisitDates(String locationIdentifier) {
 		ZoneOffset primaryZoneOffset = TimeSeriesUtils.getZoneOffset(locationDataService.getRawResponse(locationIdentifier));
 		List<FieldVisitDescription> descList = getRawResponse(locationIdentifier).getFieldVisitDescriptions();

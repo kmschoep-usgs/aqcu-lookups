@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import gov.usgs.aqcu.config.AquariusReferenceListProperties;
 
+import gov.usgs.aqcu.util.LogExecutionTime;
+
 @Repository
 public class PeriodReferenceService {
 	private AquariusReferenceListProperties aquariusReferenceListProperties;
@@ -16,6 +18,7 @@ public class PeriodReferenceService {
 		this.aquariusReferenceListProperties = aquariusReferenceListProperties;
 	}
 
+        @LogExecutionTime
 	public List<String> get() {
 		//TODO: Persist this list somewhere else?
 		return aquariusReferenceListProperties.getPeriods();
