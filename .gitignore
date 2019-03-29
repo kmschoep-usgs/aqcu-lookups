@@ -5,3 +5,9 @@
 /.project
 /.vscode
 /.idea
+**/*.jks
+**/*.p12
+**/*.crt
+**/*.csr
+**/*.chain
+**/*.key
