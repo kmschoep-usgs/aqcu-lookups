@@ -18,7 +18,7 @@
   services:
     aqcu-lookups:
       build: .
-      image: aqcu-lookups-service
+      image: aqcu-lookups
       ports:
         - "7503:7503"
       << : *secrets-config
@@ -30,7 +30,7 @@
 
     aqcu-lookups-local-dev:
       build: .
-      image: aqcu-lookups-service
+      image: aqcu-lookups
       network_mode: "host"
       ports:
         - "7503:7503"
@@ -43,7 +43,7 @@
 
     aqcu-lookups-debug:
       build: .
-      image: aqcu-lookups-service
+      image: aqcu-lookups
       network_mode: "host"
       ports:
         - "7503:7503"
