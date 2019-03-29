@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - AQCU Framework to 0.0.6-SNAPSHOT
 - Exclude config classes from coveralls reporting
-- Merged this repository with the docker-aqcu-dc-report repository
+- Merged this repository with the docker-aqcu-lookups repository
 
 ## [0.0.4] - 2019-02-20
 ### Added
