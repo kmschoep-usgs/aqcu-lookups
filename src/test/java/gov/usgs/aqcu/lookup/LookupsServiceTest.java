@@ -16,6 +16,8 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Unit
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ExtendedAttribute;
 
 import gov.usgs.aqcu.model.LocationBasicData;
+import gov.usgs.aqcu.model.ReportBasicParameter;
+import gov.usgs.aqcu.model.ReportParameterConfig;
 import gov.usgs.aqcu.model.TimeSeriesBasicData;
 import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
 import gov.usgs.aqcu.parameter.FindInDerivationChainRequestParameters;
@@ -30,6 +32,7 @@ import gov.usgs.aqcu.retrieval.DerivationChainSearchService;
 import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
 import gov.usgs.aqcu.retrieval.LocationSearchService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
+import gov.usgs.aqcu.retrieval.ReportParameterConfigLookupService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
 import gov.usgs.aqcu.retrieval.UnitsLookupService;
 import gov.usgs.aqcu.retrieval.UpchainRatingModelSearchService;
@@ -71,6 +74,9 @@ public class LookupsServiceTest {
 	private DerivationChainSearchService derivationChainService;
 	@MockBean
 	private UpchainRatingModelSearchService upchainRatingModelSearchService;
+	@MockBean
+	private ReportParameterConfigLookupService reportParameterConfigLookupService;
+	
 	private TimeSeriesThresholdPeriod p1 = new TimeSeriesThresholdPeriod()
 		.setStartTime(Instant.parse("2017-01-01T00:00:00Z"))
 		.setEndTime(Instant.parse("2017-02-01T00:00:00Z"))
@@ -119,14 +125,14 @@ public class LookupsServiceTest {
 	private UnitMetadata unit3 = new UnitMetadata()
 		.setDisplayName("name3")
 		.setIdentifier("identifier3")
-		.setSymbol("symbol3");
+		.setSymbol("symbol3");	
 	private LookupsService service;
 
 	@Before
 	public void setup() {
 		service = new LookupsService(timeSeriesDescriptionListService, processorTypesService, locationSearchService,
 			unitsLookupService, computationReferenceService, controlConditionReferenceService, periodReferenceService,
-			fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService);
+			fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService, reportParameterConfigLookupService);
 	}
 
 	@Test
@@ -389,5 +395,21 @@ public class LookupsServiceTest {
 		given(timeSeriesDescriptionListService.getTimeSeriesDescription(any(String.class)))
 			.willReturn(tsDesc1);
 		assertEquals(service.getZoneOffset(tsDesc1.getIdentifier()), ZoneOffset.ofHours(1));
+	}
+	
+	@Test
+	public void getGwVRStatParameterConfig() {
+		List<ReportBasicParameter> parameters = new ArrayList<>();
+		parameters.add(new ReportBasicParameter("locationIdentifier", "Primary Location", "location"));
+		ReportParameterConfig gwVRStatReportParamConfig = new ReportParameterConfig();
+		gwVRStatReportParamConfig.setReportType("gw-vrstat");
+		gwVRStatReportParamConfig.setParameters(parameters);
+		
+		given(reportParameterConfigLookupService.getReportParameterConfig(any(String.class)))
+		.willReturn(gwVRStatReportParamConfig);
+		assertEquals("gw-vrstat", gwVRStatReportParamConfig.getReportType());
+		assertEquals("locationIdentifier", gwVRStatReportParamConfig.getParameters().get(0).getName());
+		assertEquals("Primary Location", gwVRStatReportParamConfig.getParameters().get(0).getDisplay());
+		assertEquals("location", gwVRStatReportParamConfig.getParameters().get(0).getType());
 	}
 }
