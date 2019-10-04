@@ -11,3 +11,4 @@
 **/*.csr
 **/*.chain
 **/*.key
+/lookup-application.yml
