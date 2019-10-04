@@ -1,7 +1,10 @@
 package gov.usgs.aqcu.retrieval;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import gov.usgs.aqcu.model.ReportBasicParameter;
 import gov.usgs.aqcu.model.ReportParameterConfig;
@@ -11,30 +14,36 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 public class ReportParameterConfigLookupServiceTest {
 
 	private ReportParameterConfigLookupService service;
-
+	private Map<String, String> reportParamConfigs = new LinkedHashMap<>();
+	
 	@Before
 	public void setup() {
 		service = new ReportParameterConfigLookupService();
+		reportParamConfigs.put("gwvrstatreport", "GW_VRSTAT");
 	}
 
 	@Test
-	public void getGwVRStatParameterConfig() {
-		List<ReportBasicParameter> parameters = new ArrayList<>();
-		parameters.add(new ReportBasicParameter("locationIdentifier", "Primary Location", "location"));
-		ReportParameterConfig gwVRStatReportParamConfig = new ReportParameterConfig();
-		gwVRStatReportParamConfig.setReportType("gw-vrstat");
-		gwVRStatReportParamConfig.setParameters(parameters);
-		
-		ReportParameterConfig testGwVRStatReportParamConfig = service.getReportParameterConfig("gw-vrstat");
-		assertEquals(testGwVRStatReportParamConfig.getReportType(), gwVRStatReportParamConfig.getReportType());
-		assertEquals(testGwVRStatReportParamConfig.getParameters().get(0).getName(), gwVRStatReportParamConfig.getParameters().get(0).getName());
-		assertEquals(testGwVRStatReportParamConfig.getParameters().get(0).getDisplay(), gwVRStatReportParamConfig.getParameters().get(0).getDisplay());
-		assertEquals(testGwVRStatReportParamConfig.getParameters().get(0).getType(), gwVRStatReportParamConfig.getParameters().get(0).getType());
+	public void getByReportTypeTest() {
+		for (Map.Entry<String, String> entry : reportParamConfigs.entrySet()) {
+			String value = entry.getKey();
+			ReportParameterConfig config = ReportParameterConfig.getByReportType(value);
+			assertEquals(config.getReportType(), value);
+		}
+	}
+	
+	@Test
+	public void getByReportTypeServiceTest() {
+		for (Map.Entry<String, String> entry : reportParamConfigs.entrySet()) {
+			String value = entry.getKey();
+			ReportParameterConfig config = service.getByReportType(value);
+			assertEquals(config.getReportType(), value);
+		}
 	}
 }

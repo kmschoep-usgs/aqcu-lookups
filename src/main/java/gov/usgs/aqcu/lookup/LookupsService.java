@@ -123,7 +123,7 @@ public class LookupsService {
 	}
 	
 	public ReportParameterConfig getReportParameterConfig(String reportType) {
-		return reportParameterConfigLookupService.getReportParameterConfig(reportType);
+		return reportParameterConfigLookupService.getByReportType(reportType);
 	}
 
 	protected ZoneOffset getZoneOffset(String timeSeriesIdentifier) {

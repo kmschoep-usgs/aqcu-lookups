@@ -6,6 +6,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +78,7 @@ public class LookupsServiceTest {
 	@MockBean
 	private ReportParameterConfigLookupService reportParameterConfigLookupService;
 	
+	private Map<String, String> reportParamConfigs = new LinkedHashMap<>();
 	private TimeSeriesThresholdPeriod p1 = new TimeSeriesThresholdPeriod()
 		.setStartTime(Instant.parse("2017-01-01T00:00:00Z"))
 		.setEndTime(Instant.parse("2017-02-01T00:00:00Z"))
@@ -133,6 +135,7 @@ public class LookupsServiceTest {
 		service = new LookupsService(timeSeriesDescriptionListService, processorTypesService, locationSearchService,
 			unitsLookupService, computationReferenceService, controlConditionReferenceService, periodReferenceService,
 			fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService, reportParameterConfigLookupService);
+		reportParamConfigs.put("gwvrstatreport", "GW_VRSTAT");
 	}
 
 	@Test
@@ -399,17 +402,12 @@ public class LookupsServiceTest {
 	
 	@Test
 	public void getGwVRStatParameterConfig() {
-		List<ReportBasicParameter> parameters = new ArrayList<>();
-		parameters.add(new ReportBasicParameter("locationIdentifier", "Primary Location", "location"));
-		ReportParameterConfig gwVRStatReportParamConfig = new ReportParameterConfig();
-		gwVRStatReportParamConfig.setReportType("gw-vrstat");
-		gwVRStatReportParamConfig.setParameters(parameters);
-		
-		given(reportParameterConfigLookupService.getReportParameterConfig(any(String.class)))
-		.willReturn(gwVRStatReportParamConfig);
-		assertEquals("gw-vrstat", gwVRStatReportParamConfig.getReportType());
-		assertEquals("locationIdentifier", gwVRStatReportParamConfig.getParameters().get(0).getName());
-		assertEquals("Primary Location", gwVRStatReportParamConfig.getParameters().get(0).getDisplay());
-		assertEquals("location", gwVRStatReportParamConfig.getParameters().get(0).getType());
+		given(reportParameterConfigLookupService.getByReportType(any(String.class)))
+		.willReturn(ReportParameterConfig.GW_VRSTAT);
+		for (Map.Entry<String, String> entry : reportParamConfigs.entrySet()) {
+			String value = entry.getKey();
+			ReportParameterConfig config = service.getReportParameterConfig(value);
+			assertEquals(config.getReportType(), value);
+		}
 	}
 }

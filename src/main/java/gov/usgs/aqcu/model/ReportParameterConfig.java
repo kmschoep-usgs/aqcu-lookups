@@ -1,34 +1,34 @@
 package gov.usgs.aqcu.model;
 
+import java.util.Arrays;
 import java.util.List;
 
-public class ReportParameterConfig {
+public enum ReportParameterConfig {
+    
+    GW_VRSTAT("gwvrstatreport", Arrays.asList(
+    	new ReportBasicParameter("locationIdentifier", "Primary Location", "location")
+    ));
+
 	private String reportType;
 	private List<ReportBasicParameter> parameters;
-
-	public ReportParameterConfig(){}
 	
-	public ReportParameterConfig(String reportType, List<ReportBasicParameter> parameters) {
-		this.setReportType(reportType);
-		this.setParameters(parameters);
-	}
+    ReportParameterConfig(String reportType, List<ReportBasicParameter> parameters) {
+        this.reportType = reportType;
+        this.parameters = parameters;
+    }
 
-	public String getReportType() {
-		return reportType;
-	}
+    public String getReportType() {
+    	return this.reportType;
+    }
+    
+    public List<ReportBasicParameter> getParameters() {
+    	return this.parameters;
+    }
 
-	public void setReportType(String reportType) {
-		this.reportType = reportType;
-	}
-
-	public List<ReportBasicParameter> getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(List<ReportBasicParameter> parameters) {
-		this.parameters = parameters;
-	}
-
-		
-	
+    public static ReportParameterConfig getByReportType(String reportType) {
+        for(ReportParameterConfig config : values()) {
+            if(config.getReportType().equals(reportType)) return config; 
+        }
+        return null;
+    }
 }
