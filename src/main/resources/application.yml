@@ -66,6 +66,9 @@ aquarius:
       - Submerged
       - NoFlow
 
+s3:
+  region: us-west-2
+
 security:
   require-ssl: true
   basic:
