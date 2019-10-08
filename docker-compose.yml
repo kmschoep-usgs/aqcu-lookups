@@ -11,9 +11,9 @@
 
   secrets:
     tomcat_ssl_crt:
-      file: ./docker/certificates/tomcat-wildcard.crt
+      file: ./docker/certificates/wildcard.crt
     tomcat_ssl_key:
-      file: ./docker/certificates/tomcat-wildcard.key
+      file: ./docker/certificates/wildcard.key
 
   services:
     aqcu-lookups:

@@ -3,6 +3,9 @@ package gov.usgs.aqcu.model;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ReportParameterConfig {
     
     GW_VRSTAT("gwvrstatreport", Arrays.asList(

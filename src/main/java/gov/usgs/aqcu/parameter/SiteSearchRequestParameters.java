@@ -2,7 +2,7 @@ package gov.usgs.aqcu.parameter;
 
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 public class SiteSearchRequestParameters {
 	protected Integer pageSize;

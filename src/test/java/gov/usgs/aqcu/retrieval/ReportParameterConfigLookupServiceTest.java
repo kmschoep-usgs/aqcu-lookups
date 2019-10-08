@@ -1,12 +1,8 @@
 package gov.usgs.aqcu.retrieval;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import gov.usgs.aqcu.model.ReportBasicParameter;
 import gov.usgs.aqcu.model.ReportParameterConfig;
 
 import org.junit.Before;
