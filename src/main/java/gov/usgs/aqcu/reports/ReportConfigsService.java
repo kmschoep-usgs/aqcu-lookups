@@ -14,6 +14,8 @@ import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
+import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
+import gov.usgs.aqcu.exception.ReportDoesNotExistException;
 import gov.usgs.aqcu.model.report.SavedReportConfiguration;
 import gov.usgs.aqcu.model.config.GroupConfig;
 import gov.usgs.aqcu.model.config.GroupData;
@@ -105,10 +107,13 @@ public class ReportConfigsService {
 			throw new FolderDoesNotExistException(groupName, folderPath);
 		}
 
+		ReportsConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
+
 		FolderData result = new FolderData();
 		result.setCurrentPath(folderPath);
 		result.setFolders(s3Service.getFolderSubPaths(PathUtils.mergePaths(groupName, folderPath)));
-		result.setReports(loadFolderReportsConfig(groupName, folderPath));
+		result.setReports(reportsConfig.getSavedReportsList());
+		result.setParameterDefaults(reportsConfig.getParameterDefaults());
 
 		return result;
 	}
@@ -165,7 +170,34 @@ public class ReportConfigsService {
 	}
 
 	// Reports
-	public void saveReport(String groupNameString, String folderPathString, SavedReportConfiguration newReport) throws IOException {
+	public void saveReport(String groupNameString, String folderPathString, SavedReportConfiguration newReport, Boolean update) throws IOException {
+		final String groupName = PathUtils.trimPath(groupNameString);
+		final String folderPath = PathUtils.trimPath(folderPathString);
+
+		if(!doesGroupExist(groupName)) {
+			throw new GroupDoesNotExistException(groupName);
+		}
+
+		if(!doesFolderExist(groupName, folderPath)) {
+			throw new FolderDoesNotExistException(groupName, folderPath);
+		}
+
+		ReportsConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
+		Boolean reportExists = reportsConfig.doesReportExist(newReport.getId());
+
+
+		if(update && !reportExists) {
+			throw new ReportDoesNotExistException(groupName, folderPath, newReport.getId());
+		} else if(!update && reportExists) {
+			throw new ReportAlreadyExistsException(groupName, folderPath, newReport.getId());
+		}
+		
+		reportsConfig.saveReport(newReport);
+
+		saveFolderReportsConfig(groupName, folderPath, reportsConfig);
+	}
+
+	public void deleteReport(String groupNameString, String folderPathString, String reportId) throws IOException {
 		final String groupName = PathUtils.trimPath(groupNameString);
 		final String folderPath = PathUtils.trimPath(folderPathString);
 
@@ -179,7 +211,9 @@ public class ReportConfigsService {
 
 		ReportsConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
 
-		reportsConfig.saveReport(newReport);
+		if(!reportsConfig.deleteSavedReportById(reportId)) {
+			throw new ReportDoesNotExistException(groupName, folderPath, reportId);
+		}
 
 		saveFolderReportsConfig(groupName, folderPath, reportsConfig);
 	}

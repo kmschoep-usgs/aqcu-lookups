@@ -1,6 +1,8 @@
 package gov.usgs.aqcu.model.config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import gov.usgs.aqcu.model.report.SavedReportConfiguration;
@@ -17,6 +19,10 @@ public class ReportsConfig {
 		return savedReports;
 	}
 
+	public List<SavedReportConfiguration> getSavedReportsList() {
+		return new ArrayList<>(savedReports.values());
+	}
+
 	public void setSavedReports(Map<String, SavedReportConfiguration> savedReports) {
 		this.savedReports = savedReports;
 	}
@@ -29,8 +35,17 @@ public class ReportsConfig {
 		return savedReports.get(id);
 	}
 
-	public void deleteSavedReportById(String id) {
-		savedReports.put(id, null);
+	public Boolean deleteSavedReportById(String id) {
+		if(savedReports.containsKey(id)) {
+			savedReports.remove(id);
+			return true;
+		}
+
+		return false;		
+	}
+
+	public Boolean doesReportExist(String id) {
+		return savedReports.containsKey(id);
 	}
 
 	public Map<String, String> getParameterDefaults() {

@@ -5,11 +5,15 @@ import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
 import gov.usgs.aqcu.exception.InvalidFolderNameException;
+import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
+import gov.usgs.aqcu.exception.ReportDoesNotExistException;
 import gov.usgs.aqcu.model.config.FolderData;
 import gov.usgs.aqcu.model.config.GroupData;
+import gov.usgs.aqcu.model.report.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -123,12 +129,17 @@ public class ConfigController {
 		}
 	}
 
-	/*
+	// Reports
 	@PostMapping(value="/groups/{groupName}/reports")
-	public ResponseEntity<String> createReport(@RequestBody SavedReportConfiguration newReport, @PathVariable("groupName") String groupName, @PathVariable("folderPath") String folderPath) {
+	public ResponseEntity<String> createReport(@RequestBody SavedReportConfiguration newReport, @PathVariable("groupName") String groupName, @RequestParam String folderPath) {
 		try {
-			s3Service.addReportToFolder(groupName + "/" + folderPath, newReport);
+			newReport.setId(UUID.randomUUID().toString());
+			configsService.saveReport(groupName, folderPath, newReport, false);
 			return ResponseEntity.ok("Report created");
+		} catch(GroupDoesNotExistException | FolderDoesNotExistException e) {
+			return ResponseEntity.status(404).body(e.getMessage());
+		} catch(ReportAlreadyExistsException e) {
+			return ResponseEntity.status(400).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
 			return ResponseEntity.status(500).body("An error occurred while saving your report. Please contact support.");
@@ -136,25 +147,29 @@ public class ConfigController {
 	}
 	
 	@PutMapping(value="/groups/{groupName}/reports")
-	public ResponseEntity<String> updateReport(@RequestBody SavedReportConfiguration updatedReport, @PathVariable("groupName") String groupName, @PathVariable("folderPath") String folderPath, @PathVariable("reportId") String reportId) {
+	public ResponseEntity<String> updateReport(@RequestBody SavedReportConfiguration updatedReport, @PathVariable("groupName") String groupName, @RequestParam String folderPath, @RequestParam String reportId) {
 		try {
-			s3Service.addReportToFolder(groupName + "/" + folderPath, updatedReport);
+			updatedReport.setId(reportId);
+			configsService.saveReport(groupName, folderPath, updatedReport, true);
 			return ResponseEntity.ok("Report updated");
+		} catch(GroupDoesNotExistException | FolderDoesNotExistException | ReportDoesNotExistException e) {
+			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
 			return ResponseEntity.status(500).body("An error occurred while saving your report. Please contact support.");
 		}
 	}
 
-	@DeleteMapping(value="/groups/{groupName}/folders//report/{reportId}")
-	public ResponseEntity<String> deleteReport(@PathVariable("groupName") String groupName, @PathVariable("folderPath") String folderPath, @PathVariable("reportId") String reportId) {
+	@DeleteMapping(value="/groups/{groupName}/reports")
+	public ResponseEntity<String> deleteReport(@PathVariable("groupName") String groupName, @RequestParam String folderPath, @RequestParam String reportId) {
 		try {
-			s3Service.deleteReportFromFolder(groupName + "/" + folderPath, reportId);
+			configsService.deleteReport(groupName, folderPath, reportId);
 			return ResponseEntity.ok("Report deleted");
+		} catch(GroupDoesNotExistException | FolderDoesNotExistException | ReportDoesNotExistException e) {
+			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
 			return ResponseEntity.status(500).body("An error occurred while deleteing your report. Please contact support.");
 		}
 	}
-	*/
 }

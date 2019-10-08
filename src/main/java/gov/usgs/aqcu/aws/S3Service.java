@@ -72,7 +72,7 @@ public class S3Service {
 
 		ListObjectsV2Result response = s3.listObjectsV2(request);
 
-		return response.getCommonPrefixes().stream().map(r -> r.replace(rootDir, "")).collect(Collectors.toList());
+		return response.getCommonPrefixes().stream().map(r -> r.replaceFirst(rootDir, "")).collect(Collectors.toList());
 	}
 
 	public String getFileAsString(String filePath) {
