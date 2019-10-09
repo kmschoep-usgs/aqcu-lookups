@@ -2,7 +2,7 @@ package gov.usgs.aqcu.parameter;
 
 import javax.validation.constraints.Pattern;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 public class FindInDerivationChainRequestParameters extends DateRangeRequestParameters {
 	@NotBlank

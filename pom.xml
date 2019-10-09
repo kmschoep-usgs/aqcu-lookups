@@ -18,13 +18,8 @@
         <aquarius.sdk.version>18.8.1</aquarius.sdk.version>
         <aqcu.framework.version>0.0.6-SNAPSHOT</aqcu.framework.version>
         <guava.version>20.0</guava.version>
+        <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
     </properties>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.10.RELEASE</version>
-    </parent>
 
     <repositories>
         <repository>
@@ -32,22 +27,21 @@
             <name>AQCU Maven Centralized (Artifactory)</name>
             <url>${wma.artifactory.url}/aqcu-maven-centralized/</url>
         </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>central</id>
-            <name>bintray</name>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
     </repositories>
 
     <dependencyManagement>
         <dependencies>
+        	<dependency>
+        		<groupId>org.springframework.boot</groupId>
+        		<artifactId>spring-boot-starter-parent</artifactId>
+        		<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+        	</dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Edgware.SR2</version>
+                <version>Finchley.SR1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -98,7 +92,7 @@
 
         <dependency>
             <groupId>org.webjars</groupId>
-            <artifactId>webjars-locator</artifactId>
+            <artifactId>webjars-locator-core</artifactId>
         </dependency>
 
         <dependency>
@@ -120,7 +114,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-
         <!--  Testing/Development  -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -132,7 +125,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -140,11 +132,20 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <executions>
+					<execution>
+						<id>build-info</id>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
