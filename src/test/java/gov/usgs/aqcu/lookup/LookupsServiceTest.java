@@ -17,7 +17,6 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Unit
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ExtendedAttribute;
 
 import gov.usgs.aqcu.model.LocationBasicData;
-import gov.usgs.aqcu.model.ReportBasicParameter;
 import gov.usgs.aqcu.model.ReportParameterConfig;
 import gov.usgs.aqcu.model.TimeSeriesBasicData;
 import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
@@ -48,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -204,9 +203,11 @@ public class LookupsServiceTest {
 
 	@Test
 	public void searchDerivationChainTest() {
-		given(derivationChainService.findTimeSeriesInDerivationChain(any(String.class), any(String.class), any(Boolean.class), any(Boolean.class), any(String.class),
-			any(String.class), any(String.class), any(Instant.class), any(Instant.class), any(Boolean.class)))
-		.willReturn(new ArrayList<>(Arrays.asList(tsDesc1)));
+		List<TimeSeriesDescription> tsList = new ArrayList<>();
+		tsList.add(tsDesc1);
+		given(derivationChainService.findTimeSeriesInDerivationChain(any(String.class), any(String.class), any(Boolean.class), eq(null), any(String.class),
+				any(String.class), any(String.class), any(Instant.class), any(Instant.class), any(Boolean.class)))
+			.willReturn(tsList);		
 		FindInDerivationChainRequestParameters params = new FindInDerivationChainRequestParameters();
 		params.setComputationIdentifier("any");
 		params.setComputationPeriodIdentifier("any");

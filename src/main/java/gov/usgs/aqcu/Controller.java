@@ -9,19 +9,20 @@ import gov.usgs.aqcu.parameter.GetUpchainRatingModelsRequestParameters;
 import gov.usgs.aqcu.parameter.ProcessorTypesRequestParameters;
 import gov.usgs.aqcu.parameter.SiteSearchRequestParameters;
 import gov.usgs.aqcu.parameter.TimeSeriesIdentifiersRequestParameters;
-import gov.usgs.aqcu.aws.S3Service;
 import gov.usgs.aqcu.config.AquariusReferenceListProperties;
 import gov.usgs.aqcu.lookup.LookupsService;
 import gov.usgs.aqcu.model.LocationBasicData;
-import gov.usgs.aqcu.model.S3DirectoryData;
 import gov.usgs.aqcu.model.TimeSeriesBasicData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,16 +33,13 @@ import org.springframework.http.MediaType;
 @RequestMapping("/lookup")
 public class Controller {
 	private LookupsService lookupsService;
-	private S3Service s3Service;
 	private AquariusReferenceListProperties aquariusReferenceListProperties;
 
 	@Autowired
 	public Controller(
 		LookupsService lookupsService,
-		S3Service s3Service,
 		AquariusReferenceListProperties aquariusReferenceListProperties
 	) {
-		this.s3Service = s3Service;
 		this.lookupsService = lookupsService;
 		this.aquariusReferenceListProperties = aquariusReferenceListProperties;
 	}
@@ -111,16 +109,11 @@ public class Controller {
 		return new ResponseEntity<List<String>>(lookupsService.getUnits(), new HttpHeaders(), HttpStatus.OK);
 	}
 
-	@GetMapping(value="/s3/path", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getS3Paths(@RequestParam(required = false) String root) throws Exception {
-		return new ResponseEntity<S3DirectoryData>(s3Service.getPathData(root), new HttpHeaders(), HttpStatus.OK);
+	@GetMapping(value="/reportParameterConfig/{reportType}", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?> getReportParameterConfig(@PathVariable String reportType) throws Exception {
+		return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(lookupsService.getReportParameterConfig(reportType)), new HttpHeaders(), HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/s3/file", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getS3File(@RequestParam(required = false) String path) throws Exception {
-		return new ResponseEntity<String>(s3Service.getFileData(path), new HttpHeaders(), HttpStatus.OK);
-	}
-
 	/*
 		Only used in the UI to verify the user is logged in. Can be deprecated when we move to WaterAuth.
 		Should not be implemented here, should use the gateway to always route to the old service for this call.
