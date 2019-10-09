@@ -10,7 +10,7 @@ public class SavedReportConfiguration {
 	private String lastModifiedUser;
 	private String createdUser;
 	private String primaryParameter;
-	private Map<String, Object> parameterValues;
+	private Map<String, String> parameterValues;
 
 	public String getReportName() {
 		return reportName;
@@ -32,11 +32,11 @@ public class SavedReportConfiguration {
 		this.primaryParameter = primaryParameter;
 	}
 
-	public Map<String, Object> getParameterValues() {
+	public Map<String, String> getParameterValues() {
 		return parameterValues;
 	}
 
-	public void setParameterValues(Map<String, Object> parameterValues) {
+	public void setParameterValues(Map<String, String> parameterValues) {
 		this.parameterValues = parameterValues;
 	}
 

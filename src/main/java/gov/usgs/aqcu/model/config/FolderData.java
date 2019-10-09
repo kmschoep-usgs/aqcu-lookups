@@ -1,5 +1,7 @@
 package gov.usgs.aqcu.model.config;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,12 @@ public class FolderData {
 	private List<String> folders;
 	private Map<String, String> parameterDefaults;
 	private List<SavedReportConfiguration> reports;
+
+	public FolderData() {
+		folders = new ArrayList<>();
+		reports = new ArrayList<>();
+		parameterDefaults = new HashMap<>();
+	}
 
 	public String getCurrentPath() {
 		return currentPath;

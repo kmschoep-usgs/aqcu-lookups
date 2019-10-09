@@ -2,10 +2,6 @@ package gov.usgs.aqcu.util;
 
 public class PathUtils {
 
-	public static String cleanAndValidateNewFolder(String newFolder) {
-		return newFolder;
-	}
-
 	public static String mergePaths(String path1, String path2) {
 		return trimPath(path1) + trimPath(path2);
 	}
@@ -17,16 +13,6 @@ public class PathUtils {
 			return "";
 		} else {
 			return path.substring(0, path.lastIndexOf("/")) + "/";
-		}
-	}
-
-	public static String getFolderName(String path) {
-		if(path.isEmpty() || !path.contains("/")) {
-			return path;
-		} else if(path.endsWith("/")) {
-			return path.substring(0, path.length()).substring(path.lastIndexOf("/"));
-		} else {
-			return path.substring(path.lastIndexOf("/"));
 		}
 	}
 

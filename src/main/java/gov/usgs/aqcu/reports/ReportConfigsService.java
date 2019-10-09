@@ -6,7 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import gov.usgs.aqcu.aws.S3Service;
@@ -25,11 +24,8 @@ import gov.usgs.aqcu.util.PathUtils;
 
 @Service
 public class ReportConfigsService {	
-	private static final String REPORT_CONFIG_FILE_NAME = "reports.json";
-	private static final String GROUP_CONFIG_FILE_NAME = "config.json";
-
-	@Value("${s3.bucket}")
-	private String S3_BUCKET;
+	public static final String REPORT_CONFIG_FILE_NAME = "reports.json";
+	public static final String GROUP_CONFIG_FILE_NAME = "config.json";
 
 	private S3Service s3Service;
 
@@ -86,7 +82,7 @@ public class ReportConfigsService {
 	}
 
 	private GroupConfig loadGroupConfig(String groupName) throws IOException {
-		String groupConfigFileString = s3Service.getFileAsString(groupName + "/" + GROUP_CONFIG_FILE_NAME);
+		String groupConfigFileString = s3Service.getFileAsString(groupName + GROUP_CONFIG_FILE_NAME);
 		return new ObjectMapper().readValue(groupConfigFileString, GroupConfig.class);
 	}
 
@@ -110,6 +106,7 @@ public class ReportConfigsService {
 		ReportsConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
 
 		FolderData result = new FolderData();
+		result.setGroupName(groupName);
 		result.setCurrentPath(folderPath);
 		result.setFolders(s3Service.getFolderSubPaths(PathUtils.mergePaths(groupName, folderPath)));
 		result.setReports(reportsConfig.getSavedReportsList());
@@ -131,6 +128,7 @@ public class ReportConfigsService {
 		}
 
 		String parentPath = PathUtils.getParentPath(folderPath);
+
 		if(!parentPath.isEmpty() && !doesFolderExist(groupName, parentPath)) {
 			throw new FolderDoesNotExistException(groupName, parentPath);
 		}
@@ -211,10 +209,11 @@ public class ReportConfigsService {
 
 		ReportsConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
 
-		if(!reportsConfig.deleteSavedReportById(reportId)) {
+		if(!reportsConfig.doesReportExist(reportId)) {
 			throw new ReportDoesNotExistException(groupName, folderPath, reportId);
 		}
 
+		reportsConfig.deleteSavedReportById(reportId);
 		saveFolderReportsConfig(groupName, folderPath, reportsConfig);
 	}
 }

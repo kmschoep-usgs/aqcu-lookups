@@ -37,3 +37,7 @@ aquarius:
       - Water Year
       - Weekly
       - Unknown
+s3:
+  endpoint: http://localhost
+  bucket: test-bucket
+  region: us-west-2

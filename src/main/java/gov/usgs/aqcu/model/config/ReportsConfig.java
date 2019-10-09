@@ -12,6 +12,7 @@ public class ReportsConfig {
 	private Map<String, SavedReportConfiguration> savedReports;
 
 	public ReportsConfig() {
+		parameterDefaults = new HashMap<>();
 		savedReports = new HashMap<>();
 	}
 
