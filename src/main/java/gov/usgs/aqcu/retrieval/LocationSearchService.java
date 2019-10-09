@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.usgs.aqcu.aquarius.Apps.SearchLocationsServiceRequest;
 import gov.usgs.aqcu.aquarius.Apps.SearchLocationsServiceResponse;
-import gov.usgs.aqcu.model.LocationBasicData;
+import gov.usgs.aqcu.model.lookup.LocationBasicData;
 
 import gov.usgs.aqcu.util.LogExecutionTime;
 

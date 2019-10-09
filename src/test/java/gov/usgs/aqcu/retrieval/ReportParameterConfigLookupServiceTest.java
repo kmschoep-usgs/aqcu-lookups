@@ -3,7 +3,7 @@ package gov.usgs.aqcu.retrieval;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import gov.usgs.aqcu.model.ReportParameterConfig;
+import gov.usgs.aqcu.model.report.ReportParameterConfig;
 
 import org.junit.Before;
 import org.junit.Test;

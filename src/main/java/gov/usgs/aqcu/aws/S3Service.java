@@ -16,18 +16,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import gov.usgs.aqcu.util.PathUtils;
-
 @Service
 public class S3Service {
-	@Value("${s3.bucket}")
-	private String S3_BUCKET;
+	private final String S3_BUCKET;
 
 	private AmazonS3ClientBuilder amazonS3ClientBuilder;
 
 	@Autowired
-	public S3Service(AmazonS3ClientBuilder amazonS3ClientBuilder) {
+	public S3Service(
+		AmazonS3ClientBuilder amazonS3ClientBuilder, 
+		@Value("${s3.bucket}") String s3_bucket
+	) {
 		this.amazonS3ClientBuilder = amazonS3ClientBuilder;
+		this.S3_BUCKET = s3_bucket;
 	}
 
 	public void saveJsonString(String filePath, String jsonString) {
@@ -38,11 +39,10 @@ public class S3Service {
 
 	public void deleteFolder(String root) {
 		final AmazonS3 s3 = amazonS3ClientBuilder.build();
-		final String rootDir = PathUtils.trimPath(root);
 
 		ListObjectsV2Request lookupRequest = new ListObjectsV2Request();
 		lookupRequest.setBucketName(S3_BUCKET);
-		lookupRequest.setPrefix(rootDir);
+		lookupRequest.setPrefix(root);
 
 		ListObjectsV2Result lookupResult = s3.listObjectsV2(lookupRequest);
 

@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.usgs.aqcu.aquarius.Apps.LocationSearchResult;
 import gov.usgs.aqcu.aquarius.Apps.SearchLocationsServiceResponse;
-import gov.usgs.aqcu.model.LocationBasicData;
+import gov.usgs.aqcu.model.lookup.LocationBasicData;
 import net.servicestack.client.IReturn;
 
 

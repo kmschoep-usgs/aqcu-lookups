@@ -1,7 +1,7 @@
 package gov.usgs.aqcu.retrieval;
 
 import org.springframework.stereotype.Repository;
-import gov.usgs.aqcu.model.ReportParameterConfig;
+import gov.usgs.aqcu.model.report.ReportParameterConfig;
 
 @Repository
 public class ReportParameterConfigLookupService {
