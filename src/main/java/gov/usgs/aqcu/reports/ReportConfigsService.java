@@ -2,6 +2,7 @@ package gov.usgs.aqcu.reports;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -71,7 +72,7 @@ public class ReportConfigsService {
 	}
 
 	public List<String> getAllGroups() {
-		return s3Service.getFolderSubPaths("");
+		return s3Service.getFolderSubPaths("").stream().map(g -> g.endsWith("/") ? g.substring(0, g.length()-1) : g).collect(Collectors.toList());
 	}
 
 	private void saveGroupConfig(String groupName, GroupConfig groupConfig) throws IOException {

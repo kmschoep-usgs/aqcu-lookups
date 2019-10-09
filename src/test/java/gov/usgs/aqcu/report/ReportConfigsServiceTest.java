@@ -51,6 +51,13 @@ public class ReportConfigsServiceTest {
     }
 
     @Test
+    public void getAllGroupsTest() {
+        given(s3Service.getFolderSubPaths("")).willReturn(Arrays.asList("folder1/", "folder2/"));
+
+        assertThat(service.getAllGroups(), containsInAnyOrder("folder1", "folder2"));
+    }
+
+    @Test
     public void getGroupDataBasicTest() throws Exception {
         GroupConfig basicConfig = new GroupConfig();
         basicConfig.setAuthorizedUsers(Arrays.asList("user_1"));
