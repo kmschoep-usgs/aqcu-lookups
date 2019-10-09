@@ -47,19 +47,24 @@ public class ConfigController {
 	// Groups
 	@GetMapping(value="/groups/", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getAllGroups() throws Exception {
-		return new ResponseEntity<List<String>>(configsService.getAllGroups(), new HttpHeaders(), HttpStatus.OK);
+		try {
+			return new ResponseEntity<List<String>>(configsService.getAllGroups(), new HttpHeaders(), HttpStatus.OK);
+		} catch(Exception e) {
+			LOG.error("An error occurred while interacting with S3. Error: ", e);
+			return ResponseEntity.status(500).body("An error occurred while reading all groups.");
+		}
 	}
 	
 	@PostMapping(value="/groups/", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> createGroup(@RequestParam String groupName) throws Exception {
 		try {
 			configsService.createGroup(groupName);
-			return new ResponseEntity<String>("Group created", new HttpHeaders(), HttpStatus.OK);
+			return new ResponseEntity<String>("Group created.", new HttpHeaders(), HttpStatus.CREATED);
 		} catch(GroupAlreadyExistsException | InvalidFolderNameException e) {
 			return ResponseEntity.status(400).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
-			return ResponseEntity.status(500).body("An error occurred while creating the folder.");
+			return ResponseEntity.status(500).body("An error occurred while creating the group.");
 		}
 	}
 
@@ -71,7 +76,7 @@ public class ConfigController {
 			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
-			return ResponseEntity.status(500).body("An error occurred while loading the group.");
+			return ResponseEntity.status(500).body("An error occurred while reading the group.");
 		}
 	}
 	
@@ -79,12 +84,12 @@ public class ConfigController {
 	public ResponseEntity<?> deleteGroup(@PathVariable("groupName") String groupName) throws Exception {
 		try {
 			configsService.deleteGroup(groupName);
-			return ResponseEntity.ok("Group deleted");
+			return ResponseEntity.ok("Group deleted.");
 		} catch(GroupDoesNotExistException e) {
 			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
-			return ResponseEntity.status(500).body("An error occurred while deleteing your group. Please contact support.");
+			return ResponseEntity.status(500).body("An error occurred while deleting the group.");
 		}
 	}
 
@@ -93,7 +98,7 @@ public class ConfigController {
 	public ResponseEntity<?> createFolder(@PathVariable("groupName") String groupName, @RequestParam String folderPath) throws Exception {
 		try {
 			configsService.createFolder(groupName, folderPath);
-			return new ResponseEntity<String>("Folder created.", new HttpHeaders(), HttpStatus.OK);
+			return new ResponseEntity<String>("Folder created.", new HttpHeaders(), HttpStatus.CREATED);
 		} catch(GroupDoesNotExistException | FolderDoesNotExistException e) {
 			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(FolderAlreadyExistsException | InvalidFolderNameException e) {
@@ -112,7 +117,7 @@ public class ConfigController {
 			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
-			return ResponseEntity.status(500).body("An error occurred while loading the folder.");
+			return ResponseEntity.status(500).body("An error occurred while reading the folder.");
 		}
 	}
 
@@ -120,12 +125,12 @@ public class ConfigController {
 	public ResponseEntity<?> deleteFolder(@PathVariable("groupName") String groupName, @RequestParam String folderPath) throws Exception {
 		try {
 			configsService.deleteFolder(groupName, folderPath);
-			return ResponseEntity.ok("Folder deleted");
+			return ResponseEntity.ok("Folder deleted.");
 		} catch(GroupDoesNotExistException | FolderDoesNotExistException e) {
 			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
-			return ResponseEntity.status(500).body("An error occurred while deleteing your folder. Please contact support.");
+			return ResponseEntity.status(500).body("An error occurred while deleting the folder.");
 		}
 	}
 
@@ -135,14 +140,14 @@ public class ConfigController {
 		try {
 			newReport.setId(UUID.randomUUID().toString());
 			configsService.saveReport(groupName, folderPath, newReport, false);
-			return ResponseEntity.ok("Report created");
+			return new ResponseEntity<String>("Report created.", new HttpHeaders(), HttpStatus.CREATED);
 		} catch(GroupDoesNotExistException | FolderDoesNotExistException e) {
 			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(ReportAlreadyExistsException e) {
 			return ResponseEntity.status(400).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
-			return ResponseEntity.status(500).body("An error occurred while saving your report. Please contact support.");
+			return ResponseEntity.status(500).body("An error occurred while creating the report.");
 		}
 	}
 	
@@ -151,12 +156,12 @@ public class ConfigController {
 		try {
 			updatedReport.setId(reportId);
 			configsService.saveReport(groupName, folderPath, updatedReport, true);
-			return ResponseEntity.ok("Report updated");
+			return ResponseEntity.ok("Report updated.");
 		} catch(GroupDoesNotExistException | FolderDoesNotExistException | ReportDoesNotExistException e) {
 			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
-			return ResponseEntity.status(500).body("An error occurred while saving your report. Please contact support.");
+			return ResponseEntity.status(500).body("An error occurred while updating the report.");
 		}
 	}
 
@@ -164,12 +169,12 @@ public class ConfigController {
 	public ResponseEntity<String> deleteReport(@PathVariable("groupName") String groupName, @RequestParam String folderPath, @RequestParam String reportId) {
 		try {
 			configsService.deleteReport(groupName, folderPath, reportId);
-			return ResponseEntity.ok("Report deleted");
+			return ResponseEntity.ok("Report deleted.");
 		} catch(GroupDoesNotExistException | FolderDoesNotExistException | ReportDoesNotExistException e) {
 			return ResponseEntity.status(404).body(e.getMessage());
 		} catch(Exception e) {
 			LOG.error("An error occurred while interacting with S3. Error: ", e);
-			return ResponseEntity.status(500).body("An error occurred while deleteing your report. Please contact support.");
+			return ResponseEntity.status(500).body("An error occurred while deleting the report.");
 		}
 	}
 }
