@@ -12,13 +12,19 @@ import gov.usgs.aqcu.model.config.GroupData;
 import gov.usgs.aqcu.model.report.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ValidationException;
+import javax.validation.constraints.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,13 +35,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/config")
+@Validated
 public class ConfigController {
 	private static final Logger LOG = LoggerFactory.getLogger(ConfigController.class);
+	public static final String GROUP_NAME_REGEX = "^[\\s]*[\\/]?[a-zA-Z0-9-_]+[\\/]?[\\s]*$";
+	public static final String FOLDER_PATH_REGEX = "^[\\s]*[\\/]?[a-zA-Z0-9-_]+(?:\\/[a-zA-Z0-9-_]+)*[\\/]?[\\s]*$";
 	
 	private ReportConfigsService configsService;
 	
@@ -56,7 +66,7 @@ public class ConfigController {
 	}
 	
 	@PostMapping(value="/groups/", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> createGroup(@RequestParam String groupName) throws Exception {
+	public ResponseEntity<?> createGroup(@RequestParam @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		try {
 			configsService.createGroup(groupName);
 			return new ResponseEntity<String>("Group created.", new HttpHeaders(), HttpStatus.CREATED);
@@ -69,7 +79,7 @@ public class ConfigController {
 	}
 
 	@GetMapping(value="/groups/{groupName}", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getGroup(@PathVariable("groupName") String groupName) throws Exception {
+	public ResponseEntity<?> getGroup(@PathVariable("groupName") @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		try {
 			return new ResponseEntity<GroupData>(configsService.getGroupData(groupName), new HttpHeaders(), HttpStatus.OK);
 		} catch(GroupDoesNotExistException e) {
@@ -81,7 +91,7 @@ public class ConfigController {
 	}
 	
 	@DeleteMapping(value="/groups/{groupName}")
-	public ResponseEntity<?> deleteGroup(@PathVariable("groupName") String groupName) throws Exception {
+	public ResponseEntity<?> deleteGroup(@PathVariable("groupName") @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		try {
 			configsService.deleteGroup(groupName);
 			return ResponseEntity.ok("Group deleted.");
@@ -95,7 +105,7 @@ public class ConfigController {
 
 	// Folders
 	@PostMapping(value="/groups/{groupName}/folders")
-	public ResponseEntity<?> createFolder(@PathVariable("groupName") String groupName, @RequestParam String folderPath) throws Exception {
+	public ResponseEntity<?> createFolder(@PathVariable("groupName") @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
 		try {
 			configsService.createFolder(groupName, folderPath);
 			return new ResponseEntity<String>("Folder created.", new HttpHeaders(), HttpStatus.CREATED);
@@ -110,7 +120,7 @@ public class ConfigController {
 	}
 
 	@GetMapping(value="/groups/{groupName}/folders", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getFolder(@PathVariable("groupName") String groupName, @RequestParam String folderPath) throws Exception {
+	public ResponseEntity<?> getFolder(@PathVariable("groupName") @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
 		try {
 			return new ResponseEntity<FolderData>(configsService.getFolderData(groupName, folderPath), new HttpHeaders(), HttpStatus.OK);
 		} catch(GroupDoesNotExistException | FolderDoesNotExistException e) {
@@ -122,7 +132,7 @@ public class ConfigController {
 	}
 
 	@DeleteMapping(value="/groups/{groupName}/folders")
-	public ResponseEntity<?> deleteFolder(@PathVariable("groupName") String groupName, @RequestParam String folderPath) throws Exception {
+	public ResponseEntity<?> deleteFolder(@PathVariable("groupName") @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
 		try {
 			configsService.deleteFolder(groupName, folderPath);
 			return ResponseEntity.ok("Folder deleted.");
@@ -136,7 +146,7 @@ public class ConfigController {
 
 	// Reports
 	@PostMapping(value="/groups/{groupName}/reports")
-	public ResponseEntity<String> createReport(@RequestBody SavedReportConfiguration newReport, @PathVariable("groupName") String groupName, @RequestParam String folderPath) {
+	public ResponseEntity<String> createReport(@RequestBody SavedReportConfiguration newReport, @PathVariable("groupName") @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) {
 		try {
 			newReport.setId(UUID.randomUUID().toString());
 			configsService.saveReport(groupName, folderPath, newReport, false);
@@ -152,7 +162,7 @@ public class ConfigController {
 	}
 	
 	@PutMapping(value="/groups/{groupName}/reports")
-	public ResponseEntity<String> updateReport(@RequestBody SavedReportConfiguration updatedReport, @PathVariable("groupName") String groupName, @RequestParam String folderPath, @RequestParam String reportId) {
+	public ResponseEntity<String> updateReport(@RequestBody SavedReportConfiguration updatedReport, @PathVariable("groupName") @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath, @RequestParam String reportId) {
 		try {
 			updatedReport.setId(reportId);
 			configsService.saveReport(groupName, folderPath, updatedReport, true);
@@ -166,7 +176,7 @@ public class ConfigController {
 	}
 
 	@DeleteMapping(value="/groups/{groupName}/reports")
-	public ResponseEntity<String> deleteReport(@PathVariable("groupName") String groupName, @RequestParam String folderPath, @RequestParam String reportId) {
+	public ResponseEntity<String> deleteReport(@PathVariable("groupName") @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath, @RequestParam String reportId) {
 		try {
 			configsService.deleteReport(groupName, folderPath, reportId);
 			return ResponseEntity.ok("Report deleted.");
@@ -177,4 +187,10 @@ public class ConfigController {
 			return ResponseEntity.status(500).body("An error occurred while deleting the report.");
 		}
 	}
+
+	// Handle Validation Exceptions
+	@ExceptionHandler(ValidationException.class)
+    public void constraintValidationException(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
 }

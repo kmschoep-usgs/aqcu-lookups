@@ -1,6 +1,7 @@
 package gov.usgs.aqcu.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -12,6 +13,7 @@ import static org.mockito.Matchers.any;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 
@@ -304,5 +306,74 @@ public class ConfigControllerTest {
         result = controller.deleteReport("group1", "bad_folder", "report1");
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
         assertEquals("An error occurred while deleting the report.", result.getBody().toString());
+    }
+
+    @Test
+    public void groupNameRegexTest() {
+        Pattern pattern = Pattern.compile(ConfigController.GROUP_NAME_REGEX);
+
+        assertTrue(pattern.matcher("test").matches());
+        assertTrue(pattern.matcher("/test").matches());
+        assertTrue(pattern.matcher("/test/").matches());
+        assertTrue(pattern.matcher("test/").matches());
+        assertTrue(pattern.matcher("test_test").matches());
+        assertTrue(pattern.matcher("test-test").matches());
+        assertTrue(pattern.matcher("TEST").matches());
+        assertTrue(pattern.matcher("TeSt").matches());
+        assertTrue(pattern.matcher("1234").matches());
+        assertTrue(pattern.matcher("/1234/").matches());
+        assertTrue(pattern.matcher("12_34-12").matches());
+        assertTrue(pattern.matcher("  test  ").matches());
+        assertTrue(pattern.matcher("  /test/  ").matches());
+
+        assertFalse(pattern.matcher("test.").matches());
+        assertFalse(pattern.matcher("").matches());
+        assertFalse(pattern.matcher("/").matches());
+        assertFalse(pattern.matcher("//").matches());
+        assertFalse(pattern.matcher("test/test").matches());
+        assertFalse(pattern.matcher("/test/test").matches());
+        assertFalse(pattern.matcher("test/test/").matches());
+        assertFalse(pattern.matcher("/test/test/").matches());
+        assertFalse(pattern.matcher("test!").matches());
+        assertFalse(pattern.matcher("/1234+1234/").matches());
+        assertFalse(pattern.matcher("te  st").matches());
+        assertFalse(pattern.matcher("/  test  /").matches());
+    }
+
+    @Test
+    public void folderPathRegexTest() {
+        Pattern pattern = Pattern.compile(ConfigController.FOLDER_PATH_REGEX);
+
+        assertTrue(pattern.matcher("test").matches());
+        assertTrue(pattern.matcher("/test").matches());
+        assertTrue(pattern.matcher("/test/").matches());
+        assertTrue(pattern.matcher("test/").matches());
+        assertTrue(pattern.matcher("test_test").matches());
+        assertTrue(pattern.matcher("test-test").matches());
+        assertTrue(pattern.matcher("TEST").matches());
+        assertTrue(pattern.matcher("TeSt").matches());
+        assertTrue(pattern.matcher("1234").matches());
+        assertTrue(pattern.matcher("/1234/").matches());
+        assertTrue(pattern.matcher("12_34-12").matches());
+        assertTrue(pattern.matcher("  test  ").matches());
+        assertTrue(pattern.matcher("  /test/  ").matches());
+        assertTrue(pattern.matcher("test/test").matches());
+        assertTrue(pattern.matcher("/test/test").matches());
+        assertTrue(pattern.matcher("test/test/").matches());
+        assertTrue(pattern.matcher("/test/test/").matches());
+        assertTrue(pattern.matcher("  /test/test/  ").matches());
+        assertTrue(pattern.matcher("  test/test"  ).matches());
+
+        assertFalse(pattern.matcher("test.").matches());
+        assertFalse(pattern.matcher("").matches());
+        assertFalse(pattern.matcher("/").matches());
+        assertFalse(pattern.matcher("//").matches());
+        assertFalse(pattern.matcher("test!").matches());
+        assertFalse(pattern.matcher("/1234+1234/").matches());
+        assertFalse(pattern.matcher("te  st").matches());
+        assertFalse(pattern.matcher("/  test  /").matches());
+        assertFalse(pattern.matcher("test / test").matches());
+        assertFalse(pattern.matcher("/test/test/test 2/").matches());
+        assertFalse(pattern.matcher("/  test/test/test  /").matches());
     }
 }
