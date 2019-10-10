@@ -16,9 +16,12 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <springfox.version>2.9.2</springfox.version>
         <aquarius.sdk.version>18.8.1</aquarius.sdk.version>
-        <aqcu.framework.version>0.0.6-SNAPSHOT</aqcu.framework.version>
-        <guava.version>20.0</guava.version>
-        <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
+        <aqcu.framework.version>0.0.7-SNAPSHOT</aqcu.framework.version>
+        <spring.boot.version>2.1.8.RELEASE</spring.boot.version>
+        <pmd.plugin.version>3.12.0</pmd.plugin.version>
+        <java.version>1.8</java.version>
+        <jxr.plugin.version>3.0.0</jxr.plugin.version>
+        <jackson.version>2.10.0</jackson.version>
     </properties>
 
     <repositories>
@@ -31,24 +34,19 @@
 
     <dependencyManagement>
         <dependencies>
-        	<dependency>
-        		<groupId>org.springframework.boot</groupId>
-        		<artifactId>spring-boot-starter-parent</artifactId>
-        		<version>${spring.boot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-        	</dependency>
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Finchley.SR1</version>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-bom</artifactId>
+                <version>1.11.642</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -69,11 +67,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>${springfox.version}</version>
@@ -87,22 +80,28 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>webjars-locator-core</artifactId>
-        </dependency>
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-core</artifactId>
+		</dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-oauth2</artifactId>
-        </dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security.oauth.boot</groupId>
+			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
+			<version>${spring.boot.version}</version>
+		</dependency>
 
         <dependency>
             <groupId>com.aquaticinformatics</groupId>
@@ -114,12 +113,35 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-        <!--  Testing/Development  -->
+
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator-core</artifactId>
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
+		<dependency>
+		    <groupId>org.apache.tika</groupId>
+		    <artifactId>tika-core</artifactId>
+		    <version>1.22</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-core</artifactId>
+		    <version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>${jackson.version}</version>
+		</dependency>
+
+        <!--  Testing/Development  -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -129,18 +151,18 @@
 
     <build>
         <plugins>
-            <plugin>
+        	<plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
                 <executions>
-					<execution>
-						<id>build-info</id>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>  
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -166,6 +188,13 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
+                    <execution>
+						<id>jacoco-site</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
                 </executions>
                 <configuration>
                     <excludes>
@@ -175,8 +204,148 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.7.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M3</version>
+			</plugin>
+            <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>${pmd.plugin.version}</version>
+				<executions>
+					<execution>
+						<configuration>
+							<!-- Don't fail the build for really low priority stuff (5) -->
+							<failurePriority>4</failurePriority>
+							<!-- this is particularly useful for headless CI builds -->
+							<printFailingErrors>true</printFailingErrors>
+						</configuration>
+						<goals>
+							<goal>check</goal><!-- to skip, specify -Dpmd.skip=true -->
+							<goal>cpd-check</goal><!-- to skip, specify -Dcpd.skip=true  -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>${jxr.plugin.version}</version>
+			</plugin>
         </plugins>
     </build>
+<profiles>
+		<profile>
+			<id>security-scan</id>
+			<properties>
+				<owasp.dependency.check.version>5.0.0</owasp.dependency.check.version>
+			</properties>
+			<build>
+				<plugins>				
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>${owasp.dependency.check.version}</version>
+						<executions>
+							<execution>
+								<configuration>
+									<!--
+									plugin config documentation
+									https://jeremylong.github.io/DependencyCheck/dependency-check-maven/configuration.html
+									-->
+
+									<autoUpdate>true</autoUpdate>
+									<cveValidForHours>24</cveValidForHours>
+									<jarAnalyzerEnabled>true</jarAnalyzerEnabled>
+
+									<!-- disable analyzer that has a known stability problem https://github.com/jeremylong/DependencyCheck/issues/1908 -->
+									<ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+
+									<!-- explicitly disable irrelevant analyzers to improve performance -->
+
+									<archiveAnalyzerEnabled>false</archiveAnalyzerEnabled> <!-- This scans all types of archives. We mostly care about JARs. The jarAnalyzer handles those -->
+									<centralAnalyzerEnabled>false</centralAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+									<nexusAnalyzerEnabled>false</nexusAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+									<artifactoryAnalyzerEnabled>false</artifactoryAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+
+									<!-- none of the following languages apply -->
+									<pyDistributionAnalyzerEnabled>false</pyDistributionAnalyzerEnabled>
+									<pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
+									<rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
+									<opensslAnalyzerEnabled>false</opensslAnalyzerEnabled>
+									<cmakeAnalyzerEnabled>false</cmakeAnalyzerEnabled>
+									<autoconfAnalyzerEnabled>false</autoconfAnalyzerEnabled>
+									<composerAnalyzerEnabled>false</composerAnalyzerEnabled>
+									<nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+									<nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+									<retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
+									<nuspecAnalyzerEnabled>false</nuspecAnalyzerEnabled>
+									<nugetconfAnalyzerEnabled>false</nugetconfAnalyzerEnabled>
+									<cocoapodsAnalyzerEnabled>false</cocoapodsAnalyzerEnabled>
+									<bundleAuditAnalyzerEnabled>false</bundleAuditAnalyzerEnabled>
+									<swiftPackageManagerAnalyzerEnabled>false</swiftPackageManagerAnalyzerEnabled>
+									<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+
+									<!--
+									more info on analyzers
+									https://jeremylong.github.io/DependencyCheck/analyzers/index.html
+									-->
+								</configuration>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>${owasp.dependency.check.version}</version>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>aggregate</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jxr-plugin</artifactId>
+						<version>${jxr.plugin.version}</version>
+					</plugin>
+					
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-pmd-plugin</artifactId>
+						<version>${pmd.plugin.version}</version>
+						<configuration>
+							<linkXref>true</linkXref>
+							<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+							<minimumTokens>100</minimumTokens>
+							<targetJdk>${java.version}</targetJdk>
+						</configuration>
+					</plugin>
+					
+				</plugins>
+			</reporting>
+		</profile>
+	</profiles>
 
     <scm>
         <connection>scm:git:https://github.com/USGS-CIDA/aqcu-lookups.git</connection>
