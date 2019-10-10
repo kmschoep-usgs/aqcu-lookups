@@ -2,14 +2,25 @@ package gov.usgs.aqcu.model.report;
 
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 public class SavedReportConfiguration {
 
 	private String id;
+
+	@NotBlank
 	private String reportName;
+
+	@NotBlank
 	private String reportType;
 	private String lastModifiedUser;
 	private String createdUser;
+
+	@NotBlank
 	private String primaryParameter;
+
+	@NotEmpty
 	private Map<String, String> parameterValues;
 
 	public String getReportName() {
