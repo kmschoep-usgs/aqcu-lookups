@@ -112,7 +112,12 @@ public class LookupController {
 	public ResponseEntity<?> getReportParameterConfig(@PathVariable String reportType) throws Exception {
 		return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(lookupsService.getReportParameterConfig(reportType)), new HttpHeaders(), HttpStatus.OK);
 	}
-	
+		
+	@GetMapping(value="/report/types", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?> getReportTypes() throws Exception {
+		return new ResponseEntity<String>(lookupsService.getReportTypes(), new HttpHeaders(), HttpStatus.OK);
+	}
+
 	/*
 		Only used in the UI to verify the user is logged in. Can be deprecated when we move to WaterAuth.
 		Should not be implemented here, should use the gateway to always route to the old service for this call.
@@ -121,11 +126,6 @@ public class LookupController {
 	@GetMapping(value="/sitefile", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getSitefile() throws Exception {
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.GONE);
-	}
-	
-	@GetMapping(value="/report/types", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getReportTypes() throws Exception {
-		return new ResponseEntity<String>(lookupsService.getReportTypes(), new HttpHeaders(), HttpStatus.OK);
 	}
 
 	long getReferenceListsLastModified() {
