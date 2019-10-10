@@ -18,6 +18,10 @@
         <aquarius.sdk.version>18.8.1</aquarius.sdk.version>
         <aqcu.framework.version>0.0.7-SNAPSHOT</aqcu.framework.version>
         <spring.boot.version>2.1.8.RELEASE</spring.boot.version>
+        <pmd.plugin.version>3.12.0</pmd.plugin.version>
+        <java.version>1.8</java.version>
+        <jxr.plugin.version>3.0.0</jxr.plugin.version>
+        <jackson.version>2.10.0</jackson.version>
     </properties>
 
     <repositories>
@@ -91,11 +95,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
         </dependency>
@@ -151,6 +150,13 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <excludes>
@@ -160,9 +166,146 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0-M3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${pmd.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <!-- Don't fail the build for really low priority stuff (5) -->
+                            <failurePriority>4</failurePriority>
+                            <!-- this is particularly useful for headless CI builds -->
+                            <printFailingErrors>true</printFailingErrors>
+                        </configuration>
+                        <goals>
+                            <goal>check</goal><!-- to skip, specify -Dpmd.skip=true -->
+                            <goal>cpd-check</goal><!-- to skip, specify -Dcpd.skip=true  -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>${jxr.plugin.version}</version>
+            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>security-scan</id>
+            <properties>
+                <owasp.dependency.check.version>5.0.0</owasp.dependency.check.version>
+            </properties>
+            <build>
+                <plugins>                
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>${owasp.dependency.check.version}</version>
+                        <executions>
+                            <execution>
+                                <configuration>
+                                    <!--
+                                    plugin config documentation
+                                    https://jeremylong.github.io/DependencyCheck/dependency-check-maven/configuration.html
+                                    -->
 
+                                    <autoUpdate>true</autoUpdate>
+                                    <cveValidForHours>24</cveValidForHours>
+                                    <jarAnalyzerEnabled>true</jarAnalyzerEnabled>
+
+                                    <!-- disable analyzer that has a known stability problem https://github.com/jeremylong/DependencyCheck/issues/1908 -->
+                                    <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+
+                                    <!-- explicitly disable irrelevant analyzers to improve performance -->
+
+                                    <archiveAnalyzerEnabled>false</archiveAnalyzerEnabled> <!-- This scans all types of archives. We mostly care about JARs. The jarAnalyzer handles those -->
+                                    <centralAnalyzerEnabled>false</centralAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+                                    <nexusAnalyzerEnabled>false</nexusAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+                                    <artifactoryAnalyzerEnabled>false</artifactoryAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+
+                                    <!-- none of the following languages apply -->
+                                    <pyDistributionAnalyzerEnabled>false</pyDistributionAnalyzerEnabled>
+                                    <pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
+                                    <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
+                                    <opensslAnalyzerEnabled>false</opensslAnalyzerEnabled>
+                                    <cmakeAnalyzerEnabled>false</cmakeAnalyzerEnabled>
+                                    <autoconfAnalyzerEnabled>false</autoconfAnalyzerEnabled>
+                                    <composerAnalyzerEnabled>false</composerAnalyzerEnabled>
+                                    <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+                                    <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+                                    <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
+                                    <nuspecAnalyzerEnabled>false</nuspecAnalyzerEnabled>
+                                    <nugetconfAnalyzerEnabled>false</nugetconfAnalyzerEnabled>
+                                    <cocoapodsAnalyzerEnabled>false</cocoapodsAnalyzerEnabled>
+                                    <bundleAuditAnalyzerEnabled>false</bundleAuditAnalyzerEnabled>
+                                    <swiftPackageManagerAnalyzerEnabled>false</swiftPackageManagerAnalyzerEnabled>
+                                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                                    <!--
+                                    more info on analyzers
+                                    https://jeremylong.github.io/DependencyCheck/analyzers/index.html
+                                    -->
+                                </configuration>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>${owasp.dependency.check.version}</version>
+                        <reportSets>
+                            <reportSet>
+                                <reports>
+                                    <report>aggregate</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jxr-plugin</artifactId>
+                        <version>${jxr.plugin.version}</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <version>${pmd.plugin.version}</version>
+                        <configuration>
+                            <linkXref>true</linkXref>
+                            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+                            <minimumTokens>100</minimumTokens>
+                            <targetJdk>${java.version}</targetJdk>
+                        </configuration>
+                    </plugin>
+                    
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
     <scm>
         <connection>scm:git:https://github.com/USGS-CIDA/aqcu-lookups.git</connection>
         <developerConnection>scm:git:https://${env.GITHUB_USER}:${env.GITHUB_PASS}@github.com/USGS-CIDA/aqcu-lookups.git</developerConnection>

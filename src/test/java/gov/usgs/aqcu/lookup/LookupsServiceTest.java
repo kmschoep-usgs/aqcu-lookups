@@ -14,6 +14,7 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Time
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThreshold;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThresholdPeriod;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ExtendedAttribute;
 
 import gov.usgs.aqcu.model.lookup.LocationBasicData;
@@ -45,7 +46,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.*;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -78,6 +79,7 @@ public class LookupsServiceTest {
 	private ReportParameterConfigLookupService reportParameterConfigLookupService;
 	
 	private Map<String, String> reportParamConfigs = new LinkedHashMap<>();
+	private String reportTypes;
 	private TimeSeriesThresholdPeriod p1 = new TimeSeriesThresholdPeriod()
 		.setStartTime(Instant.parse("2017-01-01T00:00:00Z"))
 		.setEndTime(Instant.parse("2017-02-01T00:00:00Z"))
@@ -135,6 +137,7 @@ public class LookupsServiceTest {
 			unitsLookupService, computationReferenceService, controlConditionReferenceService, periodReferenceService,
 			fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService, reportParameterConfigLookupService);
 		reportParamConfigs.put("gwvrstatreport", "GW_VRSTAT");
+		reportTypes = "{all the reports}";
 	}
 
 	@Test
@@ -402,7 +405,7 @@ public class LookupsServiceTest {
 	}
 	
 	@Test
-	public void getGwVRStatParameterConfig() {
+	public void getGwVRStatParameterConfigTest() {
 		given(reportParameterConfigLookupService.getByReportType(any(String.class)))
 		.willReturn(ReportParameterConfig.GW_VRSTAT);
 		for (Map.Entry<String, String> entry : reportParamConfigs.entrySet()) {
@@ -410,5 +413,13 @@ public class LookupsServiceTest {
 			ReportParameterConfig config = service.getReportParameterConfig(value);
 			assertEquals(config.getReportType(), value);
 		}
+	}
+	
+	@Test
+	public void getReportTypesTest() throws JsonProcessingException {
+		given(reportParameterConfigLookupService.getReportTypes())
+		.willReturn(reportTypes);
+		String result = service.getReportTypes();
+		assertEquals(reportTypes, result);
 	}
 }

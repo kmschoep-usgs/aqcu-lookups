@@ -123,13 +123,9 @@ public class LookupController {
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.GONE);
 	}
 	
-	/*
-		Does not appear to be used in the UI anywhere, need to check with AutoFF. Deprecating.
-	*/
-	@Deprecated
 	@GetMapping(value="/report/types", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getReportTypes() throws Exception {
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.GONE);
+		return new ResponseEntity<String>(lookupsService.getReportTypes(), new HttpHeaders(), HttpStatus.OK);
 	}
 
 	long getReferenceListsLastModified() {

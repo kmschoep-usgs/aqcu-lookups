@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -124,6 +125,10 @@ public class LookupsService {
 	
 	public ReportParameterConfig getReportParameterConfig(String reportType) {
 		return reportParameterConfigLookupService.getByReportType(reportType);
+	}
+	
+	public String getReportTypes() throws JsonProcessingException{
+		return reportParameterConfigLookupService.getReportTypes();
 	}
 
 	protected ZoneOffset getZoneOffset(String timeSeriesIdentifier) {
