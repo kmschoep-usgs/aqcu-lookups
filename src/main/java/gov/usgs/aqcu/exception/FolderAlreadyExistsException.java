@@ -5,6 +5,6 @@ public class FolderAlreadyExistsException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public FolderAlreadyExistsException(String group, String folder) {
-		super("Specified folder '" + folder + "' alread exists within group '" + group + "'");
+		super(String.format("Specified folder '%1$s' already exists within group '%2$s'", folder, group));
 	}
 }

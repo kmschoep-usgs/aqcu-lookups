@@ -5,6 +5,6 @@ public class GroupDoesNotExistException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public GroupDoesNotExistException(String group) {
-		super("Specified group '" + group + "' does not exist");
+		super(String.format("Specified group '%1$s' does not exist.", group));
 	}
 }

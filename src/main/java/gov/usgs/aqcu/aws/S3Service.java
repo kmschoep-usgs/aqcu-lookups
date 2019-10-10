@@ -20,29 +20,25 @@ import org.springframework.stereotype.Service;
 public class S3Service {
 	private final String S3_BUCKET;
 
-	private AmazonS3ClientBuilder amazonS3ClientBuilder;
+	private final AmazonS3 s3;
 
 	@Autowired
 	public S3Service(
 		AmazonS3ClientBuilder amazonS3ClientBuilder, 
 		@Value("${s3.bucket}") String s3_bucket
 	) {
-		this.amazonS3ClientBuilder = amazonS3ClientBuilder;
+		this.s3 = amazonS3ClientBuilder.build();
 		this.S3_BUCKET = s3_bucket;
 	}
 
 	public void saveJsonString(String filePath, String jsonString) {
-		final AmazonS3 s3 = amazonS3ClientBuilder.build();
-
-		s3.putObject(S3_BUCKET, filePath, jsonString);
+		s3.putObject(S3_BUCKET, formatS3Path(filePath), jsonString);
 	}
 
-	public void deleteFolder(String root) {
-		final AmazonS3 s3 = amazonS3ClientBuilder.build();
-
+	public void deleteFolder(String rootDir) {
 		ListObjectsV2Request lookupRequest = new ListObjectsV2Request();
 		lookupRequest.setBucketName(S3_BUCKET);
-		lookupRequest.setPrefix(root);
+		lookupRequest.setPrefix(formatS3Path(rootDir));
 
 		ListObjectsV2Result lookupResult = s3.listObjectsV2(lookupRequest);
 
@@ -53,15 +49,13 @@ public class S3Service {
 	}
 
 	public Boolean doesFileExist(String filePath) {
-		final AmazonS3 s3 = amazonS3ClientBuilder.build();
-
-		return s3.doesObjectExist(S3_BUCKET, filePath);
+		return s3.doesObjectExist(S3_BUCKET, formatS3Path(filePath));
 	}
 
-	public List<String> getFolderSubPaths(String rootDir) {
-		final AmazonS3 s3 = amazonS3ClientBuilder.build();
-
+	public List<String> getFolderSubPaths(String root) {
 		ListObjectsV2Request request = new ListObjectsV2Request();
+
+		final String rootDir = formatS3Path(root);
 
 		request.setBucketName(S3_BUCKET);
 		request.setDelimiter("/");
@@ -76,10 +70,8 @@ public class S3Service {
 	}
 
 	public String getFileAsString(String filePath) {
-		final AmazonS3 s3 = amazonS3ClientBuilder.build();
-
 		try {
-			return s3.getObjectAsString(S3_BUCKET, filePath);
+			return s3.getObjectAsString(S3_BUCKET, formatS3Path(filePath));
 		} catch(AmazonS3Exception e) {
 			if(e.getStatusCode() != HttpStatus.NOT_FOUND.value()) {
 				throw e;
@@ -87,5 +79,13 @@ public class S3Service {
 			
 			return null;
 		}
+	}
+
+	private String formatS3Path(String path) {
+		// Remove leading slash, add trailing slash (if not file)
+		path = path.startsWith("/") ? path.substring(1) : path;
+		path = path.endsWith("/") || path.contains(".") ? path : path + "/";
+
+		return path;
 	}
 }

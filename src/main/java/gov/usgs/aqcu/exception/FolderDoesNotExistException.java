@@ -5,6 +5,6 @@ public class FolderDoesNotExistException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public FolderDoesNotExistException(String group, String folder) {
-		super("Specified folder '" + folder + "' does not exist within group '" + group + "'");
+		super(String.format("Specified folder '%1$s' does not exist within group '%2$s'", folder, group));
 	}
 }
