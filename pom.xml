@@ -16,8 +16,8 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <springfox.version>2.9.2</springfox.version>
         <aquarius.sdk.version>18.8.1</aquarius.sdk.version>
-        <aqcu.framework.version>0.0.6-SNAPSHOT</aqcu.framework.version>
-        <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
+        <aqcu.framework.version>0.0.7-SNAPSHOT</aqcu.framework.version>
+        <spring.boot.version>2.1.9.RELEASE</spring.boot.version>
     </properties>
 
     <repositories>
@@ -30,24 +30,19 @@
 
     <dependencyManagement>
         <dependencies>
-        	<dependency>
-        		<groupId>org.springframework.boot</groupId>
-        		<artifactId>spring-boot-starter-parent</artifactId>
-        		<version>${spring.boot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-        	</dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Finchley.SR1</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
                 <version>1.11.642</version>
+				<type>pom</type>
+				<scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -68,11 +63,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>${springfox.version}</version>
@@ -86,21 +76,12 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>webjars-locator-core</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-oauth2</artifactId>
         </dependency>
 
         <dependency>
@@ -122,11 +103,6 @@
         <!--  Testing/Development  -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
@@ -134,19 +110,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
-                <executions>
-					<execution>
-						<id>build-info</id>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>

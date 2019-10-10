@@ -3,6 +3,7 @@ package gov.usgs.aqcu.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,7 +30,6 @@ import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
-import gov.usgs.aqcu.exception.InvalidFolderNameException;
 import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.exception.ReportDoesNotExistException;
 import gov.usgs.aqcu.model.config.FolderData;
@@ -59,31 +59,41 @@ public class ConfigControllerTest {
         assertThat((List<String>)result.getBody(), containsInAnyOrder("group1", "group2"));
 
         given(service.getAllGroups()).willThrow(new AmazonS3Exception("test_error"));
-        result = controller.getAllGroups();
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while reading all groups.", result.getBody().toString());
+        try {
+            result = controller.getAllGroups();
+            fail("Expected AmazonS3Exception but got no exception");
+        } catch(AmazonS3Exception e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected AmazonS3Exception but got " + e.getClass().getName());
+        }
     }
 
     @Test
     public void createGroupTest() throws Exception {
         ResponseEntity<?> result = controller.createGroup("group1");
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertEquals("Group created.", result.getBody().toString());
+        assertEquals(null, result.getBody());
 
         doThrow(new GroupAlreadyExistsException("group2")).when(service).createGroup("group2");
-        result = controller.createGroup("group2");
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
-
-        doThrow(new InvalidFolderNameException("group2")).when(service).createGroup("group3");
-        result = controller.createGroup("group3");
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
+        try {
+            result = controller.createGroup("group2");
+            fail("Expected GroupAlreadyExistsException but got no exception");
+        } catch(GroupAlreadyExistsException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupAlreadyExistsException but got " + e.getClass().getName());
+        }
 
         doThrow(new RuntimeException("test_error")).when(service).createGroup("group4");
-        result = controller.createGroup("group4");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while creating the group.", result.getBody().toString());
+        try {
+            result = controller.createGroup("group4");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
     }
 
     @Test
@@ -103,63 +113,98 @@ public class ConfigControllerTest {
         assertEquals(((GroupData)result.getBody()).getGroupName(), "group1");
 
         given(service.getGroupData("group2")).willThrow(new GroupDoesNotExistException("group2"));
-        result = controller.getGroup("group2");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
+        try {
+            result = controller.getGroup("group2");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
 
         given(service.getGroupData("group3")).willThrow(new RuntimeException("test_error"));
-        result = controller.getGroup("group3");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while reading the group.", result.getBody().toString());
+        try {
+            result = controller.getGroup("group3");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
     }
 
     @Test
     public void deleteGroupTest() throws Exception {
         ResponseEntity<?> result = controller.deleteGroup("group1");
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("Group deleted.", result.getBody().toString());
+        assertEquals(null, result.getBody());
 
         doThrow(new GroupDoesNotExistException("group2")).when(service).deleteGroup("group2");
-        result = controller.deleteGroup("group2");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
-
+        try {
+            result = controller.deleteGroup("group2");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
+        
         doThrow(new RuntimeException("test_error")).when(service).deleteGroup("group3");
-        result = controller.deleteGroup("group3");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while deleting the group.", result.getBody().toString());
+        try {
+            result = controller.deleteGroup("group3");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
     }
 
     @Test
     public void createFolderTest() throws Exception {
         ResponseEntity<?> result = controller.createFolder("group1", "folder1");
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertEquals("Folder created.", result.getBody().toString());
+        assertEquals(null, result.getBody());
 
         doThrow(new GroupDoesNotExistException("group2")).when(service).createFolder("group2", "folder1");
-        result = controller.createFolder("group2", "folder1");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
+        try {
+            result = controller.createFolder("group2", "folder1");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
 
-        doThrow(new FolderDoesNotExistException("group2", "folder1")).when(service).createFolder("group2", "folder1/folder2");
-        result = controller.createFolder("group2", "folder1/folder2");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2") && result.getBody().toString().contains("folder1"));
+        doThrow(new FolderDoesNotExistException("group1", "folder1")).when(service).createFolder("group1", "folder1/folder2");
+        try {
+            result = controller.createFolder("group1", "folder1/folder2");
+            fail("Expected FolderDoesNotExistException but got no exception");
+        } catch(FolderDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder1"));
+        } catch(Exception e) {
+            fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new FolderAlreadyExistsException("group1", "folder1")).when(service).createFolder("group1", "folder1");
-        result = controller.createFolder("group1", "folder1");
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("folder1"));
+        try {
+            result = controller.createFolder("group1", "folder1");
+            fail("Expected FolderAlreadyExistsException but got no exception");
+        } catch(FolderAlreadyExistsException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder1"));
+        } catch(Exception e) {
+            fail("Expected FolderAlreadyExistsException but got " + e.getClass().getName());
+        }
 
-        doThrow(new InvalidFolderNameException("bad_folder")).when(service).createFolder("group1", "bad_folder");
-        result = controller.createFolder("group1", "bad_folder");
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("bad_folder"));
-
-        doThrow(new RuntimeException("test_error")).when(service).createFolder("group1", "error");
-        result = controller.createFolder("group1", "error");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while creating the folder.", result.getBody().toString());
+        doThrow(new RuntimeException("test_error")).when(service).createFolder("group1", "bad_folder");
+        try {
+            result = controller.createFolder("group1", "bad_folder");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
     }
 
     @Test
@@ -190,122 +235,212 @@ public class ConfigControllerTest {
         assertEquals(((FolderData)result.getBody()).getParameterDefaults(), defaults);
 
         given(service.getFolderData("group2", "folder1")).willThrow(new GroupDoesNotExistException("group2"));
-        result = controller.getFolder("group2", "folder1");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
+        try {
+            result = controller.getFolder("group2", "folder1");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
 
         given(service.getFolderData("group1", "folder2")).willThrow(new FolderDoesNotExistException("group1", "folder2"));
-        result = controller.getFolder("group1", "folder2");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group1") && result.getBody().toString().contains("folder2"));
+        try {
+            result = controller.getFolder("group1", "folder2");
+            fail("Expected FolderDoesNotExistException but got no exception");
+        } catch(FolderDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder2"));
+        } catch(Exception e) {
+            fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
+        }
 
         given(service.getFolderData("group1", "bad_folder")).willThrow(new RuntimeException("test_error"));
-        result = controller.getFolder("group1", "bad_folder");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while reading the folder.", result.getBody().toString());
+        try {
+            result = controller.getFolder("group1", "bad_folder");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
     }
 
     @Test
     public void deleteFolderTest() throws Exception {
         ResponseEntity<?> result = controller.deleteFolder("group1", "folder1");
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("Folder deleted.", result.getBody().toString());
+        assertEquals(null, result.getBody());
 
         doThrow(new GroupDoesNotExistException("group2")).when(service).deleteFolder("group2", "folder1");
-        result = controller.deleteFolder("group2", "folder1");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
+        try {
+            result = controller.deleteFolder("group2", "folder1");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new FolderDoesNotExistException("group1", "folder2")).when(service).deleteFolder("group1", "folder2");
-        result = controller.deleteFolder("group1", "folder2");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group1") && result.getBody().toString().contains("folder2"));
+        try {
+            result = controller.deleteFolder("group1", "folder2");
+            fail("Expected FolderDoesNotExistException but got no exception");
+        } catch(FolderDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder2"));
+        } catch(Exception e) {
+            fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new RuntimeException("test_error")).when(service).deleteFolder("group1", "bad_folder");
-        result = controller.deleteFolder("group1", "bad_folder");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while deleting the folder.", result.getBody().toString());
+        try {
+            result = controller.deleteFolder("group1", "bad_folder");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
     }
 
     @Test
     public void createReportTest() throws Exception {
         ResponseEntity<?> result = controller.createReport(new SavedReportConfiguration(), "group1", "folder1");
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertEquals("Report created.", result.getBody().toString());
+        assertEquals(null, result.getBody());
 
         doThrow(new GroupDoesNotExistException("group2")).when(service).saveReport(eq("group2"), eq("folder1"), any(SavedReportConfiguration.class), eq(false));
-        result = controller.createReport(new SavedReportConfiguration(), "group2", "folder1");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
+        try {
+            result = controller.createReport(new SavedReportConfiguration(), "group2", "folder1");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new FolderDoesNotExistException("group1", "folder2")).when(service).saveReport(eq("group1"), eq("folder2"), any(SavedReportConfiguration.class), eq(false));
-        result = controller.createReport(new SavedReportConfiguration(), "group1", "folder2");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group1") && result.getBody().toString().contains("folder2"));
+        try {
+            result = controller.createReport(new SavedReportConfiguration(), "group1", "folder2");
+            fail("Expected FolderDoesNotExistException but got no exception");
+        } catch(FolderDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder2"));
+        } catch(Exception e) {
+            fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new ReportAlreadyExistsException("group1", "folder1", "report1")).when(service).saveReport(eq("group1"), eq("folder1"), any(SavedReportConfiguration.class), eq(false));
-        result = controller.createReport(new SavedReportConfiguration(), "group1", "folder1");
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group1") && result.getBody().toString().contains("folder1") && result.getBody().toString().contains("report1"));
-
+        try {
+            result = controller.createReport(new SavedReportConfiguration(), "group1", "folder1");
+            fail("Expected ReportAlreadyExistsException but got no exception");
+        } catch(ReportAlreadyExistsException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder1") && e.getMessage().contains("report1"));
+        } catch(Exception e) {
+            fail("Expected ReportAlreadyExistsException but got " + e.getClass().getName());
+        }
+        
         doThrow(new RuntimeException("test_error")).when(service).saveReport(eq("group1"), eq("bad_folder"), any(SavedReportConfiguration.class), eq(false));
-        result = controller.createReport(new SavedReportConfiguration(), "group1", "bad_folder");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while creating the report.", result.getBody().toString());
+        try {
+            result = controller.createReport(new SavedReportConfiguration(), "group1", "bad_folder");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
     }
 
     @Test
     public void updateReportTest() throws Exception {
         ResponseEntity<?> result = controller.updateReport(new SavedReportConfiguration(), "group1", "folder1", "report1");
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("Report updated.", result.getBody().toString());
+        assertEquals(null, result.getBody());
 
         doThrow(new GroupDoesNotExistException("group2")).when(service).saveReport(eq("group2"), eq("folder1"), any(SavedReportConfiguration.class), eq(true));
-        result = controller.updateReport(new SavedReportConfiguration(), "group2", "folder1", "report1");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
+        try {
+            result = controller.updateReport(new SavedReportConfiguration(), "group2", "folder1", "report1");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new FolderDoesNotExistException("group1", "folder2")).when(service).saveReport(eq("group1"), eq("folder2"), any(SavedReportConfiguration.class), eq(true));
-        result = controller.updateReport(new SavedReportConfiguration(), "group1", "folder2", "report1");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group1") && result.getBody().toString().contains("folder2"));
+        try {
+            result = controller.updateReport(new SavedReportConfiguration(), "group1", "folder2", "report1");
+            fail("Expected FolderDoesNotExistException but got no exception");
+        } catch(FolderDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder2"));
+        } catch(Exception e) {
+            fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
+        }
 
-        doThrow(new ReportDoesNotExistException("group1", "folder1", "report2")).when(service).saveReport(eq("group1"), eq("folder1"), any(SavedReportConfiguration.class), eq(true));
-        result = controller.updateReport(new SavedReportConfiguration(), "group1", "folder1", "report2");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group1") && result.getBody().toString().contains("folder1") && result.getBody().toString().contains("report2"));
-
+        doThrow(new ReportAlreadyExistsException("group1", "folder1", "report1")).when(service).saveReport(eq("group1"), eq("folder1"), any(SavedReportConfiguration.class), eq(true));
+        try {
+            result = controller.updateReport(new SavedReportConfiguration(), "group1", "folder1", "report1");
+            fail("Expected ReportAlreadyExistsException but got no exception");
+        } catch(ReportAlreadyExistsException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder1") && e.getMessage().contains("report1"));
+        } catch(Exception e) {
+            fail("Expected ReportAlreadyExistsException but got " + e.getClass().getName());
+        }
+        
         doThrow(new RuntimeException("test_error")).when(service).saveReport(eq("group1"), eq("bad_folder"), any(SavedReportConfiguration.class), eq(true));
-        result = controller.updateReport(new SavedReportConfiguration(), "group1", "bad_folder", "report1");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while updating the report.", result.getBody().toString());
+        try {
+            result = controller.updateReport(new SavedReportConfiguration(), "group1", "bad_folder", "report1");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
     }
 
     @Test
     public void deleteReportTest() throws Exception {
         ResponseEntity<?> result = controller.deleteReport("group1", "folder1", "report1");
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("Report deleted.", result.getBody().toString());
+        assertEquals(null, result.getBody());
 
         doThrow(new GroupDoesNotExistException("group2")).when(service).deleteReport("group2", "folder1", "report1");
-        result = controller.deleteReport("group2", "folder1", "report1");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group2"));
+        try {
+            result = controller.deleteReport("group2", "folder1", "report1");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new FolderDoesNotExistException("group1", "folder2")).when(service).deleteReport("group1", "folder2", "report1");
-        result = controller.deleteReport("group1", "folder2", "report1");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group1") && result.getBody().toString().contains("folder2"));
+        try {
+            result = controller.deleteReport("group1", "folder2", "report1");
+            fail("Expected FolderDoesNotExistException but got no exception");
+        } catch(FolderDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder2"));
+        } catch(Exception e) {
+            fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new ReportDoesNotExistException("group1", "folder1", "report2")).when(service).deleteReport("group1", "folder1", "report2");
-        result = controller.deleteReport("group1", "folder1", "report2");
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody().toString().contains("group1") && result.getBody().toString().contains("folder1") && result.getBody().toString().contains("report2"));
+        try {
+            result = controller.deleteReport("group1", "folder1", "report2");
+            fail("Expected ReportDoesNotExistException but got no exception");
+        } catch(ReportDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder1") && e.getMessage().contains("report2"));
+        } catch(Exception e) {
+            fail("Expected ReportDoesNotExistException but got " + e.getClass().getName());
+        }
 
         doThrow(new RuntimeException("test_error")).when(service).deleteReport("group1", "bad_folder", "report1");
-        result = controller.deleteReport("group1", "bad_folder", "report1");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertEquals("An error occurred while deleting the report.", result.getBody().toString());
+        try {
+            result = controller.deleteReport("group1", "bad_folder", "report1");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
     }
 
     @Test

@@ -85,12 +85,8 @@ eureka:
 logging:
   level:
     org:
-      springframework: ${aqcu_springFrameworkLogLevel}
+      springframework: ${aqcu_springFrameworkLogLevel:INFO}
 
 spring:
   profiles:
     active: default, swagger
-  application:
-    name: aqcu-lookups
-  jmx:
-    default-domain: aqcu-lookups

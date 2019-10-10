@@ -1,3 +1,5 @@
+server:
+  port: 8553
 aquarius:
   service:
     endpoint: "https://test-aquarius.gov/"
@@ -41,3 +43,7 @@ s3:
   endpoint: http://localhost
   bucket: test-bucket
   region: us-west-2
+
+spring:
+  profiles:
+    active: test
