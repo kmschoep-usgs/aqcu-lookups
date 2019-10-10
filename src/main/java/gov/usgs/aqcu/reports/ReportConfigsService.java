@@ -45,7 +45,7 @@ public class ReportConfigsService {
 
 		GroupData result = new GroupData();
 		result.setGroupName(groupName);
-		result.setFolders(s3Service.getFolderSubPaths(groupName));
+		result.setFolders(s3Service.getSubFolderNames(groupName));
 		result.setConfig(loadGroupConfig(groupName));
 
 		return result;
@@ -68,7 +68,7 @@ public class ReportConfigsService {
 	}
 
 	public List<String> getAllGroups() {
-		return s3Service.getFolderSubPaths("").stream().map(g -> g.endsWith("/") ? g.substring(0, g.length()-1) : g).collect(Collectors.toList());
+		return s3Service.getSubFolderNames("");
 	}
 
 	private void saveGroupConfig(String groupName, GroupConfig groupConfig) throws IOException {
@@ -102,7 +102,7 @@ public class ReportConfigsService {
 		FolderData result = new FolderData();
 		result.setGroupName(groupName);
 		result.setCurrentPath(folderPath);
-		result.setFolders(s3Service.getFolderSubPaths(Paths.get(groupName, folderPath).toString()));
+		result.setFolders(s3Service.getSubFolderNames(Paths.get(groupName, folderPath).toString()));
 		result.setReports(reportsConfig.getSavedReportsList());
 		result.setParameterDefaults(reportsConfig.getParameterDefaults());
 

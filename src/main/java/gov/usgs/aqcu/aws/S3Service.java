@@ -52,7 +52,7 @@ public class S3Service {
 		return s3.doesObjectExist(S3_BUCKET, formatS3Path(filePath));
 	}
 
-	public List<String> getFolderSubPaths(String root) {
+	public List<String> getSubFolderNames(String root) {
 		ListObjectsV2Request request = new ListObjectsV2Request();
 
 		final String rootDir = formatS3Path(root);
@@ -66,7 +66,10 @@ public class S3Service {
 
 		ListObjectsV2Result response = s3.listObjectsV2(request);
 
-		return response.getCommonPrefixes().stream().map(r -> r.replaceFirst(rootDir, "")).collect(Collectors.toList());
+		return response.getCommonPrefixes().stream()
+			.map(r -> r.replaceFirst(rootDir, ""))
+			.map(r -> r.endsWith("/") ? r.substring(0, r.length()-1) : r)
+			.collect(Collectors.toList());
 	}
 
 	public String getFileAsString(String filePath) {
@@ -84,7 +87,7 @@ public class S3Service {
 	private String formatS3Path(String path) {
 		// Remove leading slash, add trailing slash (if not file)
 		path = path.startsWith("/") ? path.substring(1) : path;
-		path = path.endsWith("/") || path.contains(".") ? path : path + "/";
+		path = path.endsWith("/") || path.contains(".") || path.isEmpty() ? path : path + "/";
 
 		return path;
 	}

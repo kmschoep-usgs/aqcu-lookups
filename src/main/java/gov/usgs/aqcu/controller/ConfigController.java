@@ -40,7 +40,7 @@ import org.springframework.http.MediaType;
 @RequestMapping("/config")
 @Validated
 public class ConfigController {
-	public static final String GROUP_NAME_REGEX = "^[\\s]*[\\/]?[a-zA-Z0-9-_]+[\\/]?[\\s]*$";
+	public static final String GROUP_NAME_REGEX = "^[\\s]*[a-zA-Z0-9-_]+[\\s]*$";
 	public static final String FOLDER_PATH_REGEX = "^[\\s]*[\\/]?[a-zA-Z0-9-_]+(?:\\/[a-zA-Z0-9-_]+)*[\\/]?[\\s]*$";
 	private static final String GROUPS_CONTEXT_PATH = "/groups";
 	private static final String SINGLE_GROUP_CONTEXT_PATH = GROUPS_CONTEXT_PATH + "/{groupName}";

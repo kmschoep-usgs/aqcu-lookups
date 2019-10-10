@@ -95,12 +95,12 @@ public class S3ServiceTest {
     }
 
     @Test
-    public void getFolderSubPathsTest() {
+    public void getSubFolderNamesTest() {
         ListObjectsV2Result listObjectResult = Mockito.mock(ListObjectsV2Result.class);
-        given(listObjectResult.getCommonPrefixes()).willReturn(Arrays.asList("test_dir/test1", "test_dir/test2"));
+        given(listObjectResult.getCommonPrefixes()).willReturn(Arrays.asList("test_dir/test1/", "test_dir/test2"));
         given(client.listObjectsV2(any(ListObjectsV2Request.class))).willReturn(listObjectResult);
 
-        List<String> subPaths = service.getFolderSubPaths("test_dir/");
+        List<String> subPaths = service.getSubFolderNames("test_dir/");
         
         assertThat(subPaths, containsInAnyOrder("test1", "test2"));
 

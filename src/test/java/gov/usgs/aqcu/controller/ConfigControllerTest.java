@@ -448,18 +448,13 @@ public class ConfigControllerTest {
         Pattern pattern = Pattern.compile(ConfigController.GROUP_NAME_REGEX);
 
         assertTrue(pattern.matcher("test").matches());
-        assertTrue(pattern.matcher("/test").matches());
-        assertTrue(pattern.matcher("/test/").matches());
-        assertTrue(pattern.matcher("test/").matches());
         assertTrue(pattern.matcher("test_test").matches());
         assertTrue(pattern.matcher("test-test").matches());
         assertTrue(pattern.matcher("TEST").matches());
         assertTrue(pattern.matcher("TeSt").matches());
         assertTrue(pattern.matcher("1234").matches());
-        assertTrue(pattern.matcher("/1234/").matches());
         assertTrue(pattern.matcher("12_34-12").matches());
         assertTrue(pattern.matcher("  test  ").matches());
-        assertTrue(pattern.matcher("  /test/  ").matches());
 
         assertFalse(pattern.matcher("test.").matches());
         assertFalse(pattern.matcher("").matches());
@@ -473,6 +468,11 @@ public class ConfigControllerTest {
         assertFalse(pattern.matcher("/1234+1234/").matches());
         assertFalse(pattern.matcher("te  st").matches());
         assertFalse(pattern.matcher("/  test  /").matches());
+        assertFalse(pattern.matcher("/test").matches());
+        assertFalse(pattern.matcher("/test/").matches());
+        assertFalse(pattern.matcher("test/").matches());
+        assertFalse(pattern.matcher("/1234/").matches());
+        assertFalse(pattern.matcher("  /test/  ").matches());
     }
 
     @Test
