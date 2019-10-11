@@ -1,4 +1,4 @@
-package gov.usgs.aqcu.model;
+package gov.usgs.aqcu.model.report;
 
 public class ReportBasicParameter {
 	private String name;

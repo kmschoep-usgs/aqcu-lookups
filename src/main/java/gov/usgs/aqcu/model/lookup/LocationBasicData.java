@@ -1,4 +1,4 @@
-package gov.usgs.aqcu.model;
+package gov.usgs.aqcu.model.lookup;
 
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 

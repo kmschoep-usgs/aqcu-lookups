@@ -1,4 +1,4 @@
-package gov.usgs.aqcu.model;
+package gov.usgs.aqcu.model.report;
 
 import java.util.Arrays;
 import java.util.List;

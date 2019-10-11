@@ -1,6 +1,5 @@
 package gov.usgs.aqcu.config;
 
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
@@ -11,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
-@EnableOAuth2Sso
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
@@ -24,7 +22,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.cors()
 			.and()
 			.authorizeRequests()
-				.antMatchers("/swagger-resources/**", "/webjars/**", "/v2/**", "/public").permitAll()
+				.antMatchers("/swagger-resources/**", "/v2/**", "/public").permitAll()
 				.antMatchers("/version", "/info**", "/health/**", "/favicon.ico", "/swagger-ui.html").permitAll()
 				.antMatchers("/actuator/health").permitAll()
 				.anyRequest().permitAll()
@@ -37,6 +35,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public TaskScheduler taskScheduler() {
 		return new ConcurrentTaskScheduler();
 	}
-
-
 }

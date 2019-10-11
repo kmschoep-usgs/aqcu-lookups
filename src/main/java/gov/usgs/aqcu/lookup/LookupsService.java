@@ -13,9 +13,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.usgs.aqcu.model.LocationBasicData;
-import gov.usgs.aqcu.model.ReportParameterConfig;
-import gov.usgs.aqcu.model.TimeSeriesBasicData;
+import gov.usgs.aqcu.model.lookup.LocationBasicData;
+import gov.usgs.aqcu.model.lookup.TimeSeriesBasicData;
+import gov.usgs.aqcu.model.report.ReportParameterConfig;
 import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
 import gov.usgs.aqcu.parameter.FindInDerivationChainRequestParameters;
 import gov.usgs.aqcu.parameter.GetUpchainRatingModelsRequestParameters;

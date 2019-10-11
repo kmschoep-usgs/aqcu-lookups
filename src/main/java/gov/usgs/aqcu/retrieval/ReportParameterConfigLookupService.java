@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.usgs.aqcu.model.ReportParameterConfig;
+import gov.usgs.aqcu.model.report.ReportParameterConfig;
 
 @Repository
 public class ReportParameterConfigLookupService {
