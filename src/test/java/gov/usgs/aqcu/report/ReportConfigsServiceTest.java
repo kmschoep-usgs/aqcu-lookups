@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doNothing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -592,6 +593,33 @@ public class ReportConfigsServiceTest {
         assertEquals(null, service.getParentPath(input));
         input = "";
         assertEquals(null, service.getParentPath(input));
+    }
+
+    @Test
+    public void getFolderSubFoldersTest() {
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_1/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_2/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_3/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
+        given(s3Service.getSubFolderNames(TEST_GROUP_NAME)).willReturn(Arrays.asList("folder_1", "folder_2", "folder_3"));
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_1/folder_1/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_1/folder_2/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_1/folder_3/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
+        given(s3Service.getSubFolderNames(TEST_GROUP_NAME + "/folder_1")).willReturn(Arrays.asList("folder_1", "folder_2", "folder_3"));
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_2/folder_1/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_2/folder_2/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/folder_2/folder_3/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
+        given(s3Service.getSubFolderNames(TEST_GROUP_NAME + "/folder_2")).willReturn(Arrays.asList("folder_1", "folder_2", "folder_3"));
+
+        List<String> result = service.getFolderSubFolders(TEST_GROUP_NAME, "");
+        assertEquals(2, result.size());
+        assertThat(result, containsInAnyOrder("folder_1", "folder_3"));
+
+        result = service.getFolderSubFolders(TEST_GROUP_NAME, "folder_1");
+        assertEquals(2, result.size());
+        assertThat(result, containsInAnyOrder("folder_1", "folder_2"));
+
+        result = service.getFolderSubFolders(TEST_GROUP_NAME, "folder_2");
+        assertEquals(0, result.size());
     }
 
     private Boolean jsonEqual(Object ob1, Object ob2) throws Exception {

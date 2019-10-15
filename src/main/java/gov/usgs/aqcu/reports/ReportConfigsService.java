@@ -139,17 +139,17 @@ public class ReportConfigsService {
 		s3Service.deleteFolder(Paths.get(groupName, folderPath).toString());
 	}
 
+	public List<String> getFolderSubFolders(String groupName, String folderPath) {
+		return s3Service.getSubFolderNames(Paths.get(groupName, folderPath).toString()).stream()
+				.filter(f -> doesFolderExist(groupName, Paths.get(folderPath, f).toString()))
+				.collect(Collectors.toList());
+	}
+
 	private void saveFolderReportsConfig(String groupName, String folderPath, ReportsConfig reportsConfig) throws IOException {
 		s3Service.saveJsonString(
 			Paths.get(groupName, folderPath, REPORT_CONFIG_FILE_NAME).toString(), 
 			new ObjectMapper().writeValueAsString(reportsConfig)
 		);
-	}
-
-	private List<String> getFolderSubFolders(String groupName, String folderPath) {
-		return s3Service.getSubFolderNames(Paths.get(groupName, folderPath).toString()).stream()
-				.filter(f -> doesFolderExist(groupName, Paths.get(folderPath, f).toString()))
-				.collect(Collectors.toList());
 	}
 
 	private ReportsConfig loadFolderReportsConfig(String groupName, String folderPath) throws IOException {
