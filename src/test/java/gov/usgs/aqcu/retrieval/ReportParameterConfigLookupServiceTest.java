@@ -26,10 +26,11 @@ public class ReportParameterConfigLookupServiceTest {
 	@Before
 	public void setup() {
 		service = new ReportParameterConfigLookupService();
-		reportParamConfigs.put("gwvrstatreport", "GW_VRSTAT");
+		reportParamConfigs.put("gwvisitreviewstatus", "GW_VRSTAT");
 		reportType = new HashMap<>();
-		reportType.put("reportType", "gwvrstatreport");
+		reportType.put("reportType", "gwvisitreviewstatus");
 		reportType.put("displayName", "GW Visit Review Status");
+		reportType.put("serviceType", "LAMBDA");
 	}
 
 	@Test
@@ -53,6 +54,6 @@ public class ReportParameterConfigLookupServiceTest {
 	@Test
 	public void getReportType2Test() throws JsonProcessingException {
 		String result = service.getReportTypes();
-		assertEquals("[{\"reportType\":\"gwvrstatreport\",\"reportTypeDisplayName\":\"GW Visit Review Status\",\"parameters\":[{\"name\":\"locationIdentifier\",\"display\":\"Primary Location\",\"type\":\"location\"}]}]", result);
+		assertEquals("[{\"reportType\":\"gwvisitreviewstatus\",\"reportTypeDisplayName\":\"GW Visit Review Status\",\"serviceType\":\"LAMBDA\",\"parameters\":[{\"name\":\"locationIdentifier\",\"display\":\"Primary Location\",\"type\":\"location\"}]}]", result);
 	}
 }
