@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +45,7 @@ public class ReportConfigsService {
 
 		GroupData result = new GroupData();
 		result.setGroupName(groupName);
-		result.setFolders(s3Service.getSubFolderNames(groupName));
+		result.setFolders(getFolderSubFolders(groupName, ""));
 		result.setConfig(loadGroupConfig(groupName));
 
 		return result;
@@ -67,7 +68,7 @@ public class ReportConfigsService {
 	}
 
 	public List<String> getAllGroups() {
-		return s3Service.getSubFolderNames("");
+		return s3Service.getSubFolderNames("").stream().filter(g -> doesGroupExist(g)).collect(Collectors.toList());
 	}
 
 	private void saveGroupConfig(String groupName, GroupConfig groupConfig) throws IOException {
@@ -101,7 +102,7 @@ public class ReportConfigsService {
 		FolderData result = new FolderData();
 		result.setGroupName(groupName);
 		result.setCurrentPath(folderPath);
-		result.setFolders(s3Service.getSubFolderNames(Paths.get(groupName, folderPath).toString()));
+		result.setFolders(getFolderSubFolders(groupName, folderPath));
 		result.setReports(reportsConfig.getSavedReportsList());
 		result.setParameterDefaults(reportsConfig.getParameterDefaults());
 
@@ -136,6 +137,12 @@ public class ReportConfigsService {
 		}
 
 		s3Service.deleteFolder(Paths.get(groupName, folderPath).toString());
+	}
+
+	public List<String> getFolderSubFolders(String groupName, String folderPath) {
+		return s3Service.getSubFolderNames(Paths.get(groupName, folderPath).toString()).stream()
+				.filter(f -> doesFolderExist(groupName, Paths.get(folderPath, f).toString()))
+				.collect(Collectors.toList());
 	}
 
 	private void saveFolderReportsConfig(String groupName, String folderPath, ReportsConfig reportsConfig) throws IOException {
