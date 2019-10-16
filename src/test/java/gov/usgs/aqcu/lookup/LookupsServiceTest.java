@@ -136,7 +136,7 @@ public class LookupsServiceTest {
 		service = new LookupsService(timeSeriesDescriptionListService, processorTypesService, locationSearchService,
 			unitsLookupService, computationReferenceService, controlConditionReferenceService, periodReferenceService,
 			fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService, reportParameterConfigLookupService);
-		reportParamConfigs.put("gwvrstatreport", "GW_VRSTAT");
+		reportParamConfigs.put("gwvisitreviewstatus", "GW_VRSTAT");
 		reportTypes = "{all the reports}";
 	}
 

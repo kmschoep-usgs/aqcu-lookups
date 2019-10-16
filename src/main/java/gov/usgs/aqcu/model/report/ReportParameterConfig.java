@@ -9,19 +9,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ReportParameterConfig {
-    
-    GW_VRSTAT("gwvrstatreport", "GW Visit Review Status", Arrays.asList(
-    	new ReportBasicParameter("locationIdentifier", "Primary Location", "location")
-    ));
 
-	private String reportType;
-	private String reportTypeDisplayName;
-	private List<ReportBasicParameter> parameters;
-	
-    ReportParameterConfig(String reportType, String reportTypeDisplayName, List<ReportBasicParameter> parameters) {
+    GW_VRSTAT("gwvisitreviewstatus", "GW Visit Review Status", ServiceType.LAMBDA,
+            Arrays.asList(new ReportBasicParameter("locationIdentifier", "Primary Location", "location")));
+
+    private String reportType;
+    private String reportTypeDisplayName;
+    private ServiceType serviceType;
+    private List<ReportBasicParameter> parameters;
+
+    ReportParameterConfig(String reportType, String reportTypeDisplayName, ServiceType serviceType,
+            List<ReportBasicParameter> parameters) {
         this.reportType = reportType;
         this.reportTypeDisplayName = reportTypeDisplayName;
         this.parameters = parameters;
+        this.serviceType = serviceType;
+    }
+
+    public ServiceType getServiceType() {
+        return serviceType;
     }
 
     public String getReportType() {
@@ -45,5 +51,9 @@ public enum ReportParameterConfig {
 	
 	public static String getReportTypes() throws JsonProcessingException {
 		return new ObjectMapper().writeValueAsString(ReportParameterConfig.values());
-	}
+    }
+    
+    public enum ServiceType {
+        LAMBDA, SERVICE;
+    }
 }
