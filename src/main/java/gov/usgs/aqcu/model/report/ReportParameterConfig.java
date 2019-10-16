@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public enum ReportParameterConfig {
     
     GW_VRSTAT("gwvrstatreport", "GW Visit Review Status", Arrays.asList(
-    	new ReportBasicParameter("locationIdentifier", "Primary Location", "location")
+    	new ReportBasicParameter("station", "Primary Location", "location", "TextInput", false)
     ));
 
 	private String reportType;

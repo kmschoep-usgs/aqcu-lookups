@@ -53,6 +53,6 @@ public class ReportParameterConfigLookupServiceTest {
 	@Test
 	public void getReportType2Test() throws JsonProcessingException {
 		String result = service.getReportTypes();
-		assertEquals("[{\"reportType\":\"gwvrstatreport\",\"reportTypeDisplayName\":\"GW Visit Review Status\",\"parameters\":[{\"name\":\"locationIdentifier\",\"display\":\"Primary Location\",\"type\":\"location\"}]}]", result);
+		assertEquals("[{\"reportType\":\"gwvrstatreport\",\"reportTypeDisplayName\":\"GW Visit Review Status\",\"parameters\":[{\"name\":\"station\",\"display\":\"Primary Location\",\"type\":\"location\",\"inputType\":\"TextInput\",\"multi\":false}]}]", result);
 	}
 }
