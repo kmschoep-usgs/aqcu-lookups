@@ -23,7 +23,18 @@
         <jxr.plugin.version>3.0.0</jxr.plugin.version>
     </properties>
 
+    <parent>
+        <groupId>gov.usgs.water</groupId>
+        <artifactId>code-quality</artifactId>
+        <version>1.1.0</version>
+    </parent>
+
     <repositories>
+        <repository>
+            <id>wma-maven-centralized</id>
+            <name>Water Mission Area Snapshots and Releases</name>
+            <url>${wma.artifactory.url}/wma-maven-centralized</url>
+        </repository>
         <repository>
             <id>aqcu-maven-centralized</id>
             <name>AQCU Maven Centralized (Artifactory)</name>
@@ -133,6 +144,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -156,33 +168,6 @@
                 <version>4.3.0</version>
             </plugin>
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.4</version>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <excludes>
-                        <exclude>gov/usgs/aqcu/config/*.*</exclude>
-                        <exclude>gov/usgs/aqcu/serializer/SwaggerGsonSerializer.class</exclude>
-                        <exclude>gov/usgs/aqcu/Application.class</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.7.1</version>
@@ -199,25 +184,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>${pmd.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <!-- Don't fail the build for really low priority stuff (5) -->
-                            <failurePriority>4</failurePriority>
-                            <!-- this is particularly useful for headless CI builds -->
-                            <printFailingErrors>true</printFailingErrors>
-                        </configuration>
-                        <goals>
-                            <goal>check</goal><!-- to skip, specify -Dpmd.skip=true -->
-                            <goal>cpd-check</goal><!-- to skip, specify -Dcpd.skip=true  -->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>${jxr.plugin.version}</version>
             </plugin>
@@ -225,102 +191,45 @@
     </build>
     <profiles>
         <profile>
-            <id>security-scan</id>
-            <properties>
-                <owasp.dependency.check.version>5.2.1</owasp.dependency.check.version>
-            </properties>
+            <id>jacoco</id>
+            <!-- same activation as the parent profile -->
+            <activation>
+                <property>
+                    <name>jacoco.skip</name>
+                    <value>!true</value>
+                </property>
+            </activation>
             <build>
-                <plugins>                
+                <plugins>
                     <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                        <version>${owasp.dependency.check.version}</version>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.4</version>
                         <executions>
                             <execution>
-                                <configuration>
-                                    <!--
-                                    plugin config documentation
-                                    https://jeremylong.github.io/DependencyCheck/dependency-check-maven/configuration.html
-                                    -->
-
-                                    <autoUpdate>true</autoUpdate>
-                                    <cveValidForHours>24</cveValidForHours>
-                                    <jarAnalyzerEnabled>true</jarAnalyzerEnabled>
-
-                                    <!-- disable analyzer that has a known stability problem https://github.com/jeremylong/DependencyCheck/issues/1908 -->
-                                    <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
-
-                                    <!-- explicitly disable irrelevant analyzers to improve performance -->
-
-                                    <archiveAnalyzerEnabled>false</archiveAnalyzerEnabled> <!-- This scans all types of archives. We mostly care about JARs. The jarAnalyzer handles those -->
-                                    <centralAnalyzerEnabled>false</centralAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
-                                    <nexusAnalyzerEnabled>false</nexusAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
-                                    <artifactoryAnalyzerEnabled>false</artifactoryAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
-
-                                    <!-- none of the following languages apply -->
-                                    <pyDistributionAnalyzerEnabled>false</pyDistributionAnalyzerEnabled>
-                                    <pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
-                                    <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
-                                    <opensslAnalyzerEnabled>false</opensslAnalyzerEnabled>
-                                    <cmakeAnalyzerEnabled>false</cmakeAnalyzerEnabled>
-                                    <autoconfAnalyzerEnabled>false</autoconfAnalyzerEnabled>
-                                    <composerAnalyzerEnabled>false</composerAnalyzerEnabled>
-                                    <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
-                                    <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
-                                    <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
-                                    <nuspecAnalyzerEnabled>false</nuspecAnalyzerEnabled>
-                                    <nugetconfAnalyzerEnabled>false</nugetconfAnalyzerEnabled>
-                                    <cocoapodsAnalyzerEnabled>false</cocoapodsAnalyzerEnabled>
-                                    <bundleAuditAnalyzerEnabled>false</bundleAuditAnalyzerEnabled>
-                                    <swiftPackageManagerAnalyzerEnabled>false</swiftPackageManagerAnalyzerEnabled>
-                                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-                                    <suppressionFile>dependency-check-suppression.xml</suppressionFile>
-                                    <!--
-                                    more info on analyzers
-                                    https://jeremylong.github.io/DependencyCheck/analyzers/index.html
-                                    -->
-                                </configuration>
+                                <id>prepare-agent</id>
                                 <goals>
-                                    <goal>check</goal>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>jacoco-site</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>report</goal>
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <excludes>
+                                <exclude>gov/usgs/aqcu/config/*.*</exclude>
+                                <exclude>gov/usgs/aqcu/serializer/SwaggerGsonSerializer.class</exclude>
+                                <exclude>gov/usgs/aqcu/Application.class</exclude>
+                            </excludes>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
-            <reporting>
-                <plugins>
-                    <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                        <version>${owasp.dependency.check.version}</version>
-                        <reportSets>
-                            <reportSet>
-                                <reports>
-                                    <report>aggregate</report>
-                                </reports>
-                            </reportSet>
-                        </reportSets>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jxr-plugin</artifactId>
-                        <version>${jxr.plugin.version}</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                        <version>${pmd.plugin.version}</version>
-                        <configuration>
-                            <linkXref>true</linkXref>
-                            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-                            <minimumTokens>100</minimumTokens>
-                            <targetJdk>${java.version}</targetJdk>
-                        </configuration>
-                    </plugin>
-                    
-                </plugins>
-            </reporting>
         </profile>
     </profiles>
     <scm>
