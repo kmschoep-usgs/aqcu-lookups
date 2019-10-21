@@ -19,7 +19,8 @@ RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 	fi
 
 #download all maven dependencies (this will only re-run if the pom has changed)
-RUN mvn -B dependency:go-offline
+#suppress INFO-level logs about dependency downloads to permit the build to succed within Travis' log length limits
+RUN mvn -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn dependency:go-offline
 
 COPY src /build/src
 COPY .git /build
