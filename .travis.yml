@@ -13,8 +13,11 @@
         language: java
         jdk:
            - openjdk8
+        install:
+          # intentional no-op
+          - true
         script:
-          - mvn clean verify jacoco:report coveralls:report
+          - mvn clean verify jacoco:report coveralls:report -P=\!dependency-security-check
       - name: docker_build
         language: bash
         services: docker
