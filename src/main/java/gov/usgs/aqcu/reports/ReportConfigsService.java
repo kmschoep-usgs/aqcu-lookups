@@ -114,11 +114,11 @@ public class ReportConfigsService {
 
 	private String parseFolderName (String folderPath) {
 		List<String> paths = new ArrayList<String>(Arrays.asList(folderPath.split("/")));
-	    String folderName = null;
-	    if (!paths.isEmpty()) {
-	    	folderName = paths.get(paths.size() - 1);
-	    }
-	    return folderName;
+		String folderName = null;
+		if (!paths.isEmpty()) {
+			folderName = paths.get(paths.size() - 1);
+		}
+		return folderName;
 	}
 	
 	public void createFolder(String groupName, String folderPath) throws IOException {
