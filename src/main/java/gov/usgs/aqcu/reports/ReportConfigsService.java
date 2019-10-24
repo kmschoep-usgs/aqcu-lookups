@@ -3,6 +3,8 @@ package gov.usgs.aqcu.reports;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,6 +103,7 @@ public class ReportConfigsService {
 
 		FolderData result = new FolderData();
 		result.setGroupName(groupName);
+		result.setFolderName(parseFolderName(folderPath));
 		result.setCurrentPath(folderPath);
 		result.setFolders(getFolderSubFolders(groupName, folderPath));
 		result.setReports(reportsConfig.getSavedReportsList());
@@ -109,6 +112,15 @@ public class ReportConfigsService {
 		return result;
 	}
 
+	private String parseFolderName (String folderPath) {
+		List<String> paths = new ArrayList<String>(Arrays.asList(folderPath.split("/")));
+	    String folderName = null;
+	    if (!paths.isEmpty()) {
+	    	folderName = paths.get(paths.size() - 1);
+	    }
+	    return folderName;
+	}
+	
 	public void createFolder(String groupName, String folderPath) throws IOException {
 		if(!doesGroupExist(groupName)) {
 			throw new GroupDoesNotExistException(groupName);
