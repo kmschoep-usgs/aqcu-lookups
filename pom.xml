@@ -16,7 +16,7 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <springfox.version>2.9.2</springfox.version>
         <aquarius.sdk.version>18.8.1</aquarius.sdk.version>
-        <aqcu.framework.version>0.0.7-SNAPSHOT</aqcu.framework.version>
+        <aqcu.framework.version>0.0.8-SNAPSHOT</aqcu.framework.version>
         <spring.boot.version>2.1.8.RELEASE</spring.boot.version>
         <pmd.plugin.version>3.12.0</pmd.plugin.version>
         <java.version>1.8</java.version>
