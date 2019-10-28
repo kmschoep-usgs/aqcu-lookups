@@ -41,7 +41,7 @@ public class FieldVisitDescriptionListService {
 
         @LogExecutionTime
 	public List<String> getFieldVisitDates(String locationIdentifier) {
-		ZoneOffset primaryZoneOffset = TimeSeriesUtils.getZoneOffset(locationDataService.getRawResponse(locationIdentifier));
+		ZoneOffset primaryZoneOffset = TimeSeriesUtils.getZoneOffset(locationDataService.get(locationIdentifier));
 		List<FieldVisitDescription> descList = getRawResponse(locationIdentifier).getFieldVisitDescriptions();
 		List<LocalDateTime> fieldVisitDates = descList.stream().map(f -> LocalDateTime.ofInstant(f.getStartTime(), primaryZoneOffset)).collect(Collectors.toList());	
 		return fieldVisitDates.stream().map(l -> DateTimeFormatter.ofPattern("yyyy-MM-dd").format(l)).collect(Collectors.toList());
