@@ -9,6 +9,7 @@ import gov.usgs.aqcu.model.report.SavedReportConfiguration;
 
 public class FolderData {
 	private String groupName;
+	private String folderName;
 	private String currentPath;
 	private List<String> folders;
 	private Map<String, String> parameterDefaults;
@@ -58,5 +59,13 @@ public class FolderData {
 
 	public void setCurrentPath(String currentPath) {
 		this.currentPath = currentPath;
+	}
+
+	public String getFolderName() {
+		return folderName;
+	}
+
+	public void setFolderName(String folderName) {
+		this.folderName = folderName;
 	}
 }
