@@ -82,7 +82,7 @@ public class ConfigController {
 	@PostMapping(value=FOLDERS_CONTEXT_PATH)
 	public ResponseEntity<?> createFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
 		configsService.createFolder(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim());
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.CREATED);
+		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim()), new HttpHeaders(), HttpStatus.CREATED);
 	}
 
 	@GetMapping(value=FOLDERS_CONTEXT_PATH, produces={MediaType.APPLICATION_JSON_VALUE})
