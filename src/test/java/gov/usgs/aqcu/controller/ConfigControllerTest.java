@@ -210,12 +210,14 @@ public class ConfigControllerTest {
     @Test
     public void getFolderTest() throws Exception {
         HashMap<String, String> defaults = new HashMap<>();
+        HashMap<String, List<String>> params = new HashMap<>();
+        params.put("test_param", Arrays.asList("test_param_value"));
         defaults.put("test_key", "test_value");
         SavedReportConfiguration testReport = new SavedReportConfiguration();
         testReport.setCreatedUser("test_user");
         testReport.setId("test_id");
         testReport.setLastModifiedUser("test_user");
-        testReport.setParameterValues(defaults);
+        testReport.setParameterValues(params);
         testReport.setReportName("test_report");
         testReport.setReportType("test_type");
         FolderData folder1Data = new FolderData();

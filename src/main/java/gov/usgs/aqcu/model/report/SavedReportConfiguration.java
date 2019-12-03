@@ -1,5 +1,6 @@
 package gov.usgs.aqcu.model.report;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
@@ -21,7 +22,7 @@ public class SavedReportConfiguration {
 	private String primaryParameter;
 
 	@NotEmpty
-	private Map<String, String> parameterValues;
+	private Map<String, List<String>> parameterValues;
 
 	public String getReportName() {
 		return reportName;
@@ -43,11 +44,11 @@ public class SavedReportConfiguration {
 		this.primaryParameter = primaryParameter;
 	}
 
-	public Map<String, String> getParameterValues() {
+	public Map<String, List<String>> getParameterValues() {
 		return parameterValues;
 	}
 
-	public void setParameterValues(Map<String, String> parameterValues) {
+	public void setParameterValues(Map<String, List<String>> parameterValues) {
 		this.parameterValues = parameterValues;
 	}
 
