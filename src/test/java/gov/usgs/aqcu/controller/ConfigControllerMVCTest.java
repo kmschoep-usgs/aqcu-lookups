@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -369,8 +370,10 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void getFolderTest() throws Exception {
-        HashMap<String, String> testParams = new HashMap<>();
-        testParams.put("param1", "value1");
+        HashMap<String, String> testDefaults = new HashMap<>();
+        HashMap<String, List<String>> testParams = new HashMap<>();
+        testParams.put("test_param", Arrays.asList("test_param_value"));
+        testDefaults.put("param1", "value1");
         SavedReportConfiguration testReport = new SavedReportConfiguration();
         testReport.setCreatedUser("user1");
         testReport.setId("report1");
@@ -380,13 +383,13 @@ public class ConfigControllerMVCTest {
         testReport.setReportType("type1");
         testReport.setParameterValues(testParams);
         ReportsConfig testConfig = new ReportsConfig();
-        testConfig.setParameterDefaults(testParams);
+        testConfig.setParameterDefaults(testDefaults);
         testConfig.saveReport(testReport);
         FolderData testData = new FolderData();
         testData.setReports(testConfig.getSavedReportsList());
         testData.setFolders(Arrays.asList("folder1", "folder2"));
         testData.setGroupName("test");
-        testData.setParameterDefaults(testParams);
+        testData.setParameterDefaults(testDefaults);
         testData.setCurrentPath("test");
 
         given(reportConfigsService.getFolderData("test", "test")).willReturn(testData);
@@ -402,7 +405,7 @@ public class ConfigControllerMVCTest {
             .andExpect(jsonPath("$.reports[0].lastModifiedUser", is("user1")))
             .andExpect(jsonPath("$.reports[0].primaryParameter", is("param1")))
             .andExpect(jsonPath("$.reports[0].reportType", is("type1")))
-            .andExpect(jsonPath("$.reports[0].parameterValues.param1", is("value1")))
+            .andExpect(jsonPath("$.reports[0].parameterValues.test_param", is(Arrays.asList("test_param_value"))))
             .andExpect(jsonPath("$.folders", hasItems("folder1", "folder2")))
             .andExpect(jsonPath("$.parameterDefaults.param1", is("value1")));
     }
@@ -616,8 +619,8 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void createReportTest() throws Exception {
-        HashMap<String, String> goodParams = new HashMap<>();
-        goodParams.put("locationIdentifier", "test");
+        HashMap<String, List<String>> goodParams = new HashMap<>();
+        goodParams.put("locationIdentifier", Arrays.asList("test"));
         SavedReportConfiguration goodConfig = new SavedReportConfiguration();
         goodConfig.setParameterValues(goodParams);
         goodConfig.setPrimaryParameter("params");
@@ -635,8 +638,8 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void createReportValidationTest() throws Exception {
-        HashMap<String, String> testParams = new HashMap<>();
-        testParams.put("locationIdentifier", "test");
+        HashMap<String, List<String>> testParams = new HashMap<>();
+        testParams.put("locationIdentifier", Arrays.asList("test"));
         SavedReportConfiguration testConfig = new SavedReportConfiguration();
         testConfig.setParameterValues(testParams);
         testConfig.setPrimaryParameter("params");
@@ -796,8 +799,8 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void createReportErrorTest() throws Exception {
-        HashMap<String, String> testParams = new HashMap<>();
-        testParams.put("locationIdentifier", "test");
+        HashMap<String, List<String>> testParams = new HashMap<>();
+        testParams.put("locationIdentifier", Arrays.asList("test"));
         SavedReportConfiguration testConfig = new SavedReportConfiguration();
         testConfig.setParameterValues(testParams);
         testConfig.setPrimaryParameter("params");
@@ -847,8 +850,8 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void updateReportTest() throws Exception {
-        HashMap<String, String> goodParams = new HashMap<>();
-        goodParams.put("locationIdentifier", "test");
+        HashMap<String, List<String>> goodParams = new HashMap<>();
+        goodParams.put("locationIdentifier", Arrays.asList("test"));
         SavedReportConfiguration goodConfig = new SavedReportConfiguration();
         goodConfig.setParameterValues(goodParams);
         goodConfig.setPrimaryParameter("params");
@@ -867,8 +870,8 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void updateReportValidationTest() throws Exception {
-        HashMap<String, String> testParams = new HashMap<>();
-        testParams.put("locationIdentifier", "test");
+        HashMap<String, List<String>> testParams = new HashMap<>();
+        testParams.put("locationIdentifier", Arrays.asList("test"));
         SavedReportConfiguration testConfig = new SavedReportConfiguration();
         testConfig.setParameterValues(testParams);
         testConfig.setPrimaryParameter("params");
@@ -1054,8 +1057,8 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void updateReportErrorTest() throws Exception {
-        HashMap<String, String> testParams = new HashMap<>();
-        testParams.put("locationIdentifier", "test");
+        HashMap<String, List<String>> testParams = new HashMap<>();
+        testParams.put("locationIdentifier", Arrays.asList("test"));
         SavedReportConfiguration testConfig = new SavedReportConfiguration();
         testConfig.setParameterValues(testParams);
         testConfig.setPrimaryParameter("params");

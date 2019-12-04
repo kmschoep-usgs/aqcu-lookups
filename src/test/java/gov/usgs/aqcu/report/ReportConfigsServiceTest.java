@@ -149,12 +149,13 @@ public class ReportConfigsServiceTest {
     @Test
     public void getFolderDataBasicTest() throws Exception {
         HashMap<String, String> basicDefaults = new HashMap<>();
+        HashMap<String, List<String>> basicParams = new HashMap<>();
         basicDefaults.put("test_key", "test_value");
         SavedReportConfiguration basicReport = new SavedReportConfiguration();
         basicReport.setCreatedUser("test_user");
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
-        basicReport.setParameterValues(basicDefaults);
+        basicReport.setParameterValues(basicParams);
         basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
@@ -365,20 +366,22 @@ public class ReportConfigsServiceTest {
 
     @Test
     public void saveReportBasicTest() throws Exception {
-        HashMap<String, String> basicDefaults = new HashMap<>();
+    	HashMap<String, String> basicDefaults = new HashMap<>();
+        HashMap<String, List<String>> basicParams = new HashMap<>();
         basicDefaults.put("test_key", "test_value");
+        basicParams.put("test_param", Arrays.asList("test_param_value"));
         SavedReportConfiguration basicReport = new SavedReportConfiguration();
         basicReport.setCreatedUser("test_user");
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
-        basicReport.setParameterValues(basicDefaults);
+        basicReport.setParameterValues(basicParams);
         basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         SavedReportConfiguration newReport = new SavedReportConfiguration();
         newReport.setCreatedUser("test_user");
         newReport.setId("test_new_report");
         newReport.setLastModifiedUser("test_user");
-        newReport.setParameterValues(basicDefaults);
+        newReport.setParameterValues(basicParams);
         newReport.setReportName("test_name");
         newReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
@@ -399,20 +402,22 @@ public class ReportConfigsServiceTest {
 
     @Test
     public void saveReportNotExistTest() throws Exception {
-        HashMap<String, String> basicDefaults = new HashMap<>();
+    	HashMap<String, String> basicDefaults = new HashMap<>();
+        HashMap<String, List<String>> basicParams = new HashMap<>();
         basicDefaults.put("test_key", "test_value");
+        basicParams.put("test_param", Arrays.asList("test_param_value"));
         SavedReportConfiguration basicReport = new SavedReportConfiguration();
         basicReport.setCreatedUser("test_user");
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
-        basicReport.setParameterValues(basicDefaults);
+        basicReport.setParameterValues(basicParams);
         basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         SavedReportConfiguration newReport = new SavedReportConfiguration();
         newReport.setCreatedUser("test_user");
         newReport.setId("test_new_report");
         newReport.setLastModifiedUser("test_user");
-        newReport.setParameterValues(basicDefaults);
+        newReport.setParameterValues(basicParams);
         newReport.setReportName("test_name");
         newReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
@@ -473,13 +478,15 @@ public class ReportConfigsServiceTest {
 
     @Test
     public void saveReportAlreadyExistsTest() throws Exception {
-        HashMap<String, String> basicDefaults = new HashMap<>();
+    	HashMap<String, String> basicDefaults = new HashMap<>();
+        HashMap<String, List<String>> basicParams = new HashMap<>();
         basicDefaults.put("test_key", "test_value");
+        basicParams.put("test_param", Arrays.asList("test_param_value"));
         SavedReportConfiguration basicReport = new SavedReportConfiguration();
         basicReport.setCreatedUser("test_user");
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
-        basicReport.setParameterValues(basicDefaults);
+        basicReport.setParameterValues(basicParams);
         basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
@@ -503,13 +510,15 @@ public class ReportConfigsServiceTest {
 
     @Test
     public void deleteReportBasicTest() throws Exception {
-        HashMap<String, String> basicDefaults = new HashMap<>();
+    	HashMap<String, String> basicDefaults = new HashMap<>();
+        HashMap<String, List<String>> basicParams = new HashMap<>();
         basicDefaults.put("test_key", "test_value");
+        basicParams.put("test_param", Arrays.asList("test_param_value"));
         SavedReportConfiguration basicReport = new SavedReportConfiguration();
         basicReport.setCreatedUser("test_user");
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
-        basicReport.setParameterValues(basicDefaults);
+        basicReport.setParameterValues(basicParams);
         basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
@@ -527,13 +536,15 @@ public class ReportConfigsServiceTest {
 
     @Test
     public void deleteReportNotExistTest() throws Exception {
-        HashMap<String, String> basicDefaults = new HashMap<>();
+    	HashMap<String, String> basicDefaults = new HashMap<>();
+        HashMap<String, List<String>> basicParams = new HashMap<>();
         basicDefaults.put("test_key", "test_value");
+        basicParams.put("test_param", Arrays.asList("test_param_value"));
         SavedReportConfiguration basicReport = new SavedReportConfiguration();
         basicReport.setCreatedUser("test_user");
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
-        basicReport.setParameterValues(basicDefaults);
+        basicReport.setParameterValues(basicParams);
         basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
