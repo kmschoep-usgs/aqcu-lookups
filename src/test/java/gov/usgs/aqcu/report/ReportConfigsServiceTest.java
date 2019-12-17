@@ -32,7 +32,7 @@ import gov.usgs.aqcu.model.config.FolderData;
 import gov.usgs.aqcu.model.config.GroupConfig;
 import gov.usgs.aqcu.model.config.GroupData;
 import gov.usgs.aqcu.model.config.ReportsConfig;
-import gov.usgs.aqcu.model.report.SavedReportConfiguration;
+import gov.usgs.aqcu.model.config.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
 @RunWith(SpringRunner.class)

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gov.usgs.aqcu.model.report.SavedReportConfiguration;
+import gov.usgs.aqcu.model.config.SavedReportConfiguration;
 
 public class FolderData {
 	private String groupName;

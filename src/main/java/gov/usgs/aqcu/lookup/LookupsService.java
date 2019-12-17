@@ -8,14 +8,12 @@ import java.util.stream.Collectors;
 
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesDescription;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.usgs.aqcu.model.lookup.LocationBasicData;
 import gov.usgs.aqcu.model.lookup.TimeSeriesBasicData;
-import gov.usgs.aqcu.model.report.ReportParameterConfig;
 import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
 import gov.usgs.aqcu.parameter.FindInDerivationChainRequestParameters;
 import gov.usgs.aqcu.parameter.GetUpchainRatingModelsRequestParameters;
@@ -29,7 +27,6 @@ import gov.usgs.aqcu.retrieval.DerivationChainSearchService;
 import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
 import gov.usgs.aqcu.retrieval.LocationSearchService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
-import gov.usgs.aqcu.retrieval.ReportParameterConfigLookupService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
 import gov.usgs.aqcu.retrieval.UnitsLookupService;
 import gov.usgs.aqcu.retrieval.UpchainRatingModelSearchService;
@@ -47,7 +44,6 @@ public class LookupsService {
 	private FieldVisitDescriptionListService fieldVisitDescriptionListService;
 	private DerivationChainSearchService derivationChainService;
 	private UpchainRatingModelSearchService upchainRatingModelSearchService;
-	private ReportParameterConfigLookupService reportParameterConfigLookupService;
 
 	@Autowired
 	public LookupsService(
@@ -60,8 +56,7 @@ public class LookupsService {
 		PeriodReferenceService periodReferenceService,
 		FieldVisitDescriptionListService fieldVisitDescriptionListService,
 		DerivationChainSearchService derivationChainService,
-		UpchainRatingModelSearchService upchainRatingModelSearchService,
-		ReportParameterConfigLookupService reportParameterConfigLookupService) {
+		UpchainRatingModelSearchService upchainRatingModelSearchService) {
 			this.timeSeriesDescriptionListService = timeSeriesDescriptionListService;
 			this.processorTypesService = processorTypesService;
 			this.locationSearchService = locationSearchService;
@@ -72,7 +67,6 @@ public class LookupsService {
 			this.fieldVisitDescriptionListService = fieldVisitDescriptionListService;
 			this.derivationChainService = derivationChainService;
 			this.upchainRatingModelSearchService = upchainRatingModelSearchService;
-			this.reportParameterConfigLookupService = reportParameterConfigLookupService;
 	}
 
 	public Map<String,TimeSeriesBasicData> getTimeSeriesDescriptions(TimeSeriesIdentifiersRequestParameters params) {
@@ -121,14 +115,6 @@ public class LookupsService {
 	public List<String> getUnits() {
 		List<UnitMetadata> unitMetadataList = unitsLookupService.getUnits();
 		return unitMetadataList.stream().map(u -> u.getIdentifier()).collect(Collectors.toList());
-	}
-	
-	public ReportParameterConfig getReportParameterConfig(String reportType) {
-		return reportParameterConfigLookupService.getByReportType(reportType);
-	}
-	
-	public String getReportTypes() throws JsonProcessingException{
-		return reportParameterConfigLookupService.getReportTypes();
 	}
 
 	protected ZoneOffset getZoneOffset(String timeSeriesIdentifier) {
