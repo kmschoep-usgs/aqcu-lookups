@@ -14,6 +14,7 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Time
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThresholdPeriod;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ExtendedAttribute;
+import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 
 import gov.usgs.aqcu.model.lookup.LocationBasicData;
 import gov.usgs.aqcu.model.lookup.TimeSeriesBasicData;
@@ -386,6 +387,57 @@ public class LookupsServiceTest {
 	}
 
 	@Test
+	public void getTimeSeriesDescriptionsForUniqueIdsTest() {
+		TimeSeriesDescription tsD1 = new TimeSeriesDescription()
+			.setIdentifier("id-1")
+			.setExtendedAttributes(Arrays.asList(new ExtendedAttribute()
+				.setName(AquariusRetrievalUtils.getPrimaryFilter().getFilterName())
+				.setType("type")
+				.setValue(AquariusRetrievalUtils.getPrimaryFilter().getFilterValue())))
+			.setUniqueId("uid-1");
+		TimeSeriesDescription tsD2 = new TimeSeriesDescription()
+			.setIdentifier("id-2")
+			.setExtendedAttributes(Arrays.asList(new ExtendedAttribute()
+				.setName(AquariusRetrievalUtils.getPrimaryFilter().getFilterName())
+				.setType("type")
+				.setValue(AquariusRetrievalUtils.getPrimaryFilter().getFilterValue())))
+			.setUniqueId("uid-2");
+		
+		given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(Arrays.asList("uid-1", "uid-2")))
+			.willReturn(Arrays.asList(tsD1, tsD2));
+		
+		Map<String, TimeSeriesBasicData> result = service.getTimeSeriesDescriptionsForUniqueIds(Arrays.asList("uid-1", "uid-2"));
+
+		assertThat(result.keySet(), containsInAnyOrder("uid-1", "uid-2"));
+		assertEquals(2, result.values().size());
+		assertEquals("uid-1", result.get("uid-1").getUniqueId());
+		assertEquals("id-1", result.get("uid-1").getIdentifier());
+		assertEquals("uid-2", result.get("uid-2").getUniqueId());
+		assertEquals("id-2", result.get("uid-2").getIdentifier());
+	}
+
+	@Test
+	public void getSiteDataForIdentifiersTest() {
+		LocationDescription loD1 = new LocationDescription()
+			.setIdentifier("loc-1")
+			.setName("location-1");
+		LocationDescription loD2 = new LocationDescription()
+			.setIdentifier("loc-2")
+			.setName("location-2");
+
+		given(locationDescriptionService.getByLocationIdentifier("loc-1")).willReturn(loD1);
+		given(locationDescriptionService.getByLocationIdentifier("loc-2")).willReturn(loD2);
+
+		List<LocationBasicData> result = service.getSiteDataForIdentifiers(Arrays.asList("loc-1", "loc-2"));
+
+		assertEquals(2, result.size());
+		assertEquals("loc-1", result.get(0).getSiteNumber());
+		assertEquals("location-1", result.get(0).getSiteName());
+		assertEquals("loc-2", result.get(1).getSiteNumber());
+		assertEquals("location-2", result.get(1).getSiteName());
+	}
+
+	@Test
 	public void getZoneOffsetNullTest() {
 		assertEquals(service.getZoneOffset(null), ZoneOffset.UTC);
 	}
@@ -395,5 +447,34 @@ public class LookupsServiceTest {
 		given(timeSeriesDescriptionListService.getTimeSeriesDescription(any(String.class)))
 			.willReturn(tsDesc1);
 		assertEquals(service.getZoneOffset(tsDesc1.getIdentifier()), ZoneOffset.ofHours(1));
+	}
+
+	@Test
+	public void tsDescriptionsToBasicDataMapTest() {
+		TimeSeriesDescription tsD1 = new TimeSeriesDescription()
+			.setIdentifier("id-1")
+			.setExtendedAttributes(Arrays.asList(new ExtendedAttribute()
+				.setName(AquariusRetrievalUtils.getPrimaryFilter().getFilterName())
+				.setType("type")
+				.setValue(AquariusRetrievalUtils.getPrimaryFilter().getFilterValue())))
+			.setUniqueId("uid-1");
+		TimeSeriesDescription tsD2 = new TimeSeriesDescription()
+			.setIdentifier("id-2")
+			.setExtendedAttributes(Arrays.asList(new ExtendedAttribute()
+				.setName(AquariusRetrievalUtils.getPrimaryFilter().getFilterName())
+				.setType("type")
+				.setValue(AquariusRetrievalUtils.getPrimaryFilter().getFilterValue())))
+			.setUniqueId("uid-2");
+		
+		Map<String, TimeSeriesBasicData> result = service.tsDescriptionsToBasicDataMap(
+			Arrays.asList(tsD1, tsD2)
+		);
+
+		assertThat(result.keySet(), containsInAnyOrder("uid-1", "uid-2"));
+		assertEquals(2, result.values().size());
+		assertEquals("uid-1", result.get("uid-1").getUniqueId());
+		assertEquals("id-1", result.get("uid-1").getIdentifier());
+		assertEquals("uid-2", result.get("uid-2").getUniqueId());
+		assertEquals("id-2", result.get("uid-2").getIdentifier());
 	}
 }
