@@ -28,6 +28,7 @@ import gov.usgs.aqcu.reference.ControlConditionReferenceService;
 import gov.usgs.aqcu.reference.PeriodReferenceService;
 import gov.usgs.aqcu.retrieval.DerivationChainSearchService;
 import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
+import gov.usgs.aqcu.retrieval.LocationDescriptionListService;
 import gov.usgs.aqcu.retrieval.LocationSearchService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
@@ -57,6 +58,8 @@ public class LookupsServiceTest {
 	private ProcessorTypesService processorTypesService;
 	@MockBean
 	private LocationSearchService locationSearchService;
+	@MockBean
+	private LocationDescriptionListService locationDescriptionService;
 	@MockBean
 	private ComputationReferenceService computationReferenceService;
 	@MockBean
@@ -126,8 +129,8 @@ public class LookupsServiceTest {
 	@Before
 	public void setup() {
 		service = new LookupsService(timeSeriesDescriptionListService, processorTypesService, locationSearchService,
-			unitsLookupService, computationReferenceService, controlConditionReferenceService, periodReferenceService,
-			fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService);
+			locationDescriptionService, unitsLookupService, computationReferenceService, controlConditionReferenceService,
+			periodReferenceService, fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService);
 	}
 
 	@Test

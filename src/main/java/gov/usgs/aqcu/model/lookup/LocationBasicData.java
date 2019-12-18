@@ -10,6 +10,11 @@ public class LocationBasicData {
 
 	public LocationBasicData(){};
 
+	public LocationBasicData(String siteNumber, String siteName) {
+		this.siteNumber = siteNumber;
+		this.siteName = siteName;
+	}
+
 	public LocationBasicData(LocationDescription desc) {
 		this.siteNumber = desc.getIdentifier();
 		this.siteName = desc.getName();
