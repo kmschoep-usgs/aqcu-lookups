@@ -5,8 +5,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.usgs.aqcu.model.config.SavedReportConfiguration;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReportsConfig {
 	private Map<String, String> parameterDefaults;
