@@ -1,12 +1,11 @@
 package gov.usgs.aqcu.model.config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import gov.usgs.aqcu.model.report.SavedReportConfiguration;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ReportsConfig {
 	private Map<String, String> parameterDefaults;
 	private Map<String, SavedReportConfiguration> savedReports;
@@ -18,10 +17,6 @@ public class ReportsConfig {
 
 	public Map<String, SavedReportConfiguration> getSavedReports() {
 		return savedReports;
-	}
-
-	public List<SavedReportConfiguration> getSavedReportsList() {
-		return new ArrayList<>(savedReports.values());
 	}
 
 	public void setSavedReports(Map<String, SavedReportConfiguration> savedReports) {

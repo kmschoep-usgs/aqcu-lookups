@@ -6,7 +6,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +13,10 @@ import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.Time
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThreshold;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.TimeSeriesThresholdPeriod;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.UnitMetadata;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.ExtendedAttribute;
+import com.aquaticinformatics.aquarius.sdk.timeseries.servicemodels.Publish.LocationDescription;
 
 import gov.usgs.aqcu.model.lookup.LocationBasicData;
-import gov.usgs.aqcu.model.report.ReportParameterConfig;
 import gov.usgs.aqcu.model.lookup.TimeSeriesBasicData;
 import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
 import gov.usgs.aqcu.parameter.FindInDerivationChainRequestParameters;
@@ -31,9 +29,9 @@ import gov.usgs.aqcu.reference.ControlConditionReferenceService;
 import gov.usgs.aqcu.reference.PeriodReferenceService;
 import gov.usgs.aqcu.retrieval.DerivationChainSearchService;
 import gov.usgs.aqcu.retrieval.FieldVisitDescriptionListService;
+import gov.usgs.aqcu.retrieval.LocationDescriptionListService;
 import gov.usgs.aqcu.retrieval.LocationSearchService;
 import gov.usgs.aqcu.retrieval.ProcessorTypesService;
-import gov.usgs.aqcu.retrieval.ReportParameterConfigLookupService;
 import gov.usgs.aqcu.retrieval.TimeSeriesDescriptionListService;
 import gov.usgs.aqcu.retrieval.UnitsLookupService;
 import gov.usgs.aqcu.retrieval.UpchainRatingModelSearchService;
@@ -62,6 +60,8 @@ public class LookupsServiceTest {
 	@MockBean
 	private LocationSearchService locationSearchService;
 	@MockBean
+	private LocationDescriptionListService locationDescriptionService;
+	@MockBean
 	private ComputationReferenceService computationReferenceService;
 	@MockBean
 	private ControlConditionReferenceService controlConditionReferenceService;
@@ -75,11 +75,7 @@ public class LookupsServiceTest {
 	private DerivationChainSearchService derivationChainService;
 	@MockBean
 	private UpchainRatingModelSearchService upchainRatingModelSearchService;
-	@MockBean
-	private ReportParameterConfigLookupService reportParameterConfigLookupService;
-	
-	private Map<String, String> reportParamConfigs = new LinkedHashMap<>();
-	private String reportTypes;
+
 	private TimeSeriesThresholdPeriod p1 = new TimeSeriesThresholdPeriod()
 		.setStartTime(Instant.parse("2017-01-01T00:00:00Z"))
 		.setEndTime(Instant.parse("2017-02-01T00:00:00Z"))
@@ -134,10 +130,8 @@ public class LookupsServiceTest {
 	@Before
 	public void setup() {
 		service = new LookupsService(timeSeriesDescriptionListService, processorTypesService, locationSearchService,
-			unitsLookupService, computationReferenceService, controlConditionReferenceService, periodReferenceService,
-			fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService, reportParameterConfigLookupService);
-		reportParamConfigs.put("gwvisitreviewstatus", "GW_VRSTAT");
-		reportTypes = "{all the reports}";
+			locationDescriptionService, unitsLookupService, computationReferenceService, controlConditionReferenceService,
+			periodReferenceService, fieldVisitDescriptionListService, derivationChainService, upchainRatingModelSearchService);
 	}
 
 	@Test
@@ -393,6 +387,57 @@ public class LookupsServiceTest {
 	}
 
 	@Test
+	public void getTimeSeriesDescriptionsForUniqueIdsTest() {
+		TimeSeriesDescription tsD1 = new TimeSeriesDescription()
+			.setIdentifier("id-1")
+			.setExtendedAttributes(Arrays.asList(new ExtendedAttribute()
+				.setName(AquariusRetrievalUtils.getPrimaryFilter().getFilterName())
+				.setType("type")
+				.setValue(AquariusRetrievalUtils.getPrimaryFilter().getFilterValue())))
+			.setUniqueId("uid-1");
+		TimeSeriesDescription tsD2 = new TimeSeriesDescription()
+			.setIdentifier("id-2")
+			.setExtendedAttributes(Arrays.asList(new ExtendedAttribute()
+				.setName(AquariusRetrievalUtils.getPrimaryFilter().getFilterName())
+				.setType("type")
+				.setValue(AquariusRetrievalUtils.getPrimaryFilter().getFilterValue())))
+			.setUniqueId("uid-2");
+		
+		given(timeSeriesDescriptionListService.getTimeSeriesDescriptionList(Arrays.asList("uid-1", "uid-2")))
+			.willReturn(Arrays.asList(tsD1, tsD2));
+		
+		Map<String, TimeSeriesBasicData> result = service.getTimeSeriesDescriptionsForUniqueIds(Arrays.asList("uid-1", "uid-2"));
+
+		assertThat(result.keySet(), containsInAnyOrder("uid-1", "uid-2"));
+		assertEquals(2, result.values().size());
+		assertEquals("uid-1", result.get("uid-1").getUniqueId());
+		assertEquals("id-1", result.get("uid-1").getIdentifier());
+		assertEquals("uid-2", result.get("uid-2").getUniqueId());
+		assertEquals("id-2", result.get("uid-2").getIdentifier());
+	}
+
+	@Test
+	public void getSiteDataForIdentifiersTest() {
+		LocationDescription loD1 = new LocationDescription()
+			.setIdentifier("loc-1")
+			.setName("location-1");
+		LocationDescription loD2 = new LocationDescription()
+			.setIdentifier("loc-2")
+			.setName("location-2");
+
+		given(locationDescriptionService.getByLocationIdentifier("loc-1")).willReturn(loD1);
+		given(locationDescriptionService.getByLocationIdentifier("loc-2")).willReturn(loD2);
+
+		List<LocationBasicData> result = service.getSiteDataForIdentifiers(Arrays.asList("loc-1", "loc-2"));
+
+		assertEquals(2, result.size());
+		assertEquals("loc-1", result.get(0).getSiteNumber());
+		assertEquals("location-1", result.get(0).getSiteName());
+		assertEquals("loc-2", result.get(1).getSiteNumber());
+		assertEquals("location-2", result.get(1).getSiteName());
+	}
+
+	@Test
 	public void getZoneOffsetNullTest() {
 		assertEquals(service.getZoneOffset(null), ZoneOffset.UTC);
 	}
@@ -403,23 +448,33 @@ public class LookupsServiceTest {
 			.willReturn(tsDesc1);
 		assertEquals(service.getZoneOffset(tsDesc1.getIdentifier()), ZoneOffset.ofHours(1));
 	}
-	
+
 	@Test
-	public void getGwVRStatParameterConfigTest() {
-		given(reportParameterConfigLookupService.getByReportType(any(String.class)))
-		.willReturn(ReportParameterConfig.GW_VRSTAT);
-		for (Map.Entry<String, String> entry : reportParamConfigs.entrySet()) {
-			String value = entry.getKey();
-			ReportParameterConfig config = service.getReportParameterConfig(value);
-			assertEquals(config.getReportType(), value);
-		}
-	}
-	
-	@Test
-	public void getReportTypesTest() throws JsonProcessingException {
-		given(reportParameterConfigLookupService.getReportTypes())
-		.willReturn(reportTypes);
-		String result = service.getReportTypes();
-		assertEquals(reportTypes, result);
+	public void tsDescriptionsToBasicDataMapTest() {
+		TimeSeriesDescription tsD1 = new TimeSeriesDescription()
+			.setIdentifier("id-1")
+			.setExtendedAttributes(Arrays.asList(new ExtendedAttribute()
+				.setName(AquariusRetrievalUtils.getPrimaryFilter().getFilterName())
+				.setType("type")
+				.setValue(AquariusRetrievalUtils.getPrimaryFilter().getFilterValue())))
+			.setUniqueId("uid-1");
+		TimeSeriesDescription tsD2 = new TimeSeriesDescription()
+			.setIdentifier("id-2")
+			.setExtendedAttributes(Arrays.asList(new ExtendedAttribute()
+				.setName(AquariusRetrievalUtils.getPrimaryFilter().getFilterName())
+				.setType("type")
+				.setValue(AquariusRetrievalUtils.getPrimaryFilter().getFilterValue())))
+			.setUniqueId("uid-2");
+		
+		Map<String, TimeSeriesBasicData> result = service.tsDescriptionsToBasicDataMap(
+			Arrays.asList(tsD1, tsD2)
+		);
+
+		assertThat(result.keySet(), containsInAnyOrder("uid-1", "uid-2"));
+		assertEquals(2, result.values().size());
+		assertEquals("uid-1", result.get("uid-1").getUniqueId());
+		assertEquals("id-1", result.get("uid-1").getIdentifier());
+		assertEquals("uid-2", result.get("uid-2").getUniqueId());
+		assertEquals("id-2", result.get("uid-2").getIdentifier());
 	}
 }

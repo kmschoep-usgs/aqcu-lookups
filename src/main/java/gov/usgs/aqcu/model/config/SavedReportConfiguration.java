@@ -1,4 +1,4 @@
-package gov.usgs.aqcu.model.report;
+package gov.usgs.aqcu.model.config;
 
 import java.util.List;
 import java.util.Map;
@@ -6,6 +6,9 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SavedReportConfiguration {
 
 	private String id;
@@ -17,9 +20,6 @@ public class SavedReportConfiguration {
 	private String reportType;
 	private String lastModifiedUser;
 	private String createdUser;
-
-	@NotBlank
-	private String primaryParameter;
 
 	@NotEmpty
 	private Map<String, List<String>> parameterValues;
@@ -34,14 +34,6 @@ public class SavedReportConfiguration {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getPrimaryParameter() {
-		return primaryParameter;
-	}
-
-	public void setPrimaryParameter(String primaryParameter) {
-		this.primaryParameter = primaryParameter;
 	}
 
 	public Map<String, List<String>> getParameterValues() {

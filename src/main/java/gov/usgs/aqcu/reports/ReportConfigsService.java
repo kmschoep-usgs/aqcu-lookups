@@ -21,7 +21,7 @@ import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
 import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.exception.ReportDoesNotExistException;
-import gov.usgs.aqcu.model.report.SavedReportConfiguration;
+import gov.usgs.aqcu.model.config.SavedReportConfiguration;
 import gov.usgs.aqcu.model.config.GroupConfig;
 import gov.usgs.aqcu.model.config.GroupData;
 import gov.usgs.aqcu.model.config.FolderData;
@@ -106,7 +106,7 @@ public class ReportConfigsService {
 		result.setFolderName(parseFolderName(folderPath));
 		result.setCurrentPath(folderPath);
 		result.setFolders(getFolderSubFolders(groupName, folderPath));
-		result.setReports(reportsConfig.getSavedReportsList());
+		result.setReports(new ArrayList<>(reportsConfig.getSavedReports().values()));
 		result.setParameterDefaults(reportsConfig.getParameterDefaults());
 
 		return result;

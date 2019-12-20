@@ -1,9 +1,8 @@
 package gov.usgs.aqcu.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.usgs.aqcu.parameter.FieldVisitDatesRequestParameters;
 import gov.usgs.aqcu.parameter.FindInDerivationChainRequestParameters;
@@ -18,8 +17,8 @@ import gov.usgs.aqcu.model.lookup.TimeSeriesBasicData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.http.HttpStatus;
@@ -47,6 +46,11 @@ public class LookupController {
 	public ResponseEntity<?> getTimeSeriesDescriptions(@Validated TimeSeriesIdentifiersRequestParameters params) throws Exception {
 		return new ResponseEntity<Map<String,TimeSeriesBasicData>>(lookupsService.getTimeSeriesDescriptions(params), new HttpHeaders(), HttpStatus.OK);
 	}
+
+	@GetMapping(value="/timeseries/identifiers/list", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?> getTimeSeriesDescriptions(@RequestParam("identifier") String[] uniqueIds) throws Exception {
+		return new ResponseEntity<Map<String,TimeSeriesBasicData>>(lookupsService.getTimeSeriesDescriptionsForUniqueIds(Arrays.asList(uniqueIds)), new HttpHeaders(), HttpStatus.OK);
+	}
 	
 	@GetMapping(value="/derivationChain/find", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> searchDerivationChain(@Validated FindInDerivationChainRequestParameters params) throws Exception {
@@ -66,6 +70,11 @@ public class LookupController {
 	@GetMapping(value="/sites", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getSites(@Validated SiteSearchRequestParameters params) throws Exception {
 		return new ResponseEntity<List<LocationBasicData>>(lookupsService.searchSites(params), new HttpHeaders(), HttpStatus.OK);
+	}
+
+	@GetMapping(value="/sites/list", produces={MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?> getSites(@RequestParam("identifier") String[] identifiers) throws Exception {
+		return new ResponseEntity<List<LocationBasicData>>(lookupsService.getSiteDataForIdentifiers(Arrays.asList(identifiers)), new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/field-visit-dates", produces={MediaType.APPLICATION_JSON_VALUE})
@@ -106,16 +115,6 @@ public class LookupController {
 	@GetMapping(value="/units", produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getUnits() throws Exception {
 		return new ResponseEntity<List<String>>(lookupsService.getUnits(), new HttpHeaders(), HttpStatus.OK);
-	}
-
-	@GetMapping(value="/reportParameterConfig/{reportType}", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getReportParameterConfig(@PathVariable String reportType) throws Exception {
-		return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(lookupsService.getReportParameterConfig(reportType)), new HttpHeaders(), HttpStatus.OK);
-	}
-		
-	@GetMapping(value="/report/types", produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getReportTypes() throws Exception {
-		return new ResponseEntity<String>(lookupsService.getReportTypes(), new HttpHeaders(), HttpStatus.OK);
 	}
 
 	/*
