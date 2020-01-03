@@ -31,11 +31,6 @@
 
     <repositories>
         <repository>
-            <id>wma-maven-centralized</id>
-            <name>Water Mission Area Snapshots and Releases</name>
-            <url>https://cida.usgs.gov/artifactory/wma-maven-centralized</url>
-        </repository>
-        <repository>
             <id>aqcu-maven-centralized</id>
             <name>AQCU Maven Centralized (Artifactory)</name>
             <url>${wma.artifactory.url}/aqcu-maven-centralized/</url>
