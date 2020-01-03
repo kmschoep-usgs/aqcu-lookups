@@ -8,7 +8,6 @@
 
     <properties>
         <cida.maven.url>https://internal.cida.usgs.gov/maven/content/repositories</cida.maven.url>
-        <wma.artifactory.url>https://cida.usgs.gov/artifactory</wma.artifactory.url>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -33,12 +32,12 @@
         <repository>
             <id>aqcu-maven-centralized</id>
             <name>AQCU Maven Centralized (Artifactory)</name>
-            <url>${wma.artifactory.url}/aqcu-maven-centralized/</url>
+            <url>https://cida.usgs.gov/artifactory/aqcu-maven-centralized/</url>
         </repository>
         <repository>
             <id>wma-maven-centralized</id>
             <name>WMA Maven Centralized (Artifactory)</name>
-            <url>${wma.artifactory.url}/wma-maven-centralized/</url>
+            <url>https://cida.usgs.gov/artifactory/wma-maven-centralized/</url>
         </repository>
     </repositories>
 
