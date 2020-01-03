@@ -374,6 +374,7 @@ public class ConfigControllerMVCTest {
         HashMap<String, String> testDefaults = new HashMap<>();
         HashMap<String, List<String>> testParams = new HashMap<>();
         testParams.put("test_param", Arrays.asList("test_param_value"));
+        testParams.put("test_param2", Arrays.asList("test_param_value1", "test_param_value2"));
         testDefaults.put("param1", "value1");
         SavedReportConfiguration testReport = new SavedReportConfiguration();
         testReport.setCreatedUser("user1");
@@ -404,7 +405,8 @@ public class ConfigControllerMVCTest {
             .andExpect(jsonPath("$.reports[0].reportName", is("name1")))
             .andExpect(jsonPath("$.reports[0].lastModifiedUser", is("user1")))
             .andExpect(jsonPath("$.reports[0].reportType", is("type1")))
-            .andExpect(jsonPath("$.reports[0].parameterValues.test_param", is(Arrays.asList("test_param_value"))))
+            .andExpect(jsonPath("$.reports[0].parameterValues.test_param", is("test_param_value")))
+            .andExpect(jsonPath("$.reports[0].parameterValues.test_param2", is(Arrays.asList("test_param_value1", "test_param_value2"))))
             .andExpect(jsonPath("$.folders", hasItems("folder1", "folder2")))
             .andExpect(jsonPath("$.parameterDefaults.param1", is("value1")));
     }
