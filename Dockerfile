@@ -1,5 +1,15 @@
 FROM maven:3.6.0-jdk-8-alpine AS build
 
+#Pass build args into env vars
+ARG CI
+ENV CI=$CI
+
+ARG SONAR_HOST_URL
+ENV SONAR_HOST_URL=$SONAR_HOST_URL
+
+ARG SONAR_LOGIN
+ENV SONAR_LOGIN=$SONAR_LOGIN
+
 COPY pom.xml /build/pom.xml
 WORKDIR /build
 
@@ -9,10 +19,12 @@ RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 	fi
 
 #download all maven dependencies (this will only re-run if the pom has changed)
-RUN mvn -B dependency:go-offline
+#suppress INFO-level logs about dependency downloads to permit the build to succed within Travis' log length limits
+RUN mvn -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn dependency:go-offline
 
 COPY src /build/src
-ARG BUILD_COMMAND="mvn -B clean package"
+COPY .git /build
+ARG BUILD_COMMAND="mvn -B clean verify"
 RUN ${BUILD_COMMAND}
 
 FROM usgswma/wma-spring-boot-base:8-jre-slim-0.0.4
