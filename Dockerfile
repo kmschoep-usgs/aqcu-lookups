@@ -32,9 +32,7 @@ FROM usgswma/wma-spring-boot-base:8-jre-slim-0.0.4
 ENV serverPort=7503
 ENV aquariusServiceEndpoint=http://aquarius.test.gov
 ENV aquariusServiceUser=changeme
-ENV HEALTHY_RESPONSE_CONTAINS='{"status":{"code":"UP","description":""}'
+ENV HEALTHY_RESPONSE_CONTAINS='{"status":"UP"}'
+ENV HEALTH_CHECK_ENDPOINT=actuator/health
 
 COPY --chown=1000:1000 --from=build /build/target/*.jar app.jar
-
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD curl -k "https://127.0.0.1:${serverPort}${serverContextPath}${HEALTH_CHECK_ENDPOINT}" | grep -q ${HEALTHY_RESPONSE_CONTAINS} || exit 1
