@@ -13,13 +13,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <additionalparam>-Xdoclint:none</additionalparam>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <springfox.version>2.9.2</springfox.version>
-        <aquarius.sdk.version>18.8.1</aquarius.sdk.version>
-        <aqcu.framework.version>0.0.8-SNAPSHOT</aqcu.framework.version>
-        <spring.boot.version>2.1.8.RELEASE</spring.boot.version>
-        <pmd.plugin.version>3.12.0</pmd.plugin.version>
         <java.version>1.8</java.version>
+        <pmd.plugin.version>3.12.0</pmd.plugin.version>
         <jxr.plugin.version>3.0.0</jxr.plugin.version>
+        <springfox.version>2.9.2</springfox.version>
+        <aqcu.framework.version>0.0.8-SNAPSHOT</aqcu.framework.version>
+        <spring.boot.version>2.2.0.RELEASE</spring.boot.version>
+        <owasp.dependency.check.version>5.2.4</owasp.dependency.check.version>
     </properties>
 
     <parent>
@@ -58,21 +58,22 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- Security Updates - 10-10-19 -->
+            <!-- Security Upgrades -->
+            <!-- 1/13/2020 -->
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>25.0-jre</version>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>1.64</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.9.10.1</version>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>9.0.30</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.tika</groupId>
-                <artifactId>tika-core</artifactId>
-                <version>1.22</version>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>9.0.30</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -82,14 +83,6 @@
             <groupId>gov.usgs.aqcu</groupId>
             <artifactId>aqcu-framework</artifactId>
             <version>${aqcu.framework.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>gov.usgs.aqcu</groupId>
-            <artifactId>aqcu-framework</artifactId>
-            <version>${aqcu.framework.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -120,12 +113,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.aquaticinformatics</groupId>
-            <artifactId>aquarius.sdk</artifactId>
-            <version>${aquarius.sdk.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
         </dependency>
@@ -139,6 +126,14 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <version>5.2.1.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.aqcu</groupId>
+            <artifactId>aqcu-framework</artifactId>
+            <version>${aqcu.framework.version}</version>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -170,21 +165,14 @@
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.3.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <dependencies>
+                    <!-- https://github.com/trautonen/coveralls-maven-plugin/issues/112 -->
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.2.3</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -201,6 +189,18 @@
                         <exclude>gov/usgs/aqcu/Application.class</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <executions>
+                    <execution>
+                        <id>dependency-security-check</id>
+                        <configuration>
+                            <suppressionFile>dependency-check-suppression.xml</suppressionFile>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
