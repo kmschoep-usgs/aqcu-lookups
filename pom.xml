@@ -3,22 +3,21 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gov.usgs.aqcu</groupId>
     <artifactId>aqcu-lookups</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <!-- Static version that does not change. Versioning handled by Docker image.-->
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
-        <cida.maven.url>https://internal.cida.usgs.gov/maven/content/repositories</cida.maven.url>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <additionalparam>-Xdoclint:none</additionalparam>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <java.version>1.8</java.version>
-        <pmd.plugin.version>3.12.0</pmd.plugin.version>
         <jxr.plugin.version>3.0.0</jxr.plugin.version>
         <springfox.version>2.9.2</springfox.version>
-        <aqcu.framework.version>0.0.8-SNAPSHOT</aqcu.framework.version>
-        <spring.boot.version>2.2.0.RELEASE</spring.boot.version>
+        <aqcu.framework.version>0.0.8</aqcu.framework.version>
+        <spring.boot.version>2.2.4.RELEASE</spring.boot.version>
         <owasp.dependency.check.version>5.2.4</owasp.dependency.check.version>
     </properties>
 
@@ -27,17 +26,17 @@
         <artifactId>code-quality</artifactId>
         <version>1.1.0</version>
     </parent>
-
+    
     <repositories>
+        <repository>
+            <id>wma-maven-centralized</id>
+            <name>Water Mission Area Snapshots and Releases</name>
+            <url>https://cida.usgs.gov/artifactory/wma-maven-centralized</url>
+        </repository>
         <repository>
             <id>aqcu-maven-centralized</id>
             <name>AQCU Maven Centralized (Artifactory)</name>
             <url>https://cida.usgs.gov/artifactory/aqcu-maven-centralized/</url>
-        </repository>
-        <repository>
-            <id>wma-maven-centralized</id>
-            <name>WMA Maven Centralized (Artifactory)</name>
-            <url>https://cida.usgs.gov/artifactory/wma-maven-centralized/</url>
         </repository>
     </repositories>
 
