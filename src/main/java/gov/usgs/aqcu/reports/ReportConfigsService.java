@@ -21,11 +21,11 @@ import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
 import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.exception.ReportDoesNotExistException;
-import gov.usgs.aqcu.model.config.SavedReportConfiguration;
-import gov.usgs.aqcu.model.config.GroupConfig;
+import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
+import gov.usgs.aqcu.model.config.persist.GroupConfig;
+import gov.usgs.aqcu.model.config.persist.FolderConfig;
 import gov.usgs.aqcu.model.config.GroupData;
 import gov.usgs.aqcu.model.config.FolderData;
-import gov.usgs.aqcu.model.config.ReportsConfig;
 
 @Service
 public class ReportConfigsService {	
@@ -99,7 +99,7 @@ public class ReportConfigsService {
 			throw new FolderDoesNotExistException(groupName, folderPath);
 		}
 
-		ReportsConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
+		FolderConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
 
 		FolderData result = new FolderData();
 		result.setGroupName(groupName);
@@ -136,7 +136,7 @@ public class ReportConfigsService {
 			throw new FolderDoesNotExistException(groupName, parentPath);
 		}
 		
-		saveFolderReportsConfig(groupName, folderPath, new ReportsConfig());
+		saveFolderReportsConfig(groupName, folderPath, new FolderConfig());
 	}
 
 	public void deleteFolder(String groupName, String folderPath) {
@@ -157,16 +157,16 @@ public class ReportConfigsService {
 				.collect(Collectors.toList());
 	}
 
-	private void saveFolderReportsConfig(String groupName, String folderPath, ReportsConfig reportsConfig) throws IOException {
+	private void saveFolderReportsConfig(String groupName, String folderPath, FolderConfig reportsConfig) throws IOException {
 		s3Service.saveJsonString(
 			Paths.get(groupName, folderPath, REPORT_CONFIG_FILE_NAME).toString(), 
 			new ObjectMapper().writeValueAsString(reportsConfig)
 		);
 	}
 
-	private ReportsConfig loadFolderReportsConfig(String groupName, String folderPath) throws IOException {
+	private FolderConfig loadFolderReportsConfig(String groupName, String folderPath) throws IOException {
 		String folderReportsConfigString = s3Service.getFileAsString(Paths.get(groupName, folderPath, REPORT_CONFIG_FILE_NAME).toString());
-		return new ObjectMapper().readValue(folderReportsConfigString, ReportsConfig.class);
+		return new ObjectMapper().readValue(folderReportsConfigString, FolderConfig.class);
 	}
 
 	private Boolean doesFolderExist(String groupName, String folderPath) {
@@ -183,7 +183,7 @@ public class ReportConfigsService {
 			throw new FolderDoesNotExistException(groupName, folderPath);
 		}
 
-		ReportsConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
+		FolderConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
 		Boolean reportExists = reportsConfig.doesReportExist(newReport.getId());
 
 
@@ -207,7 +207,7 @@ public class ReportConfigsService {
 			throw new FolderDoesNotExistException(groupName, folderPath);
 		}
 
-		ReportsConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
+		FolderConfig reportsConfig = loadFolderReportsConfig(groupName, folderPath);
 
 		if(!reportsConfig.doesReportExist(reportId)) {
 			throw new ReportDoesNotExistException(groupName, folderPath, reportId);

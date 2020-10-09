@@ -1,4 +1,4 @@
-package gov.usgs.aqcu.model.config;
+package gov.usgs.aqcu.model.config.persist;
 
 import java.util.ArrayList;
 import java.util.List;

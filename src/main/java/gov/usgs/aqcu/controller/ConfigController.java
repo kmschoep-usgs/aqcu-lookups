@@ -8,7 +8,7 @@ import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.exception.ReportDoesNotExistException;
 import gov.usgs.aqcu.model.config.FolderData;
 import gov.usgs.aqcu.model.config.GroupData;
-import gov.usgs.aqcu.model.config.SavedReportConfiguration;
+import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
 import java.util.List;

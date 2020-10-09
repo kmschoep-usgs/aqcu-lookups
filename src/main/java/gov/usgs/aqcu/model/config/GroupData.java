@@ -3,6 +3,8 @@ package gov.usgs.aqcu.model.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.usgs.aqcu.model.config.persist.GroupConfig;
+
 public class GroupData {
 	private String groupName;
 	private List<String> folders;

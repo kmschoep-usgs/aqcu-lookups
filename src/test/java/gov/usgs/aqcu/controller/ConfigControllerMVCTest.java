@@ -45,10 +45,10 @@ import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
 import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.model.config.FolderData;
-import gov.usgs.aqcu.model.config.GroupConfig;
+import gov.usgs.aqcu.model.config.persist.GroupConfig;
+import gov.usgs.aqcu.model.config.persist.FolderConfig;
+import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
 import gov.usgs.aqcu.model.config.GroupData;
-import gov.usgs.aqcu.model.config.ReportsConfig;
-import gov.usgs.aqcu.model.config.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
 @RunWith(SpringRunner.class)
@@ -385,7 +385,7 @@ public class ConfigControllerMVCTest {
         testReport.setLastModifiedUser("user1");
         testReport.setReportType("type1");
         testReport.setParameterValues(testParams);
-        ReportsConfig testConfig = new ReportsConfig();
+        FolderConfig testConfig = new FolderConfig();
         testConfig.setParameterDefaults(testDefaults);
         testConfig.saveReport(testReport);
         FolderData testData = new FolderData();

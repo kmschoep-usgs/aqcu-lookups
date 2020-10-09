@@ -29,10 +29,10 @@ import gov.usgs.aqcu.exception.GroupDoesNotExistException;
 import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.exception.ReportDoesNotExistException;
 import gov.usgs.aqcu.model.config.FolderData;
-import gov.usgs.aqcu.model.config.GroupConfig;
+import gov.usgs.aqcu.model.config.persist.GroupConfig;
 import gov.usgs.aqcu.model.config.GroupData;
-import gov.usgs.aqcu.model.config.ReportsConfig;
-import gov.usgs.aqcu.model.config.SavedReportConfiguration;
+import gov.usgs.aqcu.model.config.persist.FolderConfig;
+import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
 @RunWith(SpringRunner.class)
@@ -160,7 +160,7 @@ public class ReportConfigsServiceTest {
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
-        ReportsConfig basicConfig = new ReportsConfig();
+        FolderConfig basicConfig = new FolderConfig();
         basicConfig.setParameterDefaults(basicDefaults);
         basicConfig.setSavedReports(basicReports);
 
@@ -183,7 +183,7 @@ public class ReportConfigsServiceTest {
 
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
-        given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(new ReportsConfig()));
+        given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(new FolderConfig()));
         given(s3Service.getSubFolderNames(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME)).willReturn(new ArrayList<>());
 
         result = service.getFolderData(TEST_GROUP_NAME, TEST_FOLDER_NAME);
@@ -196,7 +196,7 @@ public class ReportConfigsServiceTest {
         
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
-        given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(new ReportsConfig()));
+        given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(new FolderConfig()));
         given(s3Service.getSubFolderNames(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME)).willReturn(new ArrayList<>());
 
         result = service.getFolderData(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME);
@@ -248,7 +248,7 @@ public class ReportConfigsServiceTest {
     public void createFolderBasicTest() throws Exception {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
-        doNothing().when(s3Service).saveJsonString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME, new ObjectMapper().writeValueAsString(new ReportsConfig()));
+        doNothing().when(s3Service).saveJsonString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME, new ObjectMapper().writeValueAsString(new FolderConfig()));
 
         service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME);
     }
@@ -258,14 +258,14 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
-        doNothing().when(s3Service).saveJsonString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME, new ObjectMapper().writeValueAsString(new ReportsConfig()));
+        doNothing().when(s3Service).saveJsonString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME, new ObjectMapper().writeValueAsString(new FolderConfig()));
 
         service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME);
     }
 
     @Test
     public void createFolderNotExistTest() throws Exception {
-        doNothing().when(s3Service).saveJsonString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME, new ObjectMapper().writeValueAsString(new ReportsConfig()));
+        doNothing().when(s3Service).saveJsonString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME, new ObjectMapper().writeValueAsString(new FolderConfig()));
 
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(false);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
@@ -386,7 +386,7 @@ public class ReportConfigsServiceTest {
         newReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
-        ReportsConfig basicConfig = new ReportsConfig();
+        FolderConfig basicConfig = new FolderConfig();
         basicConfig.setParameterDefaults(basicDefaults);
         basicConfig.setSavedReports(basicReports);
 
@@ -422,7 +422,7 @@ public class ReportConfigsServiceTest {
         newReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
-        ReportsConfig basicConfig = new ReportsConfig();
+        FolderConfig basicConfig = new FolderConfig();
         basicConfig.setParameterDefaults(basicDefaults);
         basicConfig.setSavedReports(basicReports);
 
@@ -491,7 +491,7 @@ public class ReportConfigsServiceTest {
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
-        ReportsConfig basicConfig = new ReportsConfig();
+        FolderConfig basicConfig = new FolderConfig();
         basicConfig.setParameterDefaults(basicDefaults);
         basicConfig.setSavedReports(basicReports);
 
@@ -523,7 +523,7 @@ public class ReportConfigsServiceTest {
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
-        ReportsConfig basicConfig = new ReportsConfig();
+        FolderConfig basicConfig = new FolderConfig();
         basicConfig.setParameterDefaults(basicDefaults);
         basicConfig.setSavedReports(basicReports);
 
@@ -549,7 +549,7 @@ public class ReportConfigsServiceTest {
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
-        ReportsConfig basicConfig = new ReportsConfig();
+        FolderConfig basicConfig = new FolderConfig();
         basicConfig.setParameterDefaults(basicDefaults);
         basicConfig.setSavedReports(basicReports);
 

@@ -1,4 +1,4 @@
-package gov.usgs.aqcu.model.config;
+package gov.usgs.aqcu.model.config.persist;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,11 +6,11 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ReportsConfig {
+public class FolderConfig {
 	private Map<String, String> parameterDefaults;
 	private Map<String, SavedReportConfiguration> savedReports;
 
-	public ReportsConfig() {
+	public FolderConfig() {
 		parameterDefaults = new HashMap<>();
 		savedReports = new HashMap<>();
 	}
