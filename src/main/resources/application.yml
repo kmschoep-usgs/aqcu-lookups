@@ -8,6 +8,10 @@ server:
     key-alias: ${keystoreSSLKey:tomcat}
     enabled-protocols: TLSv1.2
 
+saved-configs:
+  groups:
+    default-folders: "gw-reports,qw-reports,sw-reports"
+
 aquarius:
   service:
     endpoint: ${aquariusServiceEndpoint}
