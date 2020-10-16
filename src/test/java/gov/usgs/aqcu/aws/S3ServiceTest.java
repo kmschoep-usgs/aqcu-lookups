@@ -32,8 +32,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import gov.usgs.aqcu.aws.S3Service;
-
 @RunWith(SpringRunner.class)
 public class S3ServiceTest {	
     @MockBean

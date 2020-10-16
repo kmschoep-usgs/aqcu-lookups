@@ -3,10 +3,12 @@ package gov.usgs.aqcu.model.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.usgs.aqcu.model.config.persist.GroupProperties;
+
 public class GroupData {
 	private String groupName;
 	private List<String> folders;
-	private GroupConfig config;
+	private GroupProperties properties;
 
 	public GroupData() {
 		folders = new ArrayList<>();
@@ -16,12 +18,12 @@ public class GroupData {
 		return folders;
 	}
 
-	public GroupConfig getConfig() {
-		return config;
+	public GroupProperties getProperties() {
+		return properties;
 	}
 
-	public void setConfig(GroupConfig config) {
-		this.config = config;
+	public void setProperties(GroupProperties properties) {
+		this.properties = properties;
 	}
 
 	public String getGroupName() {

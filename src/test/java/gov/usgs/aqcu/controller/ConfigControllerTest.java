@@ -33,9 +33,10 @@ import gov.usgs.aqcu.exception.GroupDoesNotExistException;
 import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.exception.ReportDoesNotExistException;
 import gov.usgs.aqcu.model.config.FolderData;
-import gov.usgs.aqcu.model.config.GroupConfig;
+import gov.usgs.aqcu.model.config.persist.FolderProperties;
+import gov.usgs.aqcu.model.config.persist.GroupConfig;
 import gov.usgs.aqcu.model.config.GroupData;
-import gov.usgs.aqcu.model.config.SavedReportConfiguration;
+import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
 @RunWith(SpringRunner.class)
@@ -99,16 +100,14 @@ public class ConfigControllerTest {
     @Test
     public void getGroupTest() throws Exception {
         GroupConfig config = new GroupConfig();
-        config.setAuthorizedUsers(Arrays.asList("user1", "user2"));
         GroupData group1Data = new GroupData();
-        group1Data.setConfig(config);
+        group1Data.setProperties(config.getGroupProperties());
         group1Data.setFolders(Arrays.asList("folder1", "folder2"));
         group1Data.setGroupName("group1");
 
         given(service.getGroupData("group1")).willReturn(group1Data);
         ResponseEntity<?> result = controller.getGroup("group1");
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertThat(((GroupData)result.getBody()).getConfig().getAuthorizedUsers(), containsInAnyOrder("user1", "user2"));
         assertThat(((GroupData)result.getBody()).getFolders(), containsInAnyOrder("folder1", "folder2"));
         assertEquals(((GroupData)result.getBody()).getGroupName(), "group1");
 
@@ -208,6 +207,53 @@ public class ConfigControllerTest {
     }
 
     @Test
+    public void updateFolderTest() throws Exception {
+        ResponseEntity<?> result = controller.updateFolder( new FolderProperties(), "group1", "folder1");
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(null, result.getBody());
+
+        doThrow(new GroupDoesNotExistException("group2")).when(service).createFolder("group2", "folder1");
+        try {
+            result = controller.createFolder("group2", "folder1");
+            fail("Expected GroupDoesNotExistException but got no exception");
+        } catch(GroupDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group2"));
+        } catch(Exception e) {
+            fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
+        }
+
+        doThrow(new FolderDoesNotExistException("group1", "folder1")).when(service).createFolder("group1", "folder1/folder2");
+        try {
+            result = controller.createFolder("group1", "folder1/folder2");
+            fail("Expected FolderDoesNotExistException but got no exception");
+        } catch(FolderDoesNotExistException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder1"));
+        } catch(Exception e) {
+            fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
+        }
+
+        doThrow(new FolderAlreadyExistsException("group1", "folder1")).when(service).createFolder("group1", "folder1");
+        try {
+            result = controller.createFolder("group1", "folder1");
+            fail("Expected FolderAlreadyExistsException but got no exception");
+        } catch(FolderAlreadyExistsException e) {
+            assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder1"));
+        } catch(Exception e) {
+            fail("Expected FolderAlreadyExistsException but got " + e.getClass().getName());
+        }
+
+        doThrow(new RuntimeException("test_error")).when(service).createFolder("group1", "bad_folder");
+        try {
+            result = controller.createFolder("group1", "bad_folder");
+            fail("Expected RuntimeException but got no exception");
+        } catch(RuntimeException e) {
+            assertTrue(e.getMessage().contains("test_error"));
+        } catch(Exception e) {
+            fail("Expected RuntimeException but got " + e.getClass().getName());
+        }
+    }
+
+    @Test
     public void getFolderTest() throws Exception {
         HashMap<String, String> defaults = new HashMap<>();
         HashMap<String, List<String>> params = new HashMap<>();
@@ -220,9 +266,12 @@ public class ConfigControllerTest {
         testReport.setParameterValues(params);
         testReport.setReportName("test_report");
         testReport.setReportType("test_type");
+        FolderProperties props = new FolderProperties();
+        props.setParameterDefaults(defaults);
+        props.setCanStoreReports(true);
         FolderData folder1Data = new FolderData();
         folder1Data.setReports(Arrays.asList(testReport));
-        folder1Data.setParameterDefaults(defaults);
+        folder1Data.setProperties(props);
         folder1Data.setFolders(Arrays.asList("folder1", "folder2"));
         folder1Data.setGroupName("group1");
         folder1Data.setCurrentPath("folder1/");
@@ -234,7 +283,8 @@ public class ConfigControllerTest {
         assertThat(((FolderData)result.getBody()).getFolders(), containsInAnyOrder("folder1", "folder2"));
         assertEquals(((FolderData)result.getBody()).getGroupName(), "group1");
         assertEquals(((FolderData)result.getBody()).getCurrentPath(), "folder1/");
-        assertEquals(((FolderData)result.getBody()).getParameterDefaults(), defaults);
+        assertEquals(((FolderData)result.getBody()).getProperties().getParameterDefaults(), props.getParameterDefaults());
+        assertTrue(((FolderData)result.getBody()).getProperties().getCanStoreReports());
 
         given(service.getFolderData("group2", "folder1")).willThrow(new GroupDoesNotExistException("group2"));
         try {

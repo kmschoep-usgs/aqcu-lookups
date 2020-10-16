@@ -45,10 +45,11 @@ import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
 import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.model.config.FolderData;
-import gov.usgs.aqcu.model.config.GroupConfig;
+import gov.usgs.aqcu.model.config.persist.GroupConfig;
+import gov.usgs.aqcu.model.config.persist.FolderConfig;
+import gov.usgs.aqcu.model.config.persist.FolderProperties;
+import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
 import gov.usgs.aqcu.model.config.GroupData;
-import gov.usgs.aqcu.model.config.ReportsConfig;
-import gov.usgs.aqcu.model.config.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
 @RunWith(SpringRunner.class)
@@ -135,13 +136,13 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void createGroupErrorTest() throws Exception {
-        doThrow(new GroupAlreadyExistsException("test")).when(reportConfigsService).createGroup("test");
+        doThrow(new GroupAlreadyExistsException("test")).when(reportConfigsService).createGroup(eq("test"));
         mockMvc.perform(post("/config/groups/")
             .param("groupName", "test") 
         ).andDo(print())
             .andExpect(status().isBadRequest());
         
-        doThrow(new AmazonS3Exception("test_error")).when(reportConfigsService).createGroup("test2");
+        doThrow(new AmazonS3Exception("test_error")).when(reportConfigsService).createGroup(eq("test2"));
         try {
             mockMvc.perform(post("/config/groups/").param("groupName", "test2")).andReturn();
             fail("Expected AmazonS3Exception (unhandled by controller) but got no exception.");
@@ -156,16 +157,14 @@ public class ConfigControllerMVCTest {
     @Test
     public void getGroupTest() throws Exception {
         GroupConfig testConfig = new GroupConfig();
-        testConfig.setAuthorizedUsers(Arrays.asList("user1", "user2"));
         GroupData testData = new GroupData();
-        testData.setConfig(testConfig);
+        testData.setProperties(testConfig.getGroupProperties());
         testData.setGroupName("test");
         testData.setFolders(Arrays.asList("folder1", "folder2"));
 
         given(reportConfigsService.getGroupData("test")).willReturn(testData);
         mockMvc.perform(get("/config/groups/test")).andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.config.authorizedUsers", hasItems("user1", "user2")))
             .andExpect(jsonPath("$.groupName", is("test")))
             .andExpect(jsonPath("$.folders", hasItems("folder1", "folder2")));
     }
@@ -372,6 +371,19 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
+    public void updateFolderTest() throws Exception {
+        FolderProperties newProps = new FolderProperties();
+        newProps.setCanStoreReports(false);
+        String newPropsJson = new ObjectMapper().writeValueAsString(newProps);
+        mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/folders")
+            .param("folderPath", "test")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(newPropsJson)
+        ).andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @Test
     public void getFolderTest() throws Exception {
         HashMap<String, String> testDefaults = new HashMap<>();
         HashMap<String, List<String>> testParams = new HashMap<>();
@@ -385,14 +397,16 @@ public class ConfigControllerMVCTest {
         testReport.setLastModifiedUser("user1");
         testReport.setReportType("type1");
         testReport.setParameterValues(testParams);
-        ReportsConfig testConfig = new ReportsConfig();
-        testConfig.setParameterDefaults(testDefaults);
+        FolderProperties testProps = new FolderProperties();
+        testProps.setParameterDefaults(testDefaults);
+        FolderConfig testConfig = new FolderConfig();
         testConfig.saveReport(testReport);
+        testConfig.setProperties(testProps);
         FolderData testData = new FolderData();
         testData.setReports(new ArrayList<>(testConfig.getSavedReports().values()));
+        testData.setProperties(testConfig.getProperties());
         testData.setFolders(Arrays.asList("folder1", "folder2"));
         testData.setGroupName("test");
-        testData.setParameterDefaults(testDefaults);
         testData.setCurrentPath("test");
 
         given(reportConfigsService.getFolderData("test", "test")).willReturn(testData);
@@ -410,7 +424,8 @@ public class ConfigControllerMVCTest {
             .andExpect(jsonPath("$.reports[0].parameterValues.test_param", is("test_param_value")))
             .andExpect(jsonPath("$.reports[0].parameterValues.test_param2", is(Arrays.asList("test_param_value1", "test_param_value2"))))
             .andExpect(jsonPath("$.folders", hasItems("folder1", "folder2")))
-            .andExpect(jsonPath("$.parameterDefaults.param1", is("value1")));
+            .andExpect(jsonPath("$.properties.canStoreReports", is(false)))
+            .andExpect(jsonPath("$.properties.parameterDefaults.param1", is("value1")));
     }
 
     @Test
@@ -869,7 +884,7 @@ public class ConfigControllerMVCTest {
         String goodConfigJson = new ObjectMapper().writeValueAsString(testConfig);
 
         // Success
-        mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/    test    /reports")
+        mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/reports")
             .param("folderPath", "test")
             .param("reportId", "report1")
             .contentType(MediaType.APPLICATION_JSON_VALUE)

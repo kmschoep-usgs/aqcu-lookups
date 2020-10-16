@@ -8,7 +8,8 @@ import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
 import gov.usgs.aqcu.exception.ReportDoesNotExistException;
 import gov.usgs.aqcu.model.config.FolderData;
 import gov.usgs.aqcu.model.config.GroupData;
-import gov.usgs.aqcu.model.config.SavedReportConfiguration;
+import gov.usgs.aqcu.model.config.persist.FolderProperties;
+import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
 import java.util.List;
@@ -83,6 +84,12 @@ public class ConfigController {
 	public ResponseEntity<?> createFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
 		configsService.createFolder(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim());
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim()), new HttpHeaders(), HttpStatus.CREATED);
+	}
+
+	@PutMapping(value=FOLDERS_CONTEXT_PATH)
+	public ResponseEntity<?> updateFolder(@RequestBody @Valid FolderProperties folderProperties, @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
+		configsService.updateFolder(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim(), folderProperties);
+		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim()), new HttpHeaders(), HttpStatus.OK);
 	}
 
 	@GetMapping(value=FOLDERS_CONTEXT_PATH, produces={MediaType.APPLICATION_JSON_VALUE})
