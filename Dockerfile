@@ -33,6 +33,8 @@ FROM usgswma/wma-spring-boot-base:8-jre-slim-0.0.4
 ENV serverPort=7503
 ENV aquariusServiceEndpoint=http://aquarius.test.gov
 ENV aquariusServiceUser=changeme
+ENV oauthResourceId=resource-id
+ENV oauthResourceTokenKeyUri=https://example.gov/oauth/token_key
 ENV HEALTHY_RESPONSE_CONTAINS='{"status":"UP"}'
 ENV HEALTH_CHECK_ENDPOINT=actuator/health
 
