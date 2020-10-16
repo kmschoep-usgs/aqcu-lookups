@@ -44,6 +44,12 @@ s3:
   bucket: test-bucket
   region: us-west-2
 
+security:
+  oauth2:
+    resource:
+      filter-order: 3
+      id: test-resource
+
 spring:
   profiles:
     active: test
