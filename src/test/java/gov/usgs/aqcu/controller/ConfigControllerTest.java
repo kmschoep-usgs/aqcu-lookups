@@ -11,6 +11,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Matchers.any;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +52,9 @@ public class ConfigControllerTest {
 
     @Before
     public void setup() {
-        controller = new ConfigController(service);
+        controller = new ConfigController(service, Clock.fixed( 
+            Instant.parse("2018-08-22T10:00:00Z"),
+            ZoneOffset.UTC));
     }
 
     @Test
@@ -358,7 +363,10 @@ public class ConfigControllerTest {
     public void createReportTest() throws Exception {
         ResponseEntity<?> result = controller.createReport(new SavedReportConfiguration(), "group1", "folder1");
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertEquals(null, result.getBody());
+        assertEquals("unknown",((SavedReportConfiguration)result.getBody()).getCreatedUser());
+        assertEquals("unknown",((SavedReportConfiguration)result.getBody()).getLastModifiedUser());
+        assertEquals("2018-08-22T10:00:00Z",((SavedReportConfiguration)result.getBody()).getCreatedDate().toString());
+        assertEquals("2018-08-22T10:00:00Z",((SavedReportConfiguration)result.getBody()).getLastModifiedDate().toString());
 
         doThrow(new GroupDoesNotExistException("group2")).when(service).saveReport(eq("group2"), eq("folder1"), any(SavedReportConfiguration.class), eq(false));
         try {
@@ -403,10 +411,19 @@ public class ConfigControllerTest {
 
     @Test
     public void updateReportTest() throws Exception {
-        ResponseEntity<?> result = controller.updateReport(new SavedReportConfiguration(), "group1", "folder1", "report1");
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(null, result.getBody());
+        SavedReportConfiguration baselineConfig = new SavedReportConfiguration();
+        baselineConfig.setCreatedUser("known");
+        baselineConfig.setLastModifiedUser("known");
+        baselineConfig.setCreatedDate(Instant.parse("2018-01-22T10:00:00Z"));
+        baselineConfig.setLastModifiedDate(Instant.parse("2018-01-22T10:00:00Z"));
 
+        ResponseEntity<?> result = controller.updateReport(baselineConfig, "group1", "folder1", "report1");
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("unknown",((SavedReportConfiguration)result.getBody()).getLastModifiedUser());
+        assertEquals("2018-08-22T10:00:00Z",((SavedReportConfiguration)result.getBody()).getLastModifiedDate().toString());
+        assertEquals("known",((SavedReportConfiguration)result.getBody()).getCreatedUser());
+        assertEquals("2018-01-22T10:00:00Z",((SavedReportConfiguration)result.getBody()).getCreatedDate().toString());
+        
         doThrow(new GroupDoesNotExistException("group2")).when(service).saveReport(eq("group2"), eq("folder1"), any(SavedReportConfiguration.class), eq(true));
         try {
             result = controller.updateReport(new SavedReportConfiguration(), "group2", "folder1", "report1");
