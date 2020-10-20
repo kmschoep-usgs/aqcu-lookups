@@ -12,6 +12,8 @@ import gov.usgs.aqcu.model.config.persist.FolderProperties;
 import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
 import gov.usgs.aqcu.reports.ReportConfigsService;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,11 +39,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @RestController
 @RequestMapping("/config")
 @Validated
 public class ConfigController {
+	public static final String UNKNOWN_USERNAME = "unknown";
 	public static final String GROUP_NAME_REGEX = "^[\\s]*[a-zA-Z0-9-_]+[\\s]*$";
 	public static final String FOLDER_PATH_REGEX = "^[\\s]*[\\/]?[a-zA-Z0-9-_]+(?:\\/[a-zA-Z0-9-_]+)*[\\/]?[\\s]*$";
 	private static final String GROUPS_CONTEXT_PATH = "/groups";
@@ -50,10 +57,12 @@ public class ConfigController {
 	private static final String REPORTS_CONTEXT_PATH = SINGLE_GROUP_CONTEXT_PATH + "/reports";
 	
 	private ReportConfigsService configsService;
-	
+	private Clock clock;
+
 	@Autowired
-	public ConfigController(ReportConfigsService configsService) {
+	public ConfigController(ReportConfigsService configsService, Clock clock) {
 		this.configsService = configsService;
+		this.clock = clock;
 	}
 	
 	// Groups
@@ -105,17 +114,23 @@ public class ConfigController {
 
 	// Reports
 	@PostMapping(value=REPORTS_CONTEXT_PATH)
-	public ResponseEntity<String> createReport(@RequestBody @Valid SavedReportConfiguration newReport, @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
+	public ResponseEntity<?> createReport(@RequestBody @Valid SavedReportConfiguration newReport, @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
 		newReport.setId(UUID.randomUUID().toString());
+		newReport.setCreatedUser(getRequestingUser());
+		newReport.setLastModifiedUser(getRequestingUser());
+		newReport.setCreatedDate(Instant.now(clock));
+		newReport.setLastModifiedDate(Instant.now(clock));
 		configsService.saveReport(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim(), newReport, false);
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.CREATED);
+		return new ResponseEntity<SavedReportConfiguration>(newReport, new HttpHeaders(), HttpStatus.CREATED);
 	}
 	
 	@PutMapping(value=REPORTS_CONTEXT_PATH)
-	public ResponseEntity<String> updateReport(@RequestBody @Valid SavedReportConfiguration updatedReport, @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath, @RequestParam String reportId) throws Exception {
+	public ResponseEntity<?> updateReport(@RequestBody @Valid SavedReportConfiguration updatedReport, @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath, @RequestParam String reportId) throws Exception {
 		updatedReport.setId(reportId);
+		updatedReport.setLastModifiedUser(getRequestingUser());
+		updatedReport.setLastModifiedDate(Instant.now(clock));
 		configsService.saveReport(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim(), updatedReport, true);
-		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+		return new ResponseEntity<SavedReportConfiguration>(updatedReport, new HttpHeaders(), HttpStatus.OK);
 	}
 
 	@DeleteMapping(value=REPORTS_CONTEXT_PATH)
@@ -140,5 +155,16 @@ public class ConfigController {
 	@ExceptionHandler({GroupAlreadyExistsException.class,FolderAlreadyExistsException.class,ReportAlreadyExistsException.class})
     public void alreadyExistsExceptionHandler(HttpServletResponse response) throws Exception {
         response.sendError(HttpStatus.BAD_REQUEST.value());
-    }
+	}
+	
+	String getRequestingUser() {
+		String username = UNKNOWN_USERNAME;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(null != authentication && !(authentication instanceof AnonymousAuthenticationToken)) {
+			username = authentication.getName();
+		}
+
+		return username;
+
+	}
 }
