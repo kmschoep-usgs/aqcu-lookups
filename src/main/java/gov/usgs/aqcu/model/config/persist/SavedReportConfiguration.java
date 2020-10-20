@@ -1,5 +1,6 @@
 package gov.usgs.aqcu.model.config.persist;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ public class SavedReportConfiguration {
 	private String reportType;
 	private String lastModifiedUser;
 	private String createdUser;
+	private Instant lastModifiedDate;
+    private Instant createdDate;
 
 	@NotEmpty
 	@JsonFormat(with = {JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED})
@@ -60,6 +63,22 @@ public class SavedReportConfiguration {
 
 	public void setLastModifiedUser(String lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public Instant getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Instant createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public Instant getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Instant lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 
 	public String getReportType() {
