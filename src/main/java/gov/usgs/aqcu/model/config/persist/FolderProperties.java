@@ -11,7 +11,7 @@ public class FolderProperties {
     private Map<String, String> parameterDefaults;
 
     public FolderProperties() {
-        canStoreReports = false;
+        canStoreReports = true;
         parameterDefaults = new HashMap<>();
     }
 
