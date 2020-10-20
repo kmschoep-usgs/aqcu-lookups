@@ -23,7 +23,7 @@ public class SavedReportConfiguration {
 	private String lastModifiedUser;
 	private String createdUser;
 	private Instant lastModifiedDate;
-    private Instant createdDate;
+	private Instant createdDate;
 
 	@NotEmpty
 	@JsonFormat(with = {JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED})
