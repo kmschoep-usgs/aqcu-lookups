@@ -1,5 +1,6 @@
 package gov.usgs.aqcu.config;
 
+import java.time.Clock;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -35,5 +36,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		return AqcuGsonBuilderFactory.getConfiguredGsonBuilder()
 			.registerTypeAdapter(Json.class, new SwaggerGsonSerializer())
 			.create();
+	}
+
+	@Bean
+	public Clock clock() {
+		return Clock.systemDefaultZone();
 	}
 }
