@@ -422,7 +422,7 @@ public class ConfigControllerMVCTest {
             .andExpect(jsonPath("$.reports[0].parameterValues.test_param", is("test_param_value")))
             .andExpect(jsonPath("$.reports[0].parameterValues.test_param2", is(Arrays.asList("test_param_value1", "test_param_value2"))))
             .andExpect(jsonPath("$.folders", hasItems("folder1", "folder2")))
-            .andExpect(jsonPath("$.properties.canStoreReports", is(false)))
+            .andExpect(jsonPath("$.properties.canStoreReports", is(true)))
             .andExpect(jsonPath("$.properties.parameterDefaults.param1", is("value1")));
     }
 

@@ -21,6 +21,10 @@ public class FolderConfig {
 
 	public void setProperties(FolderProperties properties) {
 		this.properties = properties;
+
+		if(!this.properties.getCanStoreReports()) {
+			this.savedReports = new HashMap<>();
+		}
 	}
 
 	public Map<String, SavedReportConfiguration> getSavedReports() {
