@@ -5,9 +5,13 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -152,7 +156,6 @@ public class ReportConfigsServiceTest {
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
         basicReport.setParameterValues(basicParams);
-        basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
@@ -419,15 +422,15 @@ public class ReportConfigsServiceTest {
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
         basicReport.setParameterValues(basicParams);
-        basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         SavedReportConfiguration newReport = new SavedReportConfiguration();
         newReport.setCreatedUser("test_user");
         newReport.setId("test_new_report");
         newReport.setLastModifiedUser("test_user");
         newReport.setParameterValues(basicParams);
-        newReport.setReportName("test_name");
         newReport.setReportType("test_type");
+        newReport.setLastModifiedDate(Instant.parse("2020-01-01T00:00:00Z"));
+        newReport.setCreatedDate(Instant.parse("2019-01-01T00:00:00Z"));
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
         FolderProperties props = new FolderProperties();
@@ -441,6 +444,11 @@ public class ReportConfigsServiceTest {
         given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(basicConfig));
 
         service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, newReport, false);
+
+        // Verify Instant Format
+        verify(s3Service).saveJsonString(anyString(), contains("2020-01-01T00:00:00Z"));
+        verify(s3Service).saveJsonString(anyString(), contains("2019-01-01T00:00:00Z"));
+
         newReport.setId("test_report");
         service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, newReport, true);
     }
@@ -457,14 +465,12 @@ public class ReportConfigsServiceTest {
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
         basicReport.setParameterValues(basicParams);
-        basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         SavedReportConfiguration newReport = new SavedReportConfiguration();
         newReport.setCreatedUser("test_user");
         newReport.setId("test_new_report");
         newReport.setLastModifiedUser("test_user");
         newReport.setParameterValues(basicParams);
-        newReport.setReportName("test_name");
         newReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
@@ -535,7 +541,6 @@ public class ReportConfigsServiceTest {
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
         basicReport.setParameterValues(basicParams);
-        basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
@@ -569,7 +574,6 @@ public class ReportConfigsServiceTest {
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
         basicReport.setParameterValues(basicParams);
-        basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
@@ -597,7 +601,6 @@ public class ReportConfigsServiceTest {
         basicReport.setId("test_report");
         basicReport.setLastModifiedUser("test_user");
         basicReport.setParameterValues(basicParams);
-        basicReport.setReportName("test_name");
         basicReport.setReportType("test_type");
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);

@@ -391,7 +391,6 @@ public class ConfigControllerMVCTest {
         SavedReportConfiguration testReport = new SavedReportConfiguration();
         testReport.setCreatedUser("user1");
         testReport.setId("report1");
-        testReport.setReportName("name1");
         testReport.setLastModifiedUser("user1");
         testReport.setReportType("type1");
         testReport.setParameterValues(testParams);
@@ -416,7 +415,6 @@ public class ConfigControllerMVCTest {
             .andExpect(jsonPath("$.groupName", is("test")))
             .andExpect(jsonPath("$.reports[0].createdUser", is("user1")))
             .andExpect(jsonPath("$.reports[0].id", is("report1")))
-            .andExpect(jsonPath("$.reports[0].reportName", is("name1")))
             .andExpect(jsonPath("$.reports[0].lastModifiedUser", is("user1")))
             .andExpect(jsonPath("$.reports[0].reportType", is("type1")))
             .andExpect(jsonPath("$.reports[0].parameterValues.test_param", is("test_param_value")))
@@ -640,7 +638,6 @@ public class ConfigControllerMVCTest {
         SavedReportConfiguration goodConfig = new SavedReportConfiguration();
         goodConfig.setParameterValues(goodParams);
         goodConfig.setReportType("type1");
-        goodConfig.setReportName("name1");
         String goodConfigJson = new ObjectMapper().writeValueAsString(goodConfig);
 
         mockMvc.perform(post("/config/groups/test/reports")
@@ -658,7 +655,6 @@ public class ConfigControllerMVCTest {
         SavedReportConfiguration testConfig = new SavedReportConfiguration();
         testConfig.setParameterValues(testParams);
         testConfig.setReportType("type1");
-        testConfig.setReportName("name1");
         String goodConfigJson = new ObjectMapper().writeValueAsString(testConfig);
 
         // Success
@@ -766,16 +762,7 @@ public class ConfigControllerMVCTest {
             .content(goodConfigJson)
         ).andDo(print())
             .andExpect(status().isBadRequest());
-
-        testConfig.setReportName(null);
-        mockMvc.perform(MockMvcRequestBuilders.post("/config/groups/test/reports")
-            .param("folderPath", "test")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(new ObjectMapper().writeValueAsString(testConfig))
-        ).andDo(print())
-            .andExpect(status().isBadRequest());
         
-        testConfig.setReportName("name1");
         testConfig.setReportType(null);
         mockMvc.perform(MockMvcRequestBuilders.post("/config/groups/test/reports")
             .param("folderPath", "test")
@@ -809,7 +796,6 @@ public class ConfigControllerMVCTest {
         SavedReportConfiguration testConfig = new SavedReportConfiguration();
         testConfig.setParameterValues(testParams);
         testConfig.setReportType("type1");
-        testConfig.setReportName("name1");
         String goodConfigJson = new ObjectMapper().writeValueAsString(testConfig);
 
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).saveReport(eq("test"), eq("test"), any(SavedReportConfiguration.class), eq(false));
@@ -859,7 +845,6 @@ public class ConfigControllerMVCTest {
         SavedReportConfiguration goodConfig = new SavedReportConfiguration();
         goodConfig.setParameterValues(goodParams);
         goodConfig.setReportType("type1");
-        goodConfig.setReportName("name1");
         String goodConfigJson = new ObjectMapper().writeValueAsString(goodConfig);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/reports")
@@ -878,7 +863,6 @@ public class ConfigControllerMVCTest {
         SavedReportConfiguration testConfig = new SavedReportConfiguration();
         testConfig.setParameterValues(testParams);
         testConfig.setReportType("type1");
-        testConfig.setReportName("name1");
         String goodConfigJson = new ObjectMapper().writeValueAsString(testConfig);
 
         // Success
@@ -1008,16 +992,6 @@ public class ConfigControllerMVCTest {
         ).andDo(print())
             .andExpect(status().isBadRequest());
         
-        testConfig.setReportName(null);
-        mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/reports")
-            .param("folderPath", "test")
-            .param("reportId", "report1")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(new ObjectMapper().writeValueAsString(testConfig))
-        ).andDo(print())
-            .andExpect(status().isBadRequest());
-        
-        testConfig.setReportName("name1");
         testConfig.setReportType(null);
         mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/reports")
             .param("folderPath", "test")
@@ -1054,7 +1028,6 @@ public class ConfigControllerMVCTest {
         SavedReportConfiguration testConfig = new SavedReportConfiguration();
         testConfig.setParameterValues(testParams);
         testConfig.setReportType("type1");
-        testConfig.setReportName("name1");
         String goodConfigJson = new ObjectMapper().writeValueAsString(testConfig);
 
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).saveReport(eq("test"), eq("test"), any(SavedReportConfiguration.class), eq(true));

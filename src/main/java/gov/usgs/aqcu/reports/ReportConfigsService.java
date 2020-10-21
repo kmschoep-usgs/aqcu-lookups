@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,8 @@ public class ReportConfigsService {
 	@Autowired
 	public ReportConfigsService(S3Service s3Service) {
 		this.s3Service = s3Service;
-		mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		mapper = new ObjectMapper().registerModule(new JavaTimeModule())
+			.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 	}
 
 	@Value("${saved-configs.groups.default-folders:}")
