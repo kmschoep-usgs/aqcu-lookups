@@ -17,7 +17,9 @@
 
   services:
     aqcu-lookups:
-      build: .
+      build:
+        context: .
+        network: host
       image: aqcu-lookups
       ports:
         - "7503:7503"
@@ -29,7 +31,9 @@
         - ./docker/secrets.env
 
     aqcu-lookups-local-dev:
-      build: .
+      build: 
+        context: .
+        network: host
       image: aqcu-lookups
       network_mode: "host"
       ports:
@@ -42,7 +46,9 @@
         - ./docker/secrets.env
 
     aqcu-lookups-debug:
-      build: .
+      build: 
+        context: .
+        network: host
       image: aqcu-lookups
       network_mode: "host"
       ports:
