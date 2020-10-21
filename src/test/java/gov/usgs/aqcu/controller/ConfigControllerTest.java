@@ -269,7 +269,6 @@ public class ConfigControllerTest {
         testReport.setId("test_id");
         testReport.setLastModifiedUser("test_user");
         testReport.setParameterValues(params);
-        testReport.setReportName("test_report");
         testReport.setReportType("test_type");
         FolderProperties props = new FolderProperties();
         props.setParameterDefaults(defaults);

@@ -16,10 +16,8 @@ public class SavedReportConfiguration {
 	private String id;
 
 	@NotBlank
-	private String reportName;
-
-	@NotBlank
 	private String reportType;
+	
 	private String lastModifiedUser;
 	private String createdUser;
 	private Instant lastModifiedDate;
@@ -28,10 +26,6 @@ public class SavedReportConfiguration {
 	@NotEmpty
 	@JsonFormat(with = {JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED})
 	private Map<String, List<String>> parameterValues;
-
-	public String getReportName() {
-		return reportName;
-	}
 
 	public String getId() {
 		return id;
@@ -88,9 +82,4 @@ public class SavedReportConfiguration {
 	public void setReportType(String reportType) {
 		this.reportType = reportType;
 	}
-
-	public void setReportName(String reportName) {
-		this.reportName = reportName;
-	}
-
 }
