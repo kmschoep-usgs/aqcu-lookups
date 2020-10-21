@@ -23,6 +23,8 @@ import javax.validation.ValidationException;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -155,6 +157,12 @@ public class ConfigController {
 	@ExceptionHandler({GroupAlreadyExistsException.class,FolderAlreadyExistsException.class,ReportAlreadyExistsException.class})
     public void alreadyExistsExceptionHandler(HttpServletResponse response) throws Exception {
         response.sendError(HttpStatus.BAD_REQUEST.value());
+	}
+
+	// Handle JSON Exceptions
+	@ExceptionHandler({JsonProcessingException.class})
+	public void jsonProcessingExceptionHandler(HttpServletResponse response) throws Exception {
+		response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to load folder data from S3.");
 	}
 	
 	String getRequestingUser() {
