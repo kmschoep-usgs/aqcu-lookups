@@ -24,6 +24,7 @@ import java.util.List;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.usgs.aqcu.config.Roles;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,12 +51,22 @@ import gov.usgs.aqcu.model.config.persist.FolderProperties;
 import gov.usgs.aqcu.model.config.persist.SavedReportConfiguration;
 import gov.usgs.aqcu.model.config.GroupData;
 import gov.usgs.aqcu.reports.ReportConfigsService;
+import static org.hamcrest.Matchers.isA;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc(addFilters = false)
 @SpringBootTest
 @ActiveProfiles("test")
 public class ConfigControllerMVCTest {
+    
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+    
     @MockBean
     ReportConfigsService reportConfigsService;
 
@@ -87,6 +98,26 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
+    public void unauthenticatedCreateGroupTest() throws Exception {
+        expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
+        mockMvc.perform(
+            post("/config/groups/")
+            .param("groupName", "test")
+        );
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    public void unauthorizedRoleCreateGroupTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(
+            post("/config/groups/")
+            .param("groupName", "test")
+        );
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void createGroupTest() throws Exception {
         mockMvc.perform(post("/config/groups/")
             .param("groupName", "test")
@@ -95,6 +126,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void createGroupValidationTest() throws Exception {
         // Success
         mockMvc.perform(post("/config/groups/")
@@ -133,6 +165,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void createGroupErrorTest() throws Exception {
         doThrow(new GroupAlreadyExistsException("test")).when(reportConfigsService).createGroup(eq("test"));
         mockMvc.perform(post("/config/groups/")
@@ -201,8 +234,26 @@ public class ConfigControllerMVCTest {
             fail("Expected NestedServletException but got " + e.getClass().getName());
         }
     }
-
+    
     @Test
+    public void unauthenticatedDeleteGroupTest() throws Exception {
+        expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("/config/groups/test")
+        );
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    public void unauthorizedRoleDeleteGroupTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("/config/groups/test")
+        );
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void deleteGroupTest() throws Exception {
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/config/groups/test")
@@ -211,6 +262,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void deleteGroupValidationTest() throws Exception {
         // Success
         mockMvc.perform(
@@ -236,6 +288,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void deleteGroupErrorTest() throws Exception {
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).deleteGroup("test");
         mockMvc.perform(

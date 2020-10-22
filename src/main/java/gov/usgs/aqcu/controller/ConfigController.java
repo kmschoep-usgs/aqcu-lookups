@@ -1,5 +1,6 @@
 package gov.usgs.aqcu.controller;
 
+import gov.usgs.aqcu.config.OnlyNationalAdmins;
 import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
@@ -63,6 +64,7 @@ public class ConfigController {
 	}
 	
 	@PostMapping(value=GROUPS_CONTEXT_PATH)
+        @OnlyNationalAdmins
 	public ResponseEntity<?> createGroup(@RequestParam @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		configsService.createGroup(groupName.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.CREATED);
@@ -74,6 +76,7 @@ public class ConfigController {
 	}
 	
 	@DeleteMapping(value=SINGLE_GROUP_CONTEXT_PATH)
+        @OnlyNationalAdmins
 	public ResponseEntity<?> deleteGroup(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		configsService.deleteGroup(groupName.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);

@@ -9,6 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole('National Admin') OR hasRole('Local Data Manager')")
+@PreAuthorize("hasRole('" + Roles.NATIONAL_ADMIN + "') OR hasRole('" + Roles.LOCAL_DATA_MANAGER + "')")
 public @interface OnlyNationalAdminsOrLocalDataManagers {
 }
