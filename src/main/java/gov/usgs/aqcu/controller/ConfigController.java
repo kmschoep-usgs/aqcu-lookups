@@ -1,6 +1,7 @@
 package gov.usgs.aqcu.controller;
 
 import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
+import gov.usgs.aqcu.exception.FolderCannotStoreReportsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
@@ -147,16 +148,16 @@ public class ConfigController {
         response.sendError(HttpStatus.BAD_REQUEST.value());
 	}
 	
-	// Handle NotExist Exceptions
+	// Handle NotFound Exceptions
 	@ExceptionHandler({GroupDoesNotExistException.class,FolderDoesNotExistException.class,ReportDoesNotExistException.class})
-    public void doesNotExistExceptionHandler(HttpServletResponse response) throws Exception {
-        response.sendError(HttpStatus.NOT_FOUND.value());
+    public void doesNotExistExceptionHandler(Exception exception, HttpServletResponse response) throws Exception {
+        response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
 	}
 	
-	// Handle AlreadyExists Exceptions
-	@ExceptionHandler({GroupAlreadyExistsException.class,FolderAlreadyExistsException.class,ReportAlreadyExistsException.class})
-    public void alreadyExistsExceptionHandler(HttpServletResponse response) throws Exception {
-        response.sendError(HttpStatus.BAD_REQUEST.value());
+	// Handle BadRequest Exceptions
+	@ExceptionHandler({GroupAlreadyExistsException.class,FolderAlreadyExistsException.class,ReportAlreadyExistsException.class,FolderCannotStoreReportsException.class})
+    public void alreadyExistsExceptionHandler(Exception exception, HttpServletResponse response) throws Exception {
+        response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
 	}
 
 	// Handle JSON Exceptions
