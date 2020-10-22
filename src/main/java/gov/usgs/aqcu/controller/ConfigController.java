@@ -1,6 +1,6 @@
 package gov.usgs.aqcu.controller;
 
-import gov.usgs.aqcu.config.OnlyNationalAdmins;
+import gov.usgs.aqcu.config.Roles;
 import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
@@ -15,6 +15,7 @@ import gov.usgs.aqcu.reports.ReportConfigsService;
 
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.security.RolesAllowed;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -64,7 +65,7 @@ public class ConfigController {
 	}
 	
 	@PostMapping(value=GROUPS_CONTEXT_PATH)
-        @OnlyNationalAdmins
+        @RolesAllowed({Roles.NATIONAL_ADMIN})
 	public ResponseEntity<?> createGroup(@RequestParam @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		configsService.createGroup(groupName.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.CREATED);
@@ -76,7 +77,7 @@ public class ConfigController {
 	}
 	
 	@DeleteMapping(value=SINGLE_GROUP_CONTEXT_PATH)
-        @OnlyNationalAdmins
+        @RolesAllowed({Roles.NATIONAL_ADMIN})
 	public ResponseEntity<?> deleteGroup(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		configsService.deleteGroup(groupName.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
