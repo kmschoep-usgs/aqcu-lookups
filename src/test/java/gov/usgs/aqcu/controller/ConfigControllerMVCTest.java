@@ -39,6 +39,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.util.NestedServletException;
 
 import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
+import gov.usgs.aqcu.exception.FolderCannotStoreReportsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
@@ -821,7 +822,7 @@ public class ConfigControllerMVCTest {
             .content(goodConfigJson)
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        
+
         doThrow(new AmazonS3Exception("test_error")).when(reportConfigsService).saveReport(eq("test"), eq("test3"), any(SavedReportConfiguration.class), eq(false));
         try {
             mockMvc.perform(post("/config/groups/test/reports")
@@ -836,6 +837,14 @@ public class ConfigControllerMVCTest {
         } catch(Exception e) {
             fail("Expected NestedServletException but got " + e.getClass().getName());
         }
+
+        doThrow(new FolderCannotStoreReportsException("test_error", "test_folder")).when(reportConfigsService).saveReport(eq("test"), eq("test4"), any(SavedReportConfiguration.class), eq(false));
+        mockMvc.perform(post("/config/groups/test/reports")
+            .param("folderPath", "test4") 
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(goodConfigJson)
+        ).andDo(print())
+            .andExpect(status().isBadRequest());
     }
 
     @Test

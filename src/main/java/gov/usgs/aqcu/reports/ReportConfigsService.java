@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import gov.usgs.aqcu.aws.S3Service;
 import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
+import gov.usgs.aqcu.exception.FolderCannotStoreReportsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
@@ -223,6 +224,11 @@ public class ReportConfigsService {
 		}
 
 		FolderConfig folderConfig = loadFolderConfig(groupName, folderPath);
+
+		if(folderConfig.getProperties() == null || !folderConfig.getProperties().getCanStoreReports()) {
+			throw new FolderCannotStoreReportsException(groupName, folderPath);
+		}
+
 		Boolean reportExists = folderConfig.doesReportExist(newReport.getId());
 
 
