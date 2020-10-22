@@ -64,9 +64,9 @@ public class ConfigController {
 		return new ResponseEntity<List<String>>(configsService.getAllGroups(), new HttpHeaders(), HttpStatus.OK);
 	}
 	
-	@PostMapping(value=GROUPS_CONTEXT_PATH)
+	@PostMapping(value=SINGLE_GROUP_CONTEXT_PATH)
         @RolesAllowed({Roles.NATIONAL_ADMIN})
-	public ResponseEntity<?> createGroup(@RequestParam @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
+	public ResponseEntity<?> createGroup(@PathVariable @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		configsService.createGroup(groupName.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.CREATED);
 	}

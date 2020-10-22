@@ -101,8 +101,7 @@ public class ConfigControllerMVCTest {
     public void unauthenticatedCreateGroupTest() throws Exception {
         expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
         mockMvc.perform(
-            post("/config/groups/")
-            .param("groupName", "test")
+            post("/config/groups/test")
         );
     }
     
@@ -111,16 +110,14 @@ public class ConfigControllerMVCTest {
     public void unauthorizedRoleCreateGroupTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(
-            post("/config/groups/")
-            .param("groupName", "test")
+            post("/config/groups/test")
         );
     }
     
     @Test
     @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void createGroupTest() throws Exception {
-        mockMvc.perform(post("/config/groups/")
-            .param("groupName", "test")
+        mockMvc.perform(post("/config/groups/test")
         ).andDo(print())
             .andExpect(status().isCreated());
     }
@@ -129,37 +126,31 @@ public class ConfigControllerMVCTest {
     @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void createGroupValidationTest() throws Exception {
         // Success
-        mockMvc.perform(post("/config/groups/")
-            .param("groupName", "    test    ") 
+        mockMvc.perform(post("/config/groups/    test    ")
         ).andDo(print())
             .andExpect(status().isCreated());
 
         // Failure
         mockMvc.perform(post("/config/groups/")).andDo(print())
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isMethodNotAllowed());
         
-        mockMvc.perform(post("/config/groups/")
-            .param("groupName", "") 
+        mockMvc.perform(post("/config/groups/   ")
         ).andDo(print())
             .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/config/groups/")
-            .param("groupName", "  ") 
+        mockMvc.perform(post("/config/groups/t e s t")
         ).andDo(print())
             .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/config/groups/")
-            .param("groupName", "t e s t") 
+        mockMvc.perform(post("/config/groups/%2Ftest")
         ).andDo(print())
             .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post("/config/groups/")
-            .param("groupName", "/test") 
+        mockMvc.perform(post("/config/groups//test")
         ).andDo(print())
-            .andExpect(status().isBadRequest());
-
-        mockMvc.perform(post("/config/groups/")
-            .param("groupName", "test!") 
+            .andExpect(status().isCreated());
+        
+        mockMvc.perform(post("/config/groups/test!")
         ).andDo(print())
             .andExpect(status().isBadRequest());
     }
@@ -168,14 +159,13 @@ public class ConfigControllerMVCTest {
     @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void createGroupErrorTest() throws Exception {
         doThrow(new GroupAlreadyExistsException("test")).when(reportConfigsService).createGroup(eq("test"));
-        mockMvc.perform(post("/config/groups/")
-            .param("groupName", "test") 
+        mockMvc.perform(post("/config/groups/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
         
         doThrow(new AmazonS3Exception("test_error")).when(reportConfigsService).createGroup(eq("test2"));
         try {
-            mockMvc.perform(post("/config/groups/").param("groupName", "test2")).andReturn();
+            mockMvc.perform(post("/config/groups/test2")).andReturn();
             fail("Expected AmazonS3Exception (unhandled by controller) but got no exception.");
         } catch(NestedServletException e) {
             assertTrue(e.getCause() instanceof AmazonS3Exception);
