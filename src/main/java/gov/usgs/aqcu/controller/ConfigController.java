@@ -98,7 +98,7 @@ public class ConfigController {
                 @PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
                 @PathVariable(name = "subfolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String subfolder
         ) throws Exception {
-                String fullFolder = String.join("/", rootFolder.toLowerCase().trim(), subfolder.toLowerCase().trim());
+                String fullFolder = rootFolder.toLowerCase().trim() + subfolder.toLowerCase().trim();
 		configsService.createFolder(groupName.toLowerCase().trim(), fullFolder);
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), fullFolder), new HttpHeaders(), HttpStatus.CREATED);
 	}

@@ -78,7 +78,7 @@ public class ConfigControllerMVCTest {
     @Test
     public void getAllGroupsTest() throws Exception {
         given(reportConfigsService.getAllGroups()).willReturn(Arrays.asList("group1", "group2"));
-        mockMvc.perform(get("/config/groups/")).andDo(print())
+        mockMvc.perform(get("/config/groups")).andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$", hasSize(2)))
@@ -89,7 +89,7 @@ public class ConfigControllerMVCTest {
     public void getAllGroupsErrorTest() throws Exception {
         given(reportConfigsService.getAllGroups()).willThrow(new AmazonS3Exception("test_error"));
         try {
-            mockMvc.perform(get("/config/groups/")).andReturn();
+            mockMvc.perform(get("/config/groups")).andReturn();
             fail("Expected AmazonS3Exception (unhandled by controller) but got no exception.");
         } catch(NestedServletException e) {
             assertTrue(e.getCause() instanceof AmazonS3Exception);
@@ -133,7 +133,7 @@ public class ConfigControllerMVCTest {
             .andExpect(status().isCreated());
 
         // Failure
-        mockMvc.perform(post("/config/groups/")).andDo(print())
+        mockMvc.perform(post("/config/groups")).andDo(print())
             .andExpect(status().isMethodNotAllowed());
         
         mockMvc.perform(post("/config/groups/   ")
@@ -319,74 +319,50 @@ public class ConfigControllerMVCTest {
     @Test
     public void createFolderValidationTest() throws Exception {
         // Success
-        mockMvc.perform(post("/config/groups/    test    /folders")
-            .param("folderPath", "test")
+        mockMvc.perform(post("/config/groups/    test    /folders/test")
         ).andDo(print())
             .andExpect(status().isCreated());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "test/test")
+        mockMvc.perform(post("/config/groups/test/folders/test/test")
         ).andDo(print())
             .andExpect(status().isCreated());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "test/test")
+        mockMvc.perform(post("/config/groups/test/folders/test/test/")
         ).andDo(print())
             .andExpect(status().isCreated());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "/test/test/")
+        mockMvc.perform(post("/config/groups/test/folders//test/test")
         ).andDo(print())
             .andExpect(status().isCreated());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "/test/test")
+        mockMvc.perform(post("/config/groups/test/folders//test/test/")
         ).andDo(print())
             .andExpect(status().isCreated());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "test/test/")
+                mockMvc.perform(post("/config/groups/test/folders/test//test")
         ).andDo(print())
             .andExpect(status().isCreated());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "    test/test/    ")
+        mockMvc.perform(post("/config/groups/test/folders/    test/test/    ")
         ).andDo(print())
             .andExpect(status().isCreated());
 
         // Failure
-        mockMvc.perform(post("/config/groups/   /folders")
-            .param("folderPath", "test")
+        mockMvc.perform(post("/config/groups/   /folders/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/t e s t/folders")
-            .param("folderPath", "test")
+        mockMvc.perform(post("/config/groups/t e s t/folders/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/test!/folders")
-            .param("folderPath", "test")
+        mockMvc.perform(post("/config/groups/test!/folders/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
         mockMvc.perform(post("/config/groups/test/folders")).andDo(print())
-            .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "  ")
+            .andExpect(status().isMethodNotAllowed());
+        mockMvc.perform(post("/config/groups/test/folders/  ")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "!test/test")
+        mockMvc.perform(post("/config/groups/test/folders/!test/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "/test/test!/")
+        mockMvc.perform(post("/config/groups/test/folders/test/test!/")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "/test//test")
-        ).andDo(print())
-            .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "//test/test/")
-        ).andDo(print())
-            .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "/    test/test/    ")
-        ).andDo(print())
-            .andExpect(status().isBadRequest());
+
     }
 
     @Test

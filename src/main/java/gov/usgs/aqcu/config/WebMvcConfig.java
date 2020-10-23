@@ -42,12 +42,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer
             .setPathMatcher(new ExtendedPathMatcher())
-//            .setUseSuffixPatternMatch(true)
-//            .setUseTrailingSlashMatch(false)
-//            .setUseRegisteredSuffixPatternMatch(true)
-//            .setUrlPathHelper(urlPathHelper())
-//            .addPathPrefix("/api",
-//                    HandlerTypePredicate.forAnnotation(RestController.class))
+            .setUseTrailingSlashMatch(false)
         ;
     }
 }
