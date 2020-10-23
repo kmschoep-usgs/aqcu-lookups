@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import gov.usgs.aqcu.aws.S3Service;
 import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
+import gov.usgs.aqcu.exception.FolderCannotStoreReportsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
 import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
 import gov.usgs.aqcu.exception.GroupDoesNotExistException;
@@ -35,11 +38,14 @@ public class ReportConfigsService {
 	public static final String GROUP_CONFIG_FILE_NAME = "config.json";
 
 	private S3Service s3Service;
+	private ObjectMapper mapper;
 	private List<String> defaultGroupFolders;
 
 	@Autowired
 	public ReportConfigsService(S3Service s3Service) {
 		this.s3Service = s3Service;
+		mapper = new ObjectMapper().registerModule(new JavaTimeModule())
+			.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 	}
 
 	@Value("${saved-configs.groups.default-folders:}")
@@ -94,13 +100,13 @@ public class ReportConfigsService {
 	private void saveGroupConfig(String groupName, GroupConfig groupConfig) throws IOException {
 		s3Service.saveJsonString(
 			Paths.get(groupName, GROUP_CONFIG_FILE_NAME).toString(), 
-			new ObjectMapper().writeValueAsString(groupConfig)
+			mapper.writeValueAsString(groupConfig)
 		);
 	}
 
 	private GroupConfig loadGroupConfig(String groupName) throws IOException {
 		String groupConfigFileString = s3Service.getFileAsString(Paths.get(groupName, GROUP_CONFIG_FILE_NAME).toString());
-		return new ObjectMapper().readValue(groupConfigFileString, GroupConfig.class);
+		return mapper.readValue(groupConfigFileString, GroupConfig.class);
 	}
 
 	private Boolean doesGroupExist(String groupName) {
@@ -194,13 +200,13 @@ public class ReportConfigsService {
 	private void saveFolderConfig(String groupName, String folderPath, FolderConfig folderConfig) throws IOException {
 		s3Service.saveJsonString(
 			Paths.get(groupName, folderPath, REPORT_CONFIG_FILE_NAME).toString(), 
-			new ObjectMapper().writeValueAsString(folderConfig)
+			mapper.writeValueAsString(folderConfig)
 		);
 	}
 
 	private FolderConfig loadFolderConfig(String groupName, String folderPath) throws IOException {
 		String folderConfigString = s3Service.getFileAsString(Paths.get(groupName, folderPath, REPORT_CONFIG_FILE_NAME).toString());
-		return new ObjectMapper().readValue(folderConfigString, FolderConfig.class);
+		return mapper.readValue(folderConfigString, FolderConfig.class);
 	}
 
 	private Boolean doesFolderExist(String groupName, String folderPath) {
@@ -218,6 +224,11 @@ public class ReportConfigsService {
 		}
 
 		FolderConfig folderConfig = loadFolderConfig(groupName, folderPath);
+
+		if(folderConfig.getProperties() == null || !folderConfig.getProperties().getCanStoreReports()) {
+			throw new FolderCannotStoreReportsException(groupName, folderPath);
+		}
+
 		Boolean reportExists = folderConfig.doesReportExist(newReport.getId());
 
 

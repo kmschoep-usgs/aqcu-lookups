@@ -1,5 +1,6 @@
 package gov.usgs.aqcu.config;
 
+import java.time.Clock;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -38,11 +39,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
 			.create();
 	}
         
-    @Override
-    public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer
-            .setPathMatcher(new ExtendedPathMatcher())
-            .setUseTrailingSlashMatch(false)
-        ;
-    }
+        @Override
+        public void configurePathMatch(PathMatchConfigurer configurer) {
+            configurer
+                .setPathMatcher(new ExtendedPathMatcher())
+                .setUseTrailingSlashMatch(false)
+            ;
+        }
+        
+	@Bean
+	public Clock clock() {
+		return Clock.systemDefaultZone();
+	}
 }
