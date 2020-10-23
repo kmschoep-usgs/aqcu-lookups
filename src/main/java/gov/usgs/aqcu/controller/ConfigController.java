@@ -49,6 +49,8 @@ public class ConfigController {
 	private static final String GROUPS_CONTEXT_PATH = "/groups";
 	private static final String SINGLE_GROUP_CONTEXT_PATH = GROUPS_CONTEXT_PATH + "/{groupName}";
 	private static final String FOLDERS_CONTEXT_PATH = SINGLE_GROUP_CONTEXT_PATH + "/folders";
+        private static final String ROOT_FOLDERS_CONTEXT_PATH = FOLDERS_CONTEXT_PATH + "/{rootFolder}";
+        private static final String SUBFOLDERS_CONTEXT_PATH = ROOT_FOLDERS_CONTEXT_PATH + "/{*subfolder}";
 	private static final String REPORTS_CONTEXT_PATH = SINGLE_GROUP_CONTEXT_PATH + "/reports";
 	
 	private ReportConfigsService configsService;
@@ -84,10 +86,21 @@ public class ConfigController {
 	}
 
 	// Folders
-	@PostMapping(value=FOLDERS_CONTEXT_PATH)
-	public ResponseEntity<?> createFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
-		configsService.createFolder(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim());
-		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim()), new HttpHeaders(), HttpStatus.CREATED);
+	@PostMapping(value=ROOT_FOLDERS_CONTEXT_PATH)
+	public ResponseEntity<?> createFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder) throws Exception {
+		configsService.createFolder(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim());
+		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim()), new HttpHeaders(), HttpStatus.CREATED);
+	}
+        
+	@PostMapping(value=SUBFOLDERS_CONTEXT_PATH)
+	public ResponseEntity<?> createSubFolder(
+                @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
+                @PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
+                @PathVariable(name = "subfolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String subfolder
+        ) throws Exception {
+                String fullFolder = String.join("/", rootFolder.toLowerCase().trim(), subfolder.toLowerCase().trim());
+		configsService.createFolder(groupName.toLowerCase().trim(), fullFolder);
+		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), fullFolder), new HttpHeaders(), HttpStatus.CREATED);
 	}
 
 	@PutMapping(value=FOLDERS_CONTEXT_PATH)

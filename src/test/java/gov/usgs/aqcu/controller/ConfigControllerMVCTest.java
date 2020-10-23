@@ -57,6 +57,8 @@ import org.junit.rules.ExpectedException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -300,12 +302,20 @@ public class ConfigControllerMVCTest {
 
     @Test
     public void createFolderTest() throws Exception {
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "test")
+        mockMvc.perform(post("/config/groups/test/folders/test")
         ).andDo(print())
             .andExpect(status().isCreated());
     }
-
+        
+    @Test
+    public void createSubFolderTest() throws Exception {
+        mockMvc.perform(post("/config/groups/test/folders/test/test")
+        ).andDo(print())
+            .andExpect(status().isCreated());
+        mockMvc.perform(post("/config/groups/test/folders/test/test/test")
+        ).andDo(print())
+            .andExpect(status().isCreated());
+    }
     @Test
     public void createFolderValidationTest() throws Exception {
         // Success
@@ -382,26 +392,23 @@ public class ConfigControllerMVCTest {
     @Test
     public void createFolderErrorTest() throws Exception {
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).createFolder("test", "test");
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "test") 
+        mockMvc.perform(post("/config/groups/test/folders/test")
         ).andDo(print())
             .andExpect(status().isNotFound());
         
         doThrow(new FolderDoesNotExistException("test", "test")).when(reportConfigsService).createFolder("test", "test/test");
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "test/test") 
+        mockMvc.perform(post("/config/groups/test/folders/test/test")
         ).andDo(print())
             .andExpect(status().isNotFound());
 
         doThrow(new FolderAlreadyExistsException("test", "test1")).when(reportConfigsService).createFolder("test", "test1");
-        mockMvc.perform(post("/config/groups/test/folders")
-            .param("folderPath", "test1") 
+        mockMvc.perform(post("/config/groups/test/folders/test1")
         ).andDo(print())
             .andExpect(status().isBadRequest());
         
         doThrow(new AmazonS3Exception("test_error")).when(reportConfigsService).createFolder("test", "test2");
         try {
-            mockMvc.perform(post("/config/groups/test/folders").param("folderPath", "test2")).andReturn();
+            mockMvc.perform(post("/config/groups/test/folders/test2")).andReturn();
             fail("Expected AmazonS3Exception (unhandled by controller) but got no exception.");
         } catch(NestedServletException e) {
             assertTrue(e.getCause() instanceof AmazonS3Exception);

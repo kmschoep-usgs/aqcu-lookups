@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 
 import gov.usgs.aqcu.serializer.SwaggerGsonSerializer;
 import gov.usgs.aqcu.util.AqcuGsonBuilderFactory;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import springfox.documentation.spring.web.json.Json;
 
 @Configuration
@@ -36,4 +37,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
 			.registerTypeAdapter(Json.class, new SwaggerGsonSerializer())
 			.create();
 	}
+        
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        configurer
+            .setPathMatcher(new ExtendedPathMatcher())
+//            .setUseSuffixPatternMatch(true)
+//            .setUseTrailingSlashMatch(false)
+//            .setUseRegisteredSuffixPatternMatch(true)
+//            .setUrlPathHelper(urlPathHelper())
+//            .addPathPrefix("/api",
+//                    HandlerTypePredicate.forAnnotation(RestController.class))
+        ;
+    }
 }
