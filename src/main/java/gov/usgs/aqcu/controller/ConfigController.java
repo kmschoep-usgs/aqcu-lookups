@@ -129,7 +129,7 @@ public class ConfigController {
 	}
 
 	@DeleteMapping(value=FOLDERS_CONTEXT_PATH)
-	public ResponseEntity<?> deleteFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
+	public ResponseEntity<?> deleteRootFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
 		configsService.deleteFolder(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
 	}

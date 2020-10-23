@@ -323,13 +323,13 @@ public class ConfigControllerTest {
 
     @Test
     public void deleteFolderTest() throws Exception {
-        ResponseEntity<?> result = controller.deleteFolder("group1", "folder1");
+        ResponseEntity<?> result = controller.deleteRootFolder("group1", "folder1");
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(null, result.getBody());
 
         doThrow(new GroupDoesNotExistException("group2")).when(service).deleteFolder("group2", "folder1");
         try {
-            result = controller.deleteFolder("group2", "folder1");
+            result = controller.deleteRootFolder("group2", "folder1");
             fail("Expected GroupDoesNotExistException but got no exception");
         } catch(GroupDoesNotExistException e) {
             assertTrue(e.getMessage().contains("group2"));
@@ -339,7 +339,7 @@ public class ConfigControllerTest {
 
         doThrow(new FolderDoesNotExistException("group1", "folder2")).when(service).deleteFolder("group1", "folder2");
         try {
-            result = controller.deleteFolder("group1", "folder2");
+            result = controller.deleteRootFolder("group1", "folder2");
             fail("Expected FolderDoesNotExistException but got no exception");
         } catch(FolderDoesNotExistException e) {
             assertTrue(e.getMessage().contains("group1") && e.getMessage().contains("folder2"));
@@ -349,7 +349,7 @@ public class ConfigControllerTest {
 
         doThrow(new RuntimeException("test_error")).when(service).deleteFolder("group1", "bad_folder");
         try {
-            result = controller.deleteFolder("group1", "bad_folder");
+            result = controller.deleteRootFolder("group1", "bad_folder");
             fail("Expected RuntimeException but got no exception");
         } catch(RuntimeException e) {
             assertTrue(e.getMessage().contains("test_error"));
