@@ -13,6 +13,7 @@ import static org.mockito.Matchers.any;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -655,22 +656,21 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void deleteFolderErrorTest() throws Exception {
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).deleteFolder("test", "test");
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "test") 
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test")
         ).andDo(print())
             .andExpect(status().isNotFound());
         
         doThrow(new FolderDoesNotExistException("test", "test/test")).when(reportConfigsService).deleteFolder("test", "test/test");
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "test/test") 
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test/test")
         ).andDo(print())
             .andExpect(status().isNotFound());
         
         doThrow(new AmazonS3Exception("test_error")).when(reportConfigsService).deleteFolder("test", "test2");
         try {
-            mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders").param("folderPath", "test2")).andReturn();
+            mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test2")).andReturn();
             fail("Expected AmazonS3Exception (unhandled by controller) but got no exception.");
         } catch(NestedServletException e) {
             assertTrue(e.getCause() instanceof AmazonS3Exception);
@@ -680,6 +680,50 @@ public class ConfigControllerMVCTest {
         }
     }
 
+    @Test
+    public void unauthenticatedDeleteRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
+        mockMvc.perform(delete("/config/groups/test/folders/test"));
+    }
+    
+    @Test
+    @WithMockUser(roles = {"unrelated_role"})
+    public void unauthorizedDeleteRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(delete("/config/groups/test/folders/test"));
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    public void unauthorizedLdmDeleteRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(delete("/config/groups/test/folders/test"));
+    }
+    
+    @Test
+    public void unauthenticatedDeleteSubfolderTest() throws Exception {
+        expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
+        mockMvc.perform(delete("/config/groups/test/folders/test/test"));
+    }
+    
+    @Test
+    @WithMockUser(roles = {"unrelated_role"})
+    public void unauthorizedDeleteSubfolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(delete("/config/groups/test/folders/test/test"));
+    }
+
+    @Test
+    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    public void deleteSubFolderasLdmTest() throws Exception {
+        mockMvc.perform(delete("/config/groups/test/folders/test/test")
+        ).andDo(print())
+            .andExpect(status().isOk());
+        mockMvc.perform(delete("/config/groups/test/folders/test/test/test")
+        ).andDo(print())
+            .andExpect(status().isOk());
+    }
+    
     @Test
     public void createReportTest() throws Exception {
         HashMap<String, List<String>> goodParams = new HashMap<>();
