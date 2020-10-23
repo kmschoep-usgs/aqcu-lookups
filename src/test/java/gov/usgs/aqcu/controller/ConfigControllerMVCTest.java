@@ -601,82 +601,55 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    public void deleteFolderTest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "test")
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    public void deleteRootFolderTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test")
         ).andDo(print())
             .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void deleteFolderValidationTest() throws Exception {
         // Success
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/    test    /folders")
-            .param("folderPath", "test")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/    test    /folders/test")
         ).andDo(print())
             .andExpect(status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "test/test")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test/test")
         ).andDo(print())
             .andExpect(status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "test/test")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test/test/")
         ).andDo(print())
             .andExpect(status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "/test/test/")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders//test/test/")
         ).andDo(print())
             .andExpect(status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "/test/test")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test//test/")
         ).andDo(print())
             .andExpect(status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "test/test/")
-        ).andDo(print())
-            .andExpect(status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "    test/test/    ")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/    test/test/    ")
         ).andDo(print())
             .andExpect(status().isOk());
 
         // Failure
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/   /folders")
-            .param("folderPath", "test")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/   /folders/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/t e s t/folders")
-            .param("folderPath", "test")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/t e s t/folders/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test!/folders")
-            .param("folderPath", "test")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test!/folders/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")).andDo(print())
-            .andExpect(status().isBadRequest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "  ")
+            .andExpect(status().isMethodNotAllowed());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/  ")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "!test/test")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/!test/test")
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "/test/test!/")
-        ).andDo(print())
-            .andExpect(status().isBadRequest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "/test//test")
-        ).andDo(print())
-            .andExpect(status().isBadRequest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "//test/test/")
-        ).andDo(print())
-            .andExpect(status().isBadRequest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders")
-            .param("folderPath", "/    test/test/    ")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test/test!/")
         ).andDo(print())
             .andExpect(status().isBadRequest());
     }

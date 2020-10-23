@@ -99,8 +99,11 @@ public class ConfigController {
 
 	// Folders
 	@PostMapping(value=ROOT_FOLDERS_CONTEXT_PATH)
-        @RolesAllowed({Roles.NATIONAL_ADMIN})
-	public ResponseEntity<?> createRootFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder) throws Exception {
+    @RolesAllowed({Roles.NATIONAL_ADMIN})
+	public ResponseEntity<?> createRootFolder(
+        @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
+        @PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder
+    ) throws Exception {
 		configsService.createFolder(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim());
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim()), new HttpHeaders(), HttpStatus.CREATED);
 	}
@@ -125,15 +128,31 @@ public class ConfigController {
 
 	@GetMapping(value=FOLDERS_CONTEXT_PATH, produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
-		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim()), new HttpHeaders(), HttpStatus.OK);
+            return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim()), new HttpHeaders(), HttpStatus.OK);
 	}
 
-	@DeleteMapping(value=FOLDERS_CONTEXT_PATH)
-	public ResponseEntity<?> deleteRootFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
-		configsService.deleteFolder(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim());
+	@DeleteMapping(value=ROOT_FOLDERS_CONTEXT_PATH)
+    @RolesAllowed({Roles.NATIONAL_ADMIN})
+	public ResponseEntity<?> deleteRootFolder(
+        @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
+        @PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder
+    ) throws Exception {
+		configsService.deleteFolder(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
 	}
 
+    @DeleteMapping(value=SUBFOLDERS_CONTEXT_PATH)
+    @RolesAllowed({Roles.LOCAL_DATA_MANAGER, Roles.NATIONAL_ADMIN})
+	public ResponseEntity<?> deleteSubFolder(
+        @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
+        @PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
+        @PathVariable(name = "subfolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String subfolder
+    ) throws Exception {
+        String fullFolder = rootFolder.toLowerCase().trim() + subfolder.toLowerCase().trim();
+		configsService.deleteFolder(groupName.toLowerCase().trim(), fullFolder);
+		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
+	}
+    
 	// Reports
 	@PostMapping(value=REPORTS_CONTEXT_PATH)
 	public ResponseEntity<?> createReport(@RequestBody @Valid SavedReportConfiguration newReport, @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
