@@ -302,14 +302,49 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    public void createFolderTest() throws Exception {
+    public void unauthenticatedCreateRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
+        mockMvc.perform(post("/config/groups/test/folders/test"));
+    }
+    
+    @Test
+    @WithMockUser(roles = {"unrelated_role"})
+    public void unauthorizedCreateRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(post("/config/groups/test/folders/test"));
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    public void unauthorizedLdmCreateRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(post("/config/groups/test/folders/test"));
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    public void createRootFolderTest() throws Exception {
         mockMvc.perform(post("/config/groups/test/folders/test")
         ).andDo(print())
             .andExpect(status().isCreated());
     }
-        
+
     @Test
-    public void createSubFolderTest() throws Exception {
+    public void unauthenticatedCreateSubfolderTest() throws Exception {
+        expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
+        mockMvc.perform(post("/config/groups/test/folders/test/test"));
+    }
+    
+    @Test
+    @WithMockUser(roles = {"unrelated_role"})
+    public void unauthorizedCreateSubfolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(post("/config/groups/test/folders/test/test"));
+    }
+
+    @Test
+    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    public void createSubFolderasLdmTest() throws Exception {
         mockMvc.perform(post("/config/groups/test/folders/test/test")
         ).andDo(print())
             .andExpect(status().isCreated());
@@ -317,7 +352,20 @@ public class ConfigControllerMVCTest {
         ).andDo(print())
             .andExpect(status().isCreated());
     }
+
     @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    public void createSubFolderAsNationalAdminTest() throws Exception {
+        mockMvc.perform(post("/config/groups/test/folders/test/test")
+        ).andDo(print())
+            .andExpect(status().isCreated());
+        mockMvc.perform(post("/config/groups/test/folders/test/test/test")
+        ).andDo(print())
+            .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void createFolderValidationTest() throws Exception {
         // Success
         mockMvc.perform(post("/config/groups/    test    /folders/test")
@@ -367,6 +415,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
     public void createFolderErrorTest() throws Exception {
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).createFolder("test", "test");
         mockMvc.perform(post("/config/groups/test/folders/test")
