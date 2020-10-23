@@ -16,3 +16,4 @@
 **/*.chain
 **/*.key
 /lookup-application.yml
+/nbproject/

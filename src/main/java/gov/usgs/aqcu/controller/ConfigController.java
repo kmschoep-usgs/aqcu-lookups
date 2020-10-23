@@ -87,12 +87,14 @@ public class ConfigController {
 
 	// Folders
 	@PostMapping(value=ROOT_FOLDERS_CONTEXT_PATH)
-	public ResponseEntity<?> createFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder) throws Exception {
+        @RolesAllowed({Roles.NATIONAL_ADMIN})
+	public ResponseEntity<?> createRootFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder) throws Exception {
 		configsService.createFolder(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim());
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim()), new HttpHeaders(), HttpStatus.CREATED);
 	}
         
 	@PostMapping(value=SUBFOLDERS_CONTEXT_PATH)
+        @RolesAllowed({Roles.LOCAL_DATA_MANAGER, Roles.NATIONAL_ADMIN})
 	public ResponseEntity<?> createSubFolder(
                 @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
                 @PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
