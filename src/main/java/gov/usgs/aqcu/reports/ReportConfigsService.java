@@ -247,7 +247,7 @@ public class ReportConfigsService {
 
 		folderConfig.saveReport(newReport);
 
-		saveFolderConfig(groupName, folderPath, folderConfig);
+		saveFolderConfig(groupName, folderPath, folderConfig);  
 	}
 
 	public void deleteReport(String groupName, String folderPath, String reportId) throws IOException {
