@@ -238,6 +238,13 @@ public class ReportConfigsService {
 			throw new ReportAlreadyExistsException(groupName, folderPath, newReport.getId());
 		}
 		
+		if(update) {
+			SavedReportConfiguration existingReport = folderConfig.getSavedReportById(newReport.getId());
+			newReport.setCreatedUser(existingReport.getCreatedUser());
+			newReport.setCreatedDate(existingReport.getCreatedDate());
+		}
+
+
 		folderConfig.saveReport(newReport);
 
 		saveFolderConfig(groupName, folderPath, folderConfig);
