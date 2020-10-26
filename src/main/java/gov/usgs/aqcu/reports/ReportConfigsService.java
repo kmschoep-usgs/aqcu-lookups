@@ -244,12 +244,11 @@ public class ReportConfigsService {
 			newReport.setCreatedDate(existingReport.getCreatedDate());
 		}
 
-
 		folderConfig.saveReport(newReport);
 
 		saveFolderConfig(groupName, folderPath, folderConfig);  
 	}
-
+	
 	public void deleteReport(String groupName, String folderPath, String reportId) throws IOException {
 		if(!doesGroupExist(groupName)) {
 			throw new GroupDoesNotExistException(groupName);
