@@ -131,6 +131,19 @@ public class ConfigController {
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim()), new HttpHeaders(), HttpStatus.OK);
 	}
     
+    @PutMapping(value=SUBFOLDERS_CONTEXT_PATH)
+    @RolesAllowed({Roles.LOCAL_DATA_MANAGER, Roles.NATIONAL_ADMIN})
+	public ResponseEntity<?> updateSubfolder(
+        @RequestBody @Valid FolderProperties folderProperties,
+        @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
+        @PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
+        @PathVariable(name = "subfolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String subfolder
+    ) throws Exception {
+        String fullFolder = rootFolder.toLowerCase().trim() + subfolder.toLowerCase().trim();
+		configsService.updateFolder(groupName.toLowerCase().trim(), fullFolder, folderProperties);
+		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), fullFolder), new HttpHeaders(), HttpStatus.OK);
+	}
+    
 	@GetMapping(value=FOLDERS_CONTEXT_PATH, produces={MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> getFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
             return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim()), new HttpHeaders(), HttpStatus.OK);

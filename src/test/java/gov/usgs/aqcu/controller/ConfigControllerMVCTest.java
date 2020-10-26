@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.usgs.aqcu.config.Roles;
 
@@ -60,8 +61,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.web.util.pattern.PathPattern;
-import org.springframework.web.util.pattern.PathPatternParser;
 
  @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -449,7 +448,12 @@ public class ConfigControllerMVCTest {
     private String exampleFolderProperties() {
         FolderProperties newProps = new FolderProperties();
         newProps.setCanStoreReports(false);
-        String newPropsJson = new ObjectMapper().writeValueAsString(newProps);
+        String newPropsJson;
+        try {
+            newPropsJson = new ObjectMapper().writeValueAsString(newProps);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex);
+        }
         return newPropsJson;
     }
     
@@ -487,6 +491,45 @@ public class ConfigControllerMVCTest {
     public void unauthorizedLdmUpdateRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(put("/config/groups/test/folders/test")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        ).andDo(print());
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    public void updateSubfolderAsNationalAdminTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/folders/test/foo")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        ).andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    public void updateSubfolderAsLocalDataManager() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/folders/test/foo")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        ).andDo(print())
+            .andExpect(status().isOk());
+    }
+    
+    @Test
+    public void unauthenticatedUpdateSubfolderTest() throws Exception {
+        expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
+        mockMvc.perform(put("/config/groups/test/folders/test/foo")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        ).andDo(print());
+    }
+    
+    @Test
+    @WithMockUser(roles = {"unrelated_role"})
+    public void unauthorizedUpdateSubfolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(put("/config/groups/test/folders/test/foo")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(exampleFolderProperties())
         ).andDo(print());
