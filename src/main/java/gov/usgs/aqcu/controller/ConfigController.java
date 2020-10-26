@@ -110,7 +110,7 @@ public class ConfigController {
         
 	@PostMapping(value=SUBFOLDERS_CONTEXT_PATH)
         @RolesAllowed({Roles.LOCAL_DATA_MANAGER, Roles.NATIONAL_ADMIN})
-	public ResponseEntity<?> createSubFolder(
+	public ResponseEntity<?> createSubfolder(
                 @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
                 @PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
                 @PathVariable(name = "subfolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String subfolder
@@ -145,7 +145,10 @@ public class ConfigController {
 	}
     
 	@GetMapping(value=FOLDERS_CONTEXT_PATH, produces={MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<?> getFolder(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName, @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath) throws Exception {
+	public ResponseEntity<?> getFolder(
+        @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
+        @RequestParam @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String folderPath
+    ) throws Exception {
             return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), folderPath.toLowerCase().trim()), new HttpHeaders(), HttpStatus.OK);
 	}
 
@@ -161,7 +164,7 @@ public class ConfigController {
 
     @DeleteMapping(value=SUBFOLDERS_CONTEXT_PATH)
     @RolesAllowed({Roles.LOCAL_DATA_MANAGER, Roles.NATIONAL_ADMIN})
-	public ResponseEntity<?> deleteSubFolder(
+	public ResponseEntity<?> deleteSubfolder(
         @PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
         @PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
         @PathVariable(name = "subfolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String subfolder
