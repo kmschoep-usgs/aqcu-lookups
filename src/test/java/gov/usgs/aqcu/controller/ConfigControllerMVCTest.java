@@ -14,6 +14,7 @@ import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,7 +63,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 
-@RunWith(SpringRunner.class)
+ @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc(addFilters = false)
 @SpringBootTest
 @ActiveProfiles("test")
@@ -445,19 +446,52 @@ public class ConfigControllerMVCTest {
         }
     }
 
-    @Test
-    public void updateFolderTest() throws Exception {
+    private String exampleFolderProperties() {
         FolderProperties newProps = new FolderProperties();
         newProps.setCanStoreReports(false);
         String newPropsJson = new ObjectMapper().writeValueAsString(newProps);
-        mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/folders")
-            .param("folderPath", "test")
+        return newPropsJson;
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    public void updateRootFolderTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/folders/test")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(newPropsJson)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isOk());
     }
 
+    @Test
+    public void unauthenticatedUpdateRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
+        mockMvc.perform(put("/config/groups/test/folders/test")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        ).andDo(print());
+    }
+    
+    @Test
+    @WithMockUser(roles = {"unrelated_role"})
+    public void unauthorizedUpdateRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(put("/config/groups/test/folders/test")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        ).andDo(print());
+    }
+    
+    @Test
+    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    public void unauthorizedLdmUpdateRootFolderTest() throws Exception {
+        expectedException.expectCause(isA(AccessDeniedException.class));
+        mockMvc.perform(put("/config/groups/test/folders/test")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        ).andDo(print());
+    }
+    
     @Test
     public void getFolderTest() throws Exception {
         HashMap<String, String> testDefaults = new HashMap<>();
@@ -723,7 +757,7 @@ public class ConfigControllerMVCTest {
         ).andDo(print())
             .andExpect(status().isOk());
     }
-    
+   
     @Test
     public void createReportTest() throws Exception {
         HashMap<String, List<String>> goodParams = new HashMap<>();
