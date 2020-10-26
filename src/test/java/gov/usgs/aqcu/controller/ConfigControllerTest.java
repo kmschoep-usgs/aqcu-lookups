@@ -213,7 +213,7 @@ public class ConfigControllerTest {
 
     @Test
     public void updateFolderTest() throws Exception {
-        ResponseEntity<?> result = controller.updateFolder( new FolderProperties(), "group1", "folder1");
+        ResponseEntity<?> result = controller.updateRootFolder( new FolderProperties(), "group1", "folder1");
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(null, result.getBody());
 
