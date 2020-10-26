@@ -479,7 +479,7 @@ public class ReportConfigsServiceTest {
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
         FolderProperties props = new FolderProperties();
-        props.setParameterDefaults(basicDefaults);
+        props.setParameterDefaults(basicDefaults); 
         FolderConfig basicConfig = new FolderConfig();
         basicConfig.setProperties(props);
         basicConfig.setSavedReports(basicReports);
