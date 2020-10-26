@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +52,9 @@ public class ReportConfigsServiceTest {
     private final String TEST_GROUP_NAME = "test_group";
     private final String TEST_FOLDER_NAME = "test_folder";
     private final String TEST_SUB_FOLDER_NAME = "test_sub_folder";
-
+    private ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
+    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    
     @Before
     public void setup() {
         service = new ReportConfigsService(s3Service);
@@ -441,7 +445,7 @@ public class ReportConfigsServiceTest {
 
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
-        given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(basicConfig));
+        given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(mapper.writeValueAsString(basicConfig));
 
         service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, newReport, false);
 
@@ -451,6 +455,45 @@ public class ReportConfigsServiceTest {
 
         newReport.setId("test_report");
         service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, newReport, true);
+    }
+    @Test
+    public void savedReportUpdateTest() throws Exception {
+    	HashMap<String, String> basicDefaults = new HashMap<>();
+        HashMap<String, List<String>> basicParams = new HashMap<>();
+        basicDefaults.put("test_key", "test_value");
+        basicParams.put("test_param", Arrays.asList("test_param_value"));
+        SavedReportConfiguration basicReport = new SavedReportConfiguration();
+        basicReport.setCreatedUser("test_user");
+        basicReport.setId("test_report");
+        basicReport.setLastModifiedUser("test_user");
+        basicReport.setParameterValues(basicParams);
+        basicReport.setReportType("test_type");
+        basicReport.setLastModifiedDate(Instant.parse("2020-01-01T00:00:00Z"));
+        basicReport.setCreatedDate(Instant.parse("2019-01-01T00:00:00Z"));
+        SavedReportConfiguration newReport = new SavedReportConfiguration();
+        newReport.setId("test_report");
+        newReport.setLastModifiedUser("test_user2");
+        newReport.setParameterValues(basicParams);
+        newReport.setReportType("test_type");
+        newReport.setLastModifiedDate(Instant.parse("2020-02-01T00:00:00Z"));      
+        HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
+        basicReports.put("test_report", basicReport);
+        FolderProperties props = new FolderProperties();
+        props.setParameterDefaults(basicDefaults); 
+        FolderConfig basicConfig = new FolderConfig();
+        basicConfig.setProperties(props);
+        basicConfig.setSavedReports(basicReports);
+
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
+        given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(mapper.writeValueAsString(basicConfig));
+
+        service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, newReport, true);
+
+        verify(s3Service).saveJsonString(anyString(), contains("2019-01-01T00:00:00Z"));
+        verify(s3Service).saveJsonString(anyString(), contains("2020-02-01T00:00:00Z"));
+        verify(s3Service).saveJsonString(anyString(), contains("test_user"));
+        verify(s3Service).saveJsonString(anyString(), contains("test_user2"));
     }
 
 

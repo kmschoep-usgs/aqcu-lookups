@@ -238,11 +238,17 @@ public class ReportConfigsService {
 			throw new ReportAlreadyExistsException(groupName, folderPath, newReport.getId());
 		}
 		
+		if(update) {
+			SavedReportConfiguration existingReport = folderConfig.getSavedReportById(newReport.getId());
+			newReport.setCreatedUser(existingReport.getCreatedUser());
+			newReport.setCreatedDate(existingReport.getCreatedDate());
+		}
+
 		folderConfig.saveReport(newReport);
 
-		saveFolderConfig(groupName, folderPath, folderConfig);
+		saveFolderConfig(groupName, folderPath, folderConfig);  
 	}
-
+	
 	public void deleteReport(String groupName, String folderPath, String reportId) throws IOException {
 		if(!doesGroupExist(groupName)) {
 			throw new GroupDoesNotExistException(groupName);
