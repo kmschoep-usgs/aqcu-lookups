@@ -27,7 +27,7 @@ import java.util.List;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.usgs.aqcu.config.Roles;
+import gov.usgs.aqcu.config.Authorities;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -110,7 +110,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void unauthorizedRoleCreateGroupTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(
@@ -119,7 +119,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createGroupTest() throws Exception {
         mockMvc.perform(post("/config/groups/test")
         ).andDo(print())
@@ -127,7 +127,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createGroupValidationTest() throws Exception {
         // Success
         mockMvc.perform(post("/config/groups/    test    ")
@@ -160,7 +160,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createGroupErrorTest() throws Exception {
         doThrow(new GroupAlreadyExistsException("test")).when(reportConfigsService).createGroup(eq("test"));
         mockMvc.perform(post("/config/groups/test")
@@ -238,7 +238,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void unauthorizedRoleDeleteGroupTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(
@@ -247,7 +247,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void deleteGroupTest() throws Exception {
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/config/groups/test")
@@ -256,7 +256,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void deleteGroupValidationTest() throws Exception {
         // Success
         mockMvc.perform(
@@ -282,7 +282,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void deleteGroupErrorTest() throws Exception {
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).deleteGroup("test");
         mockMvc.perform(
@@ -309,21 +309,21 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {"unrelated_role"})
+    @WithMockUser(authorities = {"unrelated_role"})
     public void unauthorizedCreateRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(post("/config/groups/test/folders/test"));
     }
     
     @Test
-    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void unauthorizedLdmCreateRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(post("/config/groups/test/folders/test"));
     }
     
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createRootFolderTest() throws Exception {
         mockMvc.perform(post("/config/groups/test/folders/test")
         ).andDo(print())
@@ -337,14 +337,14 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {"unrelated_role"})
+    @WithMockUser(authorities = {"unrelated_role"})
     public void unauthorizedCreateSubfolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(post("/config/groups/test/folders/test/test"));
     }
 
     @Test
-    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void createSubFolderasLdmTest() throws Exception {
         mockMvc.perform(post("/config/groups/test/folders/test/test")
         ).andDo(print())
@@ -355,7 +355,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createSubFolderAsNationalAdminTest() throws Exception {
         mockMvc.perform(post("/config/groups/test/folders/test/test")
         ).andDo(print())
@@ -366,7 +366,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createFolderValidationTest() throws Exception {
         // Success
         mockMvc.perform(post("/config/groups/    test    /folders/test")
@@ -416,7 +416,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createFolderErrorTest() throws Exception {
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).createFolder("test", "test");
         mockMvc.perform(post("/config/groups/test/folders/test")
@@ -458,7 +458,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void updateRootFolderTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/folders/test")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -477,7 +477,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {"unrelated_role"})
+    @WithMockUser(authorities = {"unrelated_role"})
     public void unauthorizedUpdateRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(put("/config/groups/test/folders/test")
@@ -487,7 +487,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void unauthorizedLdmUpdateRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(put("/config/groups/test/folders/test")
@@ -497,7 +497,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void updateSubfolderAsNationalAdminTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/folders/test/foo")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -507,7 +507,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void updateSubfolderAsLocalDataManager() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/config/groups/test/folders/test/foo")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -526,7 +526,7 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {"unrelated_role"})
+    @WithMockUser(authorities = {"unrelated_role"})
     public void unauthorizedUpdateSubfolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(put("/config/groups/test/folders/test/foo")
@@ -679,7 +679,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void deleteRootFolderTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test")
         ).andDo(print())
@@ -687,7 +687,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void deleteFolderValidationTest() throws Exception {
         // Success
         mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/    test    /folders/test")
@@ -733,7 +733,7 @@ public class ConfigControllerMVCTest {
     }
 
     @Test
-    @WithMockUser(roles = {Roles.NATIONAL_ADMIN})
+    @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void deleteFolderErrorTest() throws Exception {
         doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).deleteFolder("test", "test");
         mockMvc.perform(MockMvcRequestBuilders.delete("/config/groups/test/folders/test")
@@ -764,14 +764,14 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {"unrelated_role"})
+    @WithMockUser(authorities = {"unrelated_role"})
     public void unauthorizedDeleteRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(delete("/config/groups/test/folders/test"));
     }
     
     @Test
-    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void unauthorizedLdmDeleteRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(delete("/config/groups/test/folders/test"));
@@ -784,14 +784,14 @@ public class ConfigControllerMVCTest {
     }
     
     @Test
-    @WithMockUser(roles = {"unrelated_role"})
+    @WithMockUser(authorities = {"unrelated_role"})
     public void unauthorizedDeleteSubfolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
         mockMvc.perform(delete("/config/groups/test/folders/test/test"));
     }
 
     @Test
-    @WithMockUser(roles = {Roles.LOCAL_DATA_MANAGER})
+    @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void deleteSubFolderasLdmTest() throws Exception {
         mockMvc.perform(delete("/config/groups/test/folders/test/test")
         ).andDo(print())

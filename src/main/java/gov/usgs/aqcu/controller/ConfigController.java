@@ -1,6 +1,6 @@
 package gov.usgs.aqcu.controller;
 
-import gov.usgs.aqcu.config.Roles;
+import gov.usgs.aqcu.config.Authorities;
 import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
 import gov.usgs.aqcu.exception.FolderCannotStoreReportsException;
 import gov.usgs.aqcu.exception.FolderDoesNotExistException;
@@ -44,6 +44,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,7 +81,7 @@ public class ConfigController {
 	}
 
 	@PostMapping(value = SINGLE_GROUP_CONTEXT_PATH)
-	@RolesAllowed({Roles.NATIONAL_ADMIN})
+	@PreAuthorize("hasAuthority('" + Authorities.NATIONAL_ADMIN + "')")
 	public ResponseEntity<?> createGroup(@PathVariable @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		configsService.createGroup(groupName.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.CREATED);
@@ -91,7 +93,7 @@ public class ConfigController {
 	}
 
 	@DeleteMapping(value = SINGLE_GROUP_CONTEXT_PATH)
-	@RolesAllowed({Roles.NATIONAL_ADMIN})
+	@PreAuthorize("hasAuthority('" + Authorities.NATIONAL_ADMIN+ "')")
 	public ResponseEntity<?> deleteGroup(@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName) throws Exception {
 		configsService.deleteGroup(groupName.toLowerCase().trim());
 		return new ResponseEntity<String>(null, new HttpHeaders(), HttpStatus.OK);
@@ -99,7 +101,7 @@ public class ConfigController {
 
 	// Folders
 	@PostMapping(value = ROOT_FOLDERS_CONTEXT_PATH)
-	@RolesAllowed({Roles.NATIONAL_ADMIN})
+	@PreAuthorize("hasAuthority('" + Authorities.NATIONAL_ADMIN+ "')")
 	public ResponseEntity<?> createRootFolder(
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
 		@PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder
@@ -109,7 +111,7 @@ public class ConfigController {
 	}
 
 	@PostMapping(value = SUBFOLDERS_CONTEXT_PATH)
-	@RolesAllowed({Roles.LOCAL_DATA_MANAGER, Roles.NATIONAL_ADMIN})
+	@PreAuthorize("hasAnyAuthority('" + Authorities.LOCAL_DATA_MANAGER + "','" + Authorities.NATIONAL_ADMIN + "')")
 	public ResponseEntity<?> createSubfolder(
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
 		@PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
@@ -121,7 +123,7 @@ public class ConfigController {
 	}
 
 	@PutMapping(value = ROOT_FOLDERS_CONTEXT_PATH)
-	@RolesAllowed({Roles.NATIONAL_ADMIN})
+	@PreAuthorize("hasAuthority('" + Authorities.NATIONAL_ADMIN + "')")
 	public ResponseEntity<?> updateRootFolder(
 		@RequestBody @Valid FolderProperties folderProperties,
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
@@ -132,7 +134,7 @@ public class ConfigController {
 	}
 
 	@PutMapping(value = SUBFOLDERS_CONTEXT_PATH)
-	@RolesAllowed({Roles.LOCAL_DATA_MANAGER, Roles.NATIONAL_ADMIN})
+	@PreAuthorize("hasAnyAuthority('" + Authorities.LOCAL_DATA_MANAGER + "','" + Authorities.NATIONAL_ADMIN + "')")
 	public ResponseEntity<?> updateSubfolder(
 		@RequestBody @Valid FolderProperties folderProperties,
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
@@ -153,7 +155,7 @@ public class ConfigController {
 	}
 
 	@DeleteMapping(value = ROOT_FOLDERS_CONTEXT_PATH)
-	@RolesAllowed({Roles.NATIONAL_ADMIN})
+	@PreAuthorize("hasAuthority('" + Authorities.NATIONAL_ADMIN + "')")
 	public ResponseEntity<?> deleteRootFolder(
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
 		@PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder
@@ -163,7 +165,7 @@ public class ConfigController {
 	}
 
 	@DeleteMapping(value = SUBFOLDERS_CONTEXT_PATH)
-	@RolesAllowed({Roles.LOCAL_DATA_MANAGER, Roles.NATIONAL_ADMIN})
+	@PreAuthorize("hasAnyAuthority('" + Authorities.LOCAL_DATA_MANAGER + "','" + Authorities.NATIONAL_ADMIN + "')")
 	public ResponseEntity<?> deleteSubfolder(
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
 		@PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
