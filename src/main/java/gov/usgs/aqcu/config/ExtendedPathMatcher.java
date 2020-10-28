@@ -24,7 +24,6 @@ public class ExtendedPathMatcher implements PathMatcher {
     public ExtendedPathMatcher() {
         PathPatternParser parser = new PathPatternParser();
         parser.setPathOptions(PathContainer.Options.HTTP_PATH);
-        parser.setMatchOptionalTrailingSeparator(false);
         matcher = new PathPatternRouteMatcher(parser);
     }
 
