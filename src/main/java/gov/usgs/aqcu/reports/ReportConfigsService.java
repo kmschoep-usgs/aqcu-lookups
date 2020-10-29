@@ -231,7 +231,7 @@ public class ReportConfigsService {
 			throw new FolderCannotStoreReportsException(groupName, folderPath);
 		}
 
-		if(doesReportTypeExists(folderConfig, newReport)){
+		if(!update && doesReportTypeExists(folderConfig, newReport)){
 			throw new ReportTypeAlreadyExistsException(folderPath);
 		}
 		Boolean reportExists = folderConfig.doesReportExist(newReport.getId());

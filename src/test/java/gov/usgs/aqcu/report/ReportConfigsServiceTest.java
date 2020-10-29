@@ -756,7 +756,7 @@ public class ReportConfigsServiceTest {
     public void whenReportTypeExists_thenSaveReportThrowsException() throws IOException {
 
         expectedException.expect(ReportTypeAlreadyExistsException.class);
-        expectedException.expectMessage("already exist within folder 'test_folder'");
+        expectedException.expectMessage("modify the report in folder 'test_folder'");
 
         SavedReportConfiguration report = new SavedReportConfiguration();
         report.setReportType("reportType");
