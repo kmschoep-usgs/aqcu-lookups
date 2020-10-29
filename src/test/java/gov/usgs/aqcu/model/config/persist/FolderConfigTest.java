@@ -26,5 +26,15 @@ public class FolderConfigTest {
         assertFalse(testConfig.getProperties().getCanStoreReports());
         assertTrue(testConfig.getSavedReports().isEmpty());
     }
+
+    @Test
+    public void WhenReportMapHasValues_getSavedReportByTypeReturnsMapWithKeyReportType(){
+        FolderConfig testConfig = new FolderConfig();
+        SavedReportConfiguration testReport = new SavedReportConfiguration();
+        testReport.setId("123");
+        testReport.setReportType("report_type");
+        testConfig.saveReport(testReport);
+        assertTrue(testConfig.getSavedReportByType().containsKey("report_type"));
+    }
     
 }

@@ -2,6 +2,7 @@ package gov.usgs.aqcu.model.config.persist;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -54,5 +55,17 @@ public class FolderConfig {
 
 	public Boolean doesReportExist(String id) {
 		return savedReports.containsKey(id);
+	}
+
+	/**
+	 * This method converts the savedReport map from key: id and value: report to  map of key:reportType and value:report
+	 * @return Map of key: reportType and value:report
+	 */
+	public Map<String, SavedReportConfiguration> getSavedReportByType(){
+		return savedReports.values()
+				.stream()
+				.collect(
+						Collectors.toMap(savedReport -> savedReport.getReportType(), savedReport -> savedReport)
+				);
 	}
 }
