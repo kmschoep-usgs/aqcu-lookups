@@ -1,3 +1,7 @@
+#ignore everything in the repo-specific maven cache, except for the placeholder file that ensures the directory exists
+/.m2/repository/*
+!/.m2/repository/.gitkeep
+
 /target/
 /bin/
 /.settings/
@@ -12,3 +16,4 @@
 **/*.chain
 **/*.key
 /lookup-application.yml
+/nbproject/

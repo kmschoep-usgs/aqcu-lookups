@@ -14,3 +14,22 @@ This application can be run locally using the docker container built during the 
 Before any of these options are able to be run you must also generate certificates for this application to serve using the `create_keys` script in the `docker/certificates` directory. Additionally, this service must be able to connect to a running instance of Water Auth when starting, and it is recommended that you use the Water Auth instance from the `aqcu-local-dev` project to accomplish this. In order for this application to communicate with any downstream services that it must call, including Water Auth, you must also place the certificates that are being served by those services into the `docker/certificates/import_certs` directory to be imported into the Java TrustStore of the running container.
 
 To build and run the application after completing the above steps you can run: `docker-compose up --build {profile}`, replacing `{profile}` with one of the options listed above.
+
+## Speeding up Docker builds
+
+By default docker starts with an empty maven repository, so it takes a long time to download the dependencies. Caching to the rescue!
+
+Add this to `~/.bash_aliases` to make all your maven projects use their own dedicated maven repository
+
+```bash
+alias mvn='mvn "-Dmaven.repo.local=$(git rev-parse --show-toplevel)/.m2/repository"'
+```
+
+Restart your terminal.
+
+Run maven commands to seed the cache. `mvn clean install`-type commands should seed most of them. The most comprehensive seeding is done via:
+
+```bash
+CI=true mvn --batch-mode --errors --strict-checksums --threads 1C org.apache.maven.plugins:maven-dependency-plugin:3.0.2:go-offline
+```
+
