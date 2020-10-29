@@ -2,6 +2,7 @@ package gov.usgs.aqcu.report;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -11,29 +12,28 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collections;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import gov.usgs.aqcu.exception.*;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.usgs.aqcu.aws.S3Service;
-import gov.usgs.aqcu.exception.FolderAlreadyExistsException;
-import gov.usgs.aqcu.exception.FolderDoesNotExistException;
-import gov.usgs.aqcu.exception.GroupAlreadyExistsException;
-import gov.usgs.aqcu.exception.GroupDoesNotExistException;
-import gov.usgs.aqcu.exception.ReportAlreadyExistsException;
-import gov.usgs.aqcu.exception.ReportDoesNotExistException;
 import gov.usgs.aqcu.model.config.FolderData;
 import gov.usgs.aqcu.model.config.persist.GroupConfig;
 import gov.usgs.aqcu.model.config.GroupData;
@@ -49,12 +49,15 @@ public class ReportConfigsServiceTest {
 
     ReportConfigsService service;
 
+    @Rule
+    public ExpectedException expectedException =  ExpectedException.none();
+
     private final String TEST_GROUP_NAME = "test_group";
     private final String TEST_FOLDER_NAME = "test_folder";
     private final String TEST_SUB_FOLDER_NAME = "test_sub_folder";
     private ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
     .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    
+
     @Before
     public void setup() {
         service = new ReportConfigsService(s3Service);
@@ -446,7 +449,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(mapper.writeValueAsString(basicConfig));
-
+        newReport.setReportType("test_type_2");
         service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, newReport, false);
 
         // Verify Instant Format
@@ -474,7 +477,7 @@ public class ReportConfigsServiceTest {
         newReport.setId("test_report");
         newReport.setLastModifiedUser("test_user2");
         newReport.setParameterValues(basicParams);
-        newReport.setReportType("test_type");
+        newReport.setReportType("test_type_2");
         newReport.setLastModifiedDate(Instant.parse("2020-02-01T00:00:00Z"));      
         HashMap<String, SavedReportConfiguration> basicReports = new HashMap<>();
         basicReports.put("test_report", basicReport);
@@ -550,6 +553,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(basicConfig));
+        newReport.setReportType("test_type_3");
         service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, newReport, false);
         try {
             service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, newReport, true);
@@ -596,6 +600,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(basicConfig));
+        basicReport.setReportType("test_type_4");
         try {
             service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, basicReport, false);
             fail("Expected ReportAlreadyExistsException but got no exception.");
@@ -746,6 +751,49 @@ public class ReportConfigsServiceTest {
         result = service.getFolderSubFolders(TEST_GROUP_NAME, "folder_2");
         assertEquals(0, result.size());
     }
+
+    @Test
+    public void whenReportTypeExists_thenSaveReportThrowsException() throws IOException {
+
+        expectedException.expect(ReportTypeAlreadyExistsException.class);
+        expectedException.expectMessage("modify the report in folder 'test_folder'");
+
+        SavedReportConfiguration report = new SavedReportConfiguration();
+        report.setReportType("reportType");
+        FolderConfig folderConfig = new FolderConfig();
+        folderConfig.setSavedReports(Collections.singletonMap("id", report));
+
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
+        given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
+        given(s3Service.getFileAsString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(new ObjectMapper().writeValueAsString(folderConfig));
+
+        service.saveReport(TEST_GROUP_NAME, TEST_FOLDER_NAME, report, false);
+
+    }
+    @Test
+    public void whenReportTypeDoesNotExists_thenDoesReportTypeExistsReturnsFalse(){
+        SavedReportConfiguration basicReport = new SavedReportConfiguration();
+        basicReport.setReportType("reportType");
+
+        SavedReportConfiguration newReport = new SavedReportConfiguration();
+        newReport.setReportType("newReportType");
+
+        FolderConfig folderConfig = new FolderConfig();
+        folderConfig.getSavedReports().put("010101", basicReport );
+
+        assertFalse(service.doesReportTypeExists(folderConfig, newReport));
+    }
+
+    @Test
+    public void whenReportTypeExists_thenDoesReportTypeExistsReturnsTrue(){
+        SavedReportConfiguration basicReport = new SavedReportConfiguration();
+        basicReport.setReportType("reportType");
+
+        FolderConfig folderConfig = new FolderConfig();
+        folderConfig.getSavedReports().put("010101", basicReport );
+        assertTrue(service.doesReportTypeExists(folderConfig, basicReport));
+    }
+
 
     private Boolean jsonEqual(Object ob1, Object ob2) throws Exception {
         ObjectMapper mapper = new ObjectMapper();

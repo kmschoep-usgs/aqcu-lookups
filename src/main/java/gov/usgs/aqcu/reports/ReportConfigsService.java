@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.amazonaws.util.StringUtils;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import gov.usgs.aqcu.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -229,6 +231,9 @@ public class ReportConfigsService {
 			throw new FolderCannotStoreReportsException(groupName, folderPath);
 		}
 
+		if(!update && doesReportTypeExists(folderConfig, newReport)){
+			throw new ReportTypeAlreadyExistsException(folderPath);
+		}
 		Boolean reportExists = folderConfig.doesReportExist(newReport.getId());
 
 
@@ -272,4 +277,11 @@ public class ReportConfigsService {
 		Path parent = Paths.get(path).getParent();
 		return parent == null ? null : parent.toString();
 	}
+
+	public boolean doesReportTypeExists(FolderConfig folderConfig, SavedReportConfiguration newReport) {
+		Map<String, SavedReportConfiguration> savedReportByType = folderConfig.getSavedReportByType();
+		return savedReportByType.containsKey(newReport.getReportType());
+	}
+
+
 }
