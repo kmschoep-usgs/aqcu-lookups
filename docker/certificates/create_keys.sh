@@ -20,4 +20,4 @@ openssl x509 -req \
   -extfile <(printf "keyUsage = nonRepudiation, digitalSignature, keyEncipherment\nbasicConstraints = CA:FALSE\nsubjectAltName=${HOSTNAME}") \
   -days 9999 -in $DIR/wildcard.csr -signkey $DIR/wildcard.key  -out $DIR/wildcard.crt
 openssl pkcs12 -export -in $DIR/wildcard.crt -inkey $DIR/wildcard.key -name tomcat -out $DIR/tomcat.pkcs12 -password pass:changeit
-/usr/lib/jvm/java-8-openjdk-amd64/bin/keytool -v -importkeystore -deststorepass changeit -destkeystore $DIR/keystore -deststoretype JKS -srckeystore $DIR/tomcat.pkcs12 -srcstorepass changeit -srcstoretype PKCS12 -noprompt
+${JAVA_HOME}/bin/keytool -v -importkeystore -deststorepass changeit -destkeystore $DIR/keystore -deststoretype JKS -srckeystore $DIR/tomcat.pkcs12 -srcstorepass changeit -srcstoretype PKCS12 -noprompt
