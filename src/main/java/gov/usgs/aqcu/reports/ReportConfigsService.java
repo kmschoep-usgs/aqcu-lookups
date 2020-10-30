@@ -147,7 +147,7 @@ public class ReportConfigsService {
 		return folderName;
 	}
 	
-	public void createFolder(String groupName, String folderPath) throws IOException {
+	public void createFolder(String groupName, String folderPath, FolderProperties properties) throws IOException {
 		if(!doesGroupExist(groupName)) {
 			throw new GroupDoesNotExistException(groupName);
 		}

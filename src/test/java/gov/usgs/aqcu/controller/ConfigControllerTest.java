@@ -170,7 +170,7 @@ public class ConfigControllerTest {
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals(null, result.getBody());
 
-        doThrow(new GroupDoesNotExistException("group2")).when(service).createFolder("group2", "folder1");
+        doThrow(new GroupDoesNotExistException("group2")).when(service).createFolder("group2", "folder1", new FolderProperties());
         try {
             result = controller.createRootFolder("group2", "folder1");
             fail("Expected GroupDoesNotExistException but got no exception");
@@ -180,7 +180,7 @@ public class ConfigControllerTest {
             fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
         }
 
-        doThrow(new FolderDoesNotExistException("group1", "folder1")).when(service).createFolder("group1", "folder1/folder2");
+        doThrow(new FolderDoesNotExistException("group1", "folder1")).when(service).createFolder("group1", "folder1/folder2", new FolderProperties());
         try {
             result = controller.createRootFolder("group1", "folder1/folder2");
             fail("Expected FolderDoesNotExistException but got no exception");
@@ -190,7 +190,7 @@ public class ConfigControllerTest {
             fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
         }
 
-        doThrow(new FolderAlreadyExistsException("group1", "folder1")).when(service).createFolder("group1", "folder1");
+        doThrow(new FolderAlreadyExistsException("group1", "folder1")).when(service).createFolder("group1", "folder1", new FolderProperties());
         try {
             result = controller.createRootFolder("group1", "folder1");
             fail("Expected FolderAlreadyExistsException but got no exception");
@@ -200,7 +200,7 @@ public class ConfigControllerTest {
             fail("Expected FolderAlreadyExistsException but got " + e.getClass().getName());
         }
 
-        doThrow(new RuntimeException("test_error")).when(service).createFolder("group1", "bad_folder");
+        doThrow(new RuntimeException("test_error")).when(service).createFolder("group1", "bad_folder", new FolderProperties());
         try {
             result = controller.createRootFolder("group1", "bad_folder");
             fail("Expected RuntimeException but got no exception");
@@ -217,7 +217,7 @@ public class ConfigControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(null, result.getBody());
 
-        doThrow(new GroupDoesNotExistException("group2")).when(service).createFolder("group2", "folder1");
+        doThrow(new GroupDoesNotExistException("group2")).when(service).createFolder("group2", "folder1", new FolderProperties());
         try {
             result = controller.createRootFolder("group2", "folder1");
             fail("Expected GroupDoesNotExistException but got no exception");
@@ -227,7 +227,7 @@ public class ConfigControllerTest {
             fail("Expected GroupDoesNotExistException but got " + e.getClass().getName());
         }
 
-        doThrow(new FolderDoesNotExistException("group1", "folder1")).when(service).createFolder("group1", "folder1/folder2");
+        doThrow(new FolderDoesNotExistException("group1", "folder1")).when(service).createFolder("group1", "folder1/folder2", new FolderProperties());
         try {
             result = controller.createRootFolder("group1", "folder1/folder2");
             fail("Expected FolderDoesNotExistException but got no exception");
@@ -237,7 +237,7 @@ public class ConfigControllerTest {
             fail("Expected FolderDoesNotExistException but got " + e.getClass().getName());
         }
 
-        doThrow(new FolderAlreadyExistsException("group1", "folder1")).when(service).createFolder("group1", "folder1");
+        doThrow(new FolderAlreadyExistsException("group1", "folder1")).when(service).createFolder("group1", "folder1", new FolderProperties());
         try {
             result = controller.createRootFolder("group1", "folder1");
             fail("Expected FolderAlreadyExistsException but got no exception");
@@ -247,7 +247,7 @@ public class ConfigControllerTest {
             fail("Expected FolderAlreadyExistsException but got " + e.getClass().getName());
         }
 
-        doThrow(new RuntimeException("test_error")).when(service).createFolder("group1", "bad_folder");
+        doThrow(new RuntimeException("test_error")).when(service).createFolder("group1", "bad_folder", new FolderProperties());
         try {
             result = controller.createRootFolder("group1", "bad_folder");
             fail("Expected RuntimeException but got no exception");

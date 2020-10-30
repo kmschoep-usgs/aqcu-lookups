@@ -101,7 +101,7 @@ public class ConfigController {
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
 		@PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder
 	) throws Exception {
-		configsService.createFolder(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim());
+		configsService.createFolder(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim(), new FolderProperties());
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim()), new HttpHeaders(), HttpStatus.CREATED);
 	}
 
@@ -113,7 +113,7 @@ public class ConfigController {
 		@PathVariable(name = "subfolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String subfolder
 	) throws Exception {
 		String fullFolder = rootFolder.toLowerCase().trim() + subfolder.toLowerCase().trim();
-		configsService.createFolder(groupName.toLowerCase().trim(), fullFolder);
+		configsService.createFolder(groupName.toLowerCase().trim(), fullFolder, new FolderProperties());
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), fullFolder), new HttpHeaders(), HttpStatus.CREATED);
 	}
 
