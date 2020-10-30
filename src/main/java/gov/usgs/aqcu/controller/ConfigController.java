@@ -13,7 +13,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.security.RolesAllowed;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -39,7 +38,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -98,22 +96,24 @@ public class ConfigController {
 	@PostMapping(value = ROOT_FOLDERS_CONTEXT_PATH)
 	@PreAuthorize("hasAuthority('" + Authorities.NATIONAL_ADMIN+ "')")
 	public ResponseEntity<?> createRootFolder(
+		@RequestBody @Valid FolderProperties folderProperties,
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
 		@PathVariable @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder
 	) throws Exception {
-		configsService.createFolder(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim(), new FolderProperties());
+		configsService.createFolder(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim(), folderProperties);
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), rootFolder.toLowerCase().trim()), new HttpHeaders(), HttpStatus.CREATED);
 	}
 
 	@PostMapping(value = SUBFOLDERS_CONTEXT_PATH)
 	@PreAuthorize("hasAnyAuthority('" + Authorities.LOCAL_DATA_MANAGER + "','" + Authorities.NATIONAL_ADMIN + "')")
 	public ResponseEntity<?> createSubfolder(
+		@RequestBody @Valid FolderProperties folderProperties,
 		@PathVariable("groupName") @NotBlank @Pattern(regexp = GROUP_NAME_REGEX) String groupName,
 		@PathVariable(name = "rootFolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String rootFolder,
 		@PathVariable(name = "subfolder") @NotBlank @Pattern(regexp = FOLDER_PATH_REGEX) String subfolder
 	) throws Exception {
 		String fullFolder = rootFolder.toLowerCase().trim() + subfolder.toLowerCase().trim();
-		configsService.createFolder(groupName.toLowerCase().trim(), fullFolder, new FolderProperties());
+		configsService.createFolder(groupName.toLowerCase().trim(), fullFolder, folderProperties);
 		return new ResponseEntity<FolderData>(configsService.getFolderData(groupName.toLowerCase().trim(), fullFolder), new HttpHeaders(), HttpStatus.CREATED);
 	}
 

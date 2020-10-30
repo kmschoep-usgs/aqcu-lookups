@@ -258,7 +258,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
         doNothing().when(s3Service).saveJsonString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME, new ObjectMapper().writeValueAsString(new FolderConfig()));
 
-        service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME);
+        service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME, new FolderProperties());
     }
 
     @Test
@@ -268,7 +268,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
         doNothing().when(s3Service).saveJsonString(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME, new ObjectMapper().writeValueAsString(new FolderConfig()));
 
-        service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME);
+        service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME, new FolderProperties());
     }
 
     @Test
@@ -278,7 +278,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(false);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
         try {
-            service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME);
+            service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME, new FolderProperties());
             fail("Expected GroupDoesNotExistException but got no exception.");
         } catch(GroupDoesNotExistException e) {
             // Success
@@ -289,7 +289,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(true);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
         try {
-            service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME);
+            service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME, new FolderProperties());
             fail("Expected FolderDoesNotExistException but got no exception.");
         } catch(FolderDoesNotExistException e) {
             // Success
@@ -300,7 +300,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + ReportConfigsService.GROUP_CONFIG_FILE_NAME)).willReturn(false);
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(false);
         try {
-            service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME);
+            service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME, new FolderProperties());
             fail("Expected GroupDoesNotExistException but got no exception.");
         } catch(GroupDoesNotExistException e) {
             // Success
@@ -362,7 +362,7 @@ public class ReportConfigsServiceTest {
         given(s3Service.doesFileExist(TEST_GROUP_NAME + "/" + TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME + "/" + ReportConfigsService.REPORT_CONFIG_FILE_NAME)).willReturn(true);
 
         try {
-            service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME);
+            service.createFolder(TEST_GROUP_NAME, TEST_FOLDER_NAME + "/" + TEST_SUB_FOLDER_NAME, new FolderProperties());
             fail("Expected FolderAlreadyExistsException but got no exception.");
         } catch(FolderAlreadyExistsException e) {
             // Success

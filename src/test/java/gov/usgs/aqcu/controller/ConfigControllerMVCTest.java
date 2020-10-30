@@ -5,11 +5,11 @@ import static org.junit.Assert.fail;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Matchers.any;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -305,27 +305,38 @@ public class ConfigControllerMVCTest {
     @Test
     public void unauthenticatedCreateRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
-        mockMvc.perform(post("/config/groups/test/folders/test"));
+        mockMvc.perform(post("/config/groups/test/folders/test")
+        	.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        );
     }
     
     @Test
     @WithMockUser(authorities = {"unrelated_role"})
     public void unauthorizedCreateRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
-        mockMvc.perform(post("/config/groups/test/folders/test"));
+        mockMvc.perform(post("/config/groups/test/folders/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        );
     }
     
     @Test
     @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void unauthorizedLdmCreateRootFolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
-        mockMvc.perform(post("/config/groups/test/folders/test"));
+        mockMvc.perform(post("/config/groups/test/folders/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        );
     }
     
     @Test
     @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createRootFolderTest() throws Exception {
         mockMvc.perform(post("/config/groups/test/folders/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
     }
@@ -333,23 +344,33 @@ public class ConfigControllerMVCTest {
     @Test
     public void unauthenticatedCreateSubfolderTest() throws Exception {
         expectedException.expectCause(isA(AuthenticationCredentialsNotFoundException.class));
-        mockMvc.perform(post("/config/groups/test/folders/test/test"));
+        mockMvc.perform(post("/config/groups/test/folders/test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        );
     }
     
     @Test
     @WithMockUser(authorities = {"unrelated_role"})
     public void unauthorizedCreateSubfolderTest() throws Exception {
         expectedException.expectCause(isA(AccessDeniedException.class));
-        mockMvc.perform(post("/config/groups/test/folders/test/test"));
+        mockMvc.perform(post("/config/groups/test/folders/test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        );
     }
 
     @Test
     @WithMockUser(authorities = {Authorities.LOCAL_DATA_MANAGER})
     public void createSubFolderasLdmTest() throws Exception {
         mockMvc.perform(post("/config/groups/test/folders/test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
         mockMvc.perform(post("/config/groups/test/folders/test/test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
     }
@@ -358,9 +379,13 @@ public class ConfigControllerMVCTest {
     @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createSubFolderAsNationalAdminTest() throws Exception {
         mockMvc.perform(post("/config/groups/test/folders/test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
         mockMvc.perform(post("/config/groups/test/folders/test/test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
     }
@@ -370,46 +395,75 @@ public class ConfigControllerMVCTest {
     public void createFolderValidationTest() throws Exception {
         // Success
         mockMvc.perform(post("/config/groups/    test    /folders/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
         mockMvc.perform(post("/config/groups/test/folders/test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
         mockMvc.perform(post("/config/groups/test/folders/test/test/")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
         mockMvc.perform(post("/config/groups/test/folders//test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
         mockMvc.perform(post("/config/groups/test/folders//test/test/")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
-                mockMvc.perform(post("/config/groups/test/folders/test//test")
+        mockMvc.perform(post("/config/groups/test/folders/test//test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
         mockMvc.perform(post("/config/groups/test/folders/    test/test/    ")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isCreated());
 
         // Failure
         mockMvc.perform(post("/config/groups/   /folders/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isBadRequest());
         mockMvc.perform(post("/config/groups/t e s t/folders/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isBadRequest());
         mockMvc.perform(post("/config/groups/test!/folders/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isBadRequest());
-        mockMvc.perform(post("/config/groups/test/folders")).andDo(print())
+        mockMvc.perform(post("/config/groups/test/folders")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
+        ).andDo(print())
             .andExpect(status().isMethodNotAllowed());
         mockMvc.perform(post("/config/groups/test/folders/  ")
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+	        .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isBadRequest());
         mockMvc.perform(post("/config/groups/test/folders/!test/test")
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+	        .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isBadRequest());
         mockMvc.perform(post("/config/groups/test/folders/test/test!/")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isBadRequest());
 
@@ -418,24 +472,33 @@ public class ConfigControllerMVCTest {
     @Test
     @WithMockUser(authorities = {Authorities.NATIONAL_ADMIN})
     public void createFolderErrorTest() throws Exception {
-        doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).createFolder("test", "test");
+        doThrow(new GroupDoesNotExistException("test")).when(reportConfigsService).createFolder(eq("test"), eq("test"), any(FolderProperties.class));
         mockMvc.perform(post("/config/groups/test/folders/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isNotFound());
         
-        doThrow(new FolderDoesNotExistException("test", "test")).when(reportConfigsService).createFolder("test", "test/test");
+        doThrow(new FolderDoesNotExistException("test", "test")).when(reportConfigsService).createFolder(eq("test"), eq("test/test"), any(FolderProperties.class));
         mockMvc.perform(post("/config/groups/test/folders/test/test")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isNotFound());
 
-        doThrow(new FolderAlreadyExistsException("test", "test1")).when(reportConfigsService).createFolder("test", "test1");
+        doThrow(new FolderAlreadyExistsException("test", "test1")).when(reportConfigsService).createFolder(eq("test"), eq("test1"), any(FolderProperties.class));
         mockMvc.perform(post("/config/groups/test/folders/test1")
+    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(exampleFolderProperties())
         ).andDo(print())
             .andExpect(status().isBadRequest());
         
-        doThrow(new AmazonS3Exception("test_error")).when(reportConfigsService).createFolder("test", "test2");
+        doThrow(new AmazonS3Exception("test_error")).when(reportConfigsService).createFolder(eq("test"), eq("test2"), any(FolderProperties.class));
         try {
-            mockMvc.perform(post("/config/groups/test/folders/test2")).andReturn();
+            mockMvc.perform(post("/config/groups/test/folders/test2")
+	    		.contentType(MediaType.APPLICATION_JSON_VALUE)
+	            .content(exampleFolderProperties())
+            ).andReturn();
             fail("Expected AmazonS3Exception (unhandled by controller) but got no exception.");
         } catch(NestedServletException e) {
             assertTrue(e.getCause() instanceof AmazonS3Exception);

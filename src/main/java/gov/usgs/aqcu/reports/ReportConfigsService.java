@@ -162,7 +162,10 @@ public class ReportConfigsService {
 			throw new FolderDoesNotExistException(groupName, parentPath);
 		}
 		
-		saveFolderConfig(groupName, folderPath, new FolderConfig());
+		FolderConfig newFolderConfig = new FolderConfig();
+		newFolderConfig.setProperties(properties);
+		
+		saveFolderConfig(groupName, folderPath, newFolderConfig);
 	}
 
 	public void updateFolder(String groupName, String folderPath, FolderProperties properties) throws IOException {
