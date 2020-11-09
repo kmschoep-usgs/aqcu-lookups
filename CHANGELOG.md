@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Dependencies are pulled from and pushed to WMA Artifactory
+- Update aqcu-framework to version 0.0.9
 
 ### Removed
 - Dependency on travis.ci
