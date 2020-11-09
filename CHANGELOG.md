@@ -5,15 +5,35 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). (Patch version X.Y.0 is implied if not specified.)
 
 ## [Unreleased]
+
+## [0.2.0] - 2020-11-10
+### Added
+- Role-based authorization for folder/report configuration CRUD operations
+- Enforce unique report type configurations per folder
+- Folder properties configurations so that local data managers can control permissions for the folder
+- Audit information to report configuration object
+- OAuth2 security
+
+### Changed
+- Dependencies are pulled from and pushed to WMA Artifactory
+
+### Removed
+- Dependency on travis.ci
+
+## [0.1.0] - 2020-02-14
 ### Added
 - Added logging and debug statements
 - Added Travis and Coveralls
 - Docker configuration
 
 ### Changed
-- AQCU Framework to 0.0.6-SNAPSHOT
+- AQCU Framework to 0.0.8-SNAPSHOT
 - Exclude config classes from coveralls reporting
 - Merged this repository with the docker-aqcu-lookups repository
+- Added CRUD functionality for report configurations stored in CHS S3 to support new user interface
+- Upgrade to Springboot 2.2.0
+- Use Springfox to generate Swagger UI.
+- Fix Critical and High security vulnerabilities.
 
 ## [0.0.4] - 2019-02-20
 ### Added
@@ -47,8 +67,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Time Series Description List Service
 - Upchain Processor List Service
 
-[Unreleased]: https://github.com/USGS-CIDA/aqcu-lookups/compare/aqcu-lookups-0.0.4...master
-[0.0.2]: https://github.com/USGS-CIDA/aqcu-lookups/compare/aqcu-lookups-0.0.1...aqcu-lookups-0.0.2
-[0.0.3]: https://github.com/USGS-CIDA/aqcu-lookups/compare/aqcu-lookups-0.0.2...aqcu-lookups-0.0.3
+[Unreleased]: https://github.com/USGS-CIDA/aqcu-lookups/compare/0.2.0...master
+[0.2.0]: https://github.com/USGS-CIDA/aqcu-lookups/compare/0.1.0...0.2.0
+[0.1.0]: https://github.com/USGS-CIDA/aqcu-lookups/compare/aqcu-lookups-0.0.4...0.1.0
 [0.0.4]: https://github.com/USGS-CIDA/aqcu-lookups/compare/aqcu-lookups-0.0.3...aqcu-lookups-0.0.4
-
+[0.0.3]: https://github.com/USGS-CIDA/aqcu-lookups/compare/aqcu-lookups-0.0.2...aqcu-lookups-0.0.3
+[0.0.2]: https://github.com/USGS-CIDA/aqcu-lookups/compare/aqcu-lookups-0.0.1...aqcu-lookups-0.0.2
